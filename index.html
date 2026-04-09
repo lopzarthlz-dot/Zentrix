@@ -5,46 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Zentrix</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" crossorigin="anonymous"/>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>
-(function() {
-  var firebaseConfig = {
-    apiKey: "AIzaSyDKPdzZkLdVbnyXX6Mcnw1k03Fl4ujdVy4",
-    authDomain: "zentrix-6f3fc.firebaseapp.com",
-    projectId: "zentrix-6f3fc",
-    storageBucket: "zentrix-6f3fc.firebasestorage.app",
-    messagingSenderId: "554078287215",
-    appId: "1:554078287185:web:612bac92e0243e16cb4f70"
-  };
 
-  try {
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
-
-    function getUserId() {
-      var uid = null;
-      try { uid = localStorage.getItem('zentrix_uid'); } catch(e) {}
-      if (!uid) {
-        uid = 'zentrix_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
-        try { localStorage.setItem('zentrix_uid', uid); } catch(e) {}
-      }
-      return uid;
-    }
-
-    var userId = getUserId();
-    window._zentrixUserId = userId;
-    window._zentrixDb = db;
-    window._zentrixFirebaseReady = true;
-    console.log('Zentrix Firebase ready. userId:', userId);
-    window.dispatchEvent(new Event('zentrix-firebase-ready'));
-  } catch(e) {
-    console.error('Firebase init error:', e);
-    window._zentrixFirebaseReady = false;
-    window.dispatchEvent(new Event('zentrix-firebase-ready'));
-  }
-})();
-</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -582,132 +543,132 @@ var vid=document.getElementById('main-video');
 
 function g(id){return document.getElementById(id);}
 
-// ===== FIREBASE STORAGE SYSTEM =====
-var _saveTimer = null;
-var _unsubscribe = null;
+// ===== JSONBIN SYNC STORAGE =====
+var JKEY = '$2a$10$jN/BRmcG6SKRvbvBw/XG7.P5K84TACqgCqXXHQtQ8iQqL3HjsEua2';
+var JBIN_KEY = 'zentrix_bin_id';
+var _syncTimer = null;
+var _isSyncing = false;
 
-function _getRef() {
-  if (!window._zentrixDb || !window._zentrixUserId) return null;
-  return window._zentrixDb.collection('users').doc(window._zentrixUserId);
+function _getBinId() {
+  try { return localStorage.getItem(JBIN_KEY); } catch(e) { return null; }
+}
+function _setBinId(id) {
+  try { localStorage.setItem(JBIN_KEY, id); } catch(e) {}
 }
 
-function _pushToFirebase() {
-  var ref = _getRef();
-  if (!ref) return;
-  clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(function() {
-    var payload = {
-      items: JSON.parse(JSON.stringify(items)),
-      discItems: JSON.parse(JSON.stringify(discItems)),
-      savedItems: JSON.parse(JSON.stringify(savedItems)),
-      updatedAt: Date.now()
-    };
-    ref.set(payload).then(function() {
-      console.log('Zentrix: saved to Firebase', items.length, 'animes');
-    }).catch(function(e) {
-      console.error('Zentrix: Firebase save error:', e);
-    });
-  }, 800);
-}
-
-function loadData() {
-  var empty = g('home-empty');
-  if (empty) {
-    empty.innerHTML = '<div class="empty-icon">⏳</div><div class="empty-title">Carregando...</div>';
-    empty.style.display = 'flex';
-  }
-
-  function doLoad() {
-    if (!window._zentrixFirebaseReady) {
-      setTimeout(doLoad, 300);
-      return;
+// Create a new bin on first use
+function _createBin(cb) {
+  var payload = JSON.stringify({items:[], discItems:[], savedItems:[]});
+  fetch('https://api.jsonbin.io/v3/b', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': JKEY,
+      'X-Bin-Name': 'zentrix-data',
+      'X-Bin-Private': 'false'
+    },
+    body: payload
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (d.metadata && d.metadata.id) {
+      _setBinId(d.metadata.id);
+      console.log('Zentrix: bin criado', d.metadata.id);
+      if (cb) cb(d.metadata.id);
+    } else {
+      console.error('Zentrix: erro criando bin', d);
+      if (cb) cb(null);
     }
-    if (!window._zentrixDb) {
-      // Firebase failed, use localStorage
-      _loadFromLocalStorage();
-      renderAll();
-      return;
-    }
-    var ref = _getRef();
-    ref.get().then(function(snap) {
-      if (snap.exists) {
-        var d = snap.data();
-        items = Array.isArray(d.items) ? d.items : [];
-        discItems = Array.isArray(d.discItems) ? d.discItems : [];
-        savedItems = Array.isArray(d.savedItems) ? d.savedItems : [];
-        console.log('Zentrix: loaded from Firebase:', items.length, 'animes');
-      } else {
-        // New user - migrate from localStorage if any
-        _loadFromLocalStorage();
-        if (items.length > 0 || discItems.length > 0) {
-          console.log('Zentrix: migrating localStorage to Firebase...');
-          _pushToFirebase();
-        }
-      }
-      renderAll();
-      _startSync();
-    }).catch(function(e) {
-      console.error('Zentrix: Firebase load error:', e);
-      _loadFromLocalStorage();
-      renderAll();
-    });
-  }
-
-  if (window._zentrixFirebaseReady !== undefined) {
-    doLoad();
-  } else {
-    window.addEventListener('zentrix-firebase-ready', doLoad, {once: true});
-    setTimeout(function() {
-      if (!window._zentrixFirebaseReady) {
-        _loadFromLocalStorage();
-        renderAll();
-      }
-    }, 6000);
-  }
-}
-
-function _loadFromLocalStorage() {
-  try { var v = localStorage.getItem(KEY); if (v) items = JSON.parse(v); } catch(e) {}
-  try { var v = localStorage.getItem(DISC_KEY); if (v) discItems = JSON.parse(v); } catch(e) {}
-  try { var v = localStorage.getItem(SAVED_KEY); if (v) savedItems = JSON.parse(v); } catch(e) {}
-}
-
-function _startSync() {
-  var ref = _getRef();
-  if (!ref) return;
-  if (_unsubscribe) _unsubscribe();
-  _unsubscribe = ref.onSnapshot(function(snap) {
-    if (!snap.exists) return;
-    var d = snap.data();
-    var remoteTs = d.updatedAt || 0;
-    var localTs = window._zentrixLastSave || 0;
-    // Only update UI if change came from another device (not our own save)
-    if (remoteTs > localTs + 1500) {
-      items = Array.isArray(d.items) ? d.items : [];
-      discItems = Array.isArray(d.discItems) ? d.discItems : [];
-      savedItems = Array.isArray(d.savedItems) ? d.savedItems : [];
-      console.log('Zentrix: synced from another device!');
-      renderAll();
-    }
-  }, function(e) {
-    console.error('Zentrix: sync error:', e);
+  }).catch(function(e){
+    console.error('Zentrix: erro criando bin', e);
+    if (cb) cb(null);
   });
 }
 
-function saveData() {
-  window._zentrixLastSave = Date.now();
+// Load from JSONBin
+function loadData() {
+  var binId = _getBinId();
+  if (!binId) {
+    // No bin yet - load from localStorage then create bin
+    _loadLocal();
+    _createBin(function(id) {
+      if (id && (items.length > 0 || discItems.length > 0)) {
+        _pushToJSONBin(); // migrate existing data
+      }
+      renderAll();
+    });
+    return;
+  }
+  // Load from JSONBin
+  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+    headers: { 'X-Master-Key': JKEY }
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (d.record) {
+      items = Array.isArray(d.record.items) ? d.record.items : [];
+      discItems = Array.isArray(d.record.discItems) ? d.record.discItems : [];
+      savedItems = Array.isArray(d.record.savedItems) ? d.record.savedItems : [];
+      console.log('Zentrix: carregado do JSONBin -', items.length, 'animes');
+      // Also save to localStorage as backup
+      _saveLocal();
+    } else {
+      _loadLocal();
+    }
+    renderAll();
+  }).catch(function(e){
+    console.warn('Zentrix: JSONBin offline, usando local', e);
+    _loadLocal();
+    renderAll();
+  });
+}
+
+function _loadLocal() {
+  try { var v=localStorage.getItem(KEY); if(v) items=JSON.parse(v); } catch(e){ items=[]; }
+  try { var v=localStorage.getItem(DISC_KEY); if(v) discItems=JSON.parse(v); } catch(e){ discItems=[]; }
+  try { var v=localStorage.getItem(SAVED_KEY); if(v) savedItems=JSON.parse(v); } catch(e){ savedItems=[]; }
+}
+function _saveLocal() {
   try { localStorage.setItem(KEY, JSON.stringify(items)); } catch(e) {}
-  _pushToFirebase();
+  try { localStorage.setItem(DISC_KEY, JSON.stringify(discItems)); } catch(e) {}
+  try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedItems)); } catch(e) {}
+}
+
+function _pushToJSONBin() {
+  var binId = _getBinId();
+  if (!binId || _isSyncing) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(function() {
+    _isSyncing = true;
+    var payload = JSON.stringify({
+      items: JSON.parse(JSON.stringify(items)),
+      discItems: JSON.parse(JSON.stringify(discItems)),
+      savedItems: JSON.parse(JSON.stringify(savedItems))
+    });
+    fetch('https://api.jsonbin.io/v3/b/' + binId, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JKEY
+      },
+      body: payload
+    }).then(function(r){ return r.json(); }).then(function(d){
+      _isSyncing = false;
+      console.log('Zentrix: salvo no JSONBin');
+    }).catch(function(e){
+      _isSyncing = false;
+      console.warn('Zentrix: erro salvando no JSONBin', e);
+    });
+  }, 1000);
+}
+
+function saveData() {
+  _saveLocal();
+  _pushToJSONBin();
 }
 function saveDisc() {
-  window._zentrixLastSave = Date.now();
-  try { localStorage.setItem(DISC_KEY, JSON.stringify(discItems)); } catch(e) {}
-  _pushToFirebase();
+  _saveLocal();
+  _pushToJSONBin();
 }
 function saveSaved() {
-  window._zentrixLastSave = Date.now();
-  try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedItems)); } catch(e) {}
-  _pushToFirebase();
+  _saveLocal();
+  _pushToJSONBin();
 }
 
 function catLabel(){return 'Anime';}
@@ -1171,6 +1132,7 @@ var ds=g('disc-search');if(ds)ds.addEventListener('input',renderDisc);
 var li=g('link-modal-input');if(li)li.addEventListener('keydown',function(e){if(e.key==='Enter')submitLinkModal();});
 
 loadData();
+renderAll();
 console.log('Zentrix OK!');
 
 });
