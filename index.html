@@ -532,7 +532,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-var KEY='zentrix_v1', DISC_KEY='lopz_disc_v1', SAVED_KEY='lopz_saved_v1';
+var KEY='zentrix_v1', DISC_KEY='zentrix_disc_v1', SAVED_KEY='zentrix_saved_v1';
 var items=[], discItems=[], savedItems=[];
 var filter='all', searchFilter='all';
 var curAud='d', curSavedCat='anime-serie';
@@ -543,133 +543,134 @@ var vid=document.getElementById('main-video');
 
 function g(id){return document.getElementById(id);}
 
-// ===== JSONBIN SYNC STORAGE =====
-var JKEY = '$2a$10$jN/BRmcG6SKRvbvBw/XG7.P5K84TACqgCqXXHQtQ8iQqL3HjsEua2';
-var JBIN_KEY = 'zentrix_bin_id';
-var _syncTimer = null;
-var _isSyncing = false;
-
-function _getBinId() {
-  try { return localStorage.getItem(JBIN_KEY); } catch(e) { return null; }
-}
-function _setBinId(id) {
-  try { localStorage.setItem(JBIN_KEY, id); } catch(e) {}
-}
-
-// Create a new bin on first use
-function _createBin(cb) {
-  var payload = JSON.stringify({items:[], discItems:[], savedItems:[]});
-  fetch('https://api.jsonbin.io/v3/b', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Master-Key': JKEY,
-      'X-Bin-Name': 'zentrix-data',
-      'X-Bin-Private': 'false'
-    },
-    body: payload
-  }).then(function(r){ return r.json(); }).then(function(d){
-    if (d.metadata && d.metadata.id) {
-      _setBinId(d.metadata.id);
-      console.log('Zentrix: bin criado', d.metadata.id);
-      if (cb) cb(d.metadata.id);
-    } else {
-      console.error('Zentrix: erro criando bin', d);
-      if (cb) cb(null);
-    }
-  }).catch(function(e){
-    console.error('Zentrix: erro criando bin', e);
-    if (cb) cb(null);
-  });
-}
-
-// Load from JSONBin
-function loadData() {
-  var binId = _getBinId();
-  if (!binId) {
-    // No bin yet - load from localStorage then create bin
-    _loadLocal();
-    _createBin(function(id) {
-      if (id && (items.length > 0 || discItems.length > 0)) {
-        _pushToJSONBin(); // migrate existing data
-      }
-      renderAll();
-    });
-    return;
-  }
-  // Load from JSONBin
-  fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
-    headers: { 'X-Master-Key': JKEY }
-  }).then(function(r){ return r.json(); }).then(function(d){
-    if (d.record) {
-      items = Array.isArray(d.record.items) ? d.record.items : [];
-      discItems = Array.isArray(d.record.discItems) ? d.record.discItems : [];
-      savedItems = Array.isArray(d.record.savedItems) ? d.record.savedItems : [];
-      console.log('Zentrix: carregado do JSONBin -', items.length, 'animes');
-      // Also save to localStorage as backup
-      _saveLocal();
-    } else {
-      _loadLocal();
-    }
-    renderAll();
-  }).catch(function(e){
-    console.warn('Zentrix: JSONBin offline, usando local', e);
-    _loadLocal();
-    renderAll();
-  });
-}
-
-function _loadLocal() {
-  try { var v=localStorage.getItem(KEY); if(v) items=JSON.parse(v); } catch(e){ items=[]; }
-  try { var v=localStorage.getItem(DISC_KEY); if(v) discItems=JSON.parse(v); } catch(e){ discItems=[]; }
-  try { var v=localStorage.getItem(SAVED_KEY); if(v) savedItems=JSON.parse(v); } catch(e){ savedItems=[]; }
-}
-function _saveLocal() {
-  try { localStorage.setItem(KEY, JSON.stringify(items)); } catch(e) {}
-  try { localStorage.setItem(DISC_KEY, JSON.stringify(discItems)); } catch(e) {}
-  try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedItems)); } catch(e) {}
-}
-
-function _pushToJSONBin() {
-  var binId = _getBinId();
-  if (!binId || _isSyncing) return;
-  clearTimeout(_syncTimer);
-  _syncTimer = setTimeout(function() {
-    _isSyncing = true;
-    var payload = JSON.stringify({
-      items: JSON.parse(JSON.stringify(items)),
-      discItems: JSON.parse(JSON.stringify(discItems)),
-      savedItems: JSON.parse(JSON.stringify(savedItems))
-    });
-    fetch('https://api.jsonbin.io/v3/b/' + binId, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': JKEY
+// ===== ANIMES PADRÃO (editados aqui no código) =====
+var DEFAULT_ANIMES = [
+  {
+    id: 'sentenced-hero',
+    name: 'Sentenced to Be a Hero',
+    status: 'watching',
+    cat: 'anime-serie',
+    audio: 'ld',
+    fav: false,
+    rating: null,
+    progress: {},
+    cover: '',
+    lastEp: -1,
+    episodes: [
+      {
+        id: 'ep1',
+        name: 'Sentenciado a ser Herói',
+        linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4',
+        fileUrl: null, savedTime: 0, duration: 0, watched: false
       },
-      body: payload
-    }).then(function(r){ return r.json(); }).then(function(d){
-      _isSyncing = false;
-      console.log('Zentrix: salvo no JSONBin');
-    }).catch(function(e){
-      _isSyncing = false;
-      console.warn('Zentrix: erro salvando no JSONBin', e);
+      {
+        id: 'ep2',
+        name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1',
+        linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4',
+        fileUrl: null, savedTime: 0, duration: 0, watched: false
+      },
+      {
+        id: 'ep3',
+        name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2',
+        linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4',
+        fileUrl: null, savedTime: 0, duration: 0, watched: false
+      }
+    ]
+  }
+  // NOVOS ANIMES AQUI EMBAIXO
+];
+
+// Merge default animes with user progress from localStorage
+function mergeWithProgress(defaults, savedProgress) {
+  return defaults.map(function(anime) {
+    var prog = savedProgress[anime.id] || {};
+    var merged = JSON.parse(JSON.stringify(anime)); // deep copy
+    // Apply saved user progress to each episode
+    merged.lastEp = prog.lastEp !== undefined ? prog.lastEp : anime.lastEp;
+    merged.fav = prog.fav !== undefined ? prog.fav : anime.fav;
+    merged.rating = prog.rating !== undefined ? prog.rating : anime.rating;
+    merged.status = prog.status || anime.status;
+    merged.progress = prog.progress || anime.progress;
+    if (prog.episodes) {
+      merged.episodes = anime.episodes.map(function(ep) {
+        var epProg = prog.episodes[ep.id] || {};
+        return {
+          id: ep.id,
+          name: ep.name,
+          linkUrl: ep.linkUrl,
+          fileUrl: ep.fileUrl,
+          savedTime: epProg.savedTime || 0,
+          duration: epProg.duration || 0,
+          watched: epProg.watched || false
+        };
+      });
+    }
+    return merged;
+  });
+}
+
+// Save only user progress (not the anime data itself)
+function saveProgress_JSON() {
+  var progress = {};
+  items.forEach(function(anime) {
+    var def = DEFAULT_ANIMES.find(function(d) { return d.id === anime.id; });
+    if (!def) return; // custom anime added by user, skip
+    var epProgress = {};
+    anime.episodes.forEach(function(ep) {
+      if (ep.savedTime > 0 || ep.watched || ep.duration > 0) {
+        epProgress[ep.id] = {
+          savedTime: ep.savedTime || 0,
+          duration: ep.duration || 0,
+          watched: ep.watched || false
+        };
+      }
     });
-  }, 1000);
+    progress[anime.id] = {
+      lastEp: anime.lastEp,
+      fav: anime.fav,
+      rating: anime.rating,
+      status: anime.status,
+      progress: anime.progress,
+      episodes: epProgress
+    };
+  });
+  try { localStorage.setItem('zentrix_progress', JSON.stringify(progress)); } catch(e) {}
+}
+
+// ===== STORAGE LOCAL =====
+function loadData() {
+  // Load user progress
+  var savedProgress = {};
+  try { var v = localStorage.getItem('zentrix_progress'); if (v) savedProgress = JSON.parse(v); } catch(e) {}
+
+  // Merge default animes with progress
+  var merged = mergeWithProgress(DEFAULT_ANIMES, savedProgress);
+
+  // Load any custom animes user added manually
+  var customItems = [];
+  try { var v = localStorage.getItem(KEY); if (v) customItems = JSON.parse(v); } catch(e) {}
+  // Filter out any that conflict with defaults
+  customItems = customItems.filter(function(ci) {
+    return !DEFAULT_ANIMES.find(function(d) { return d.id === ci.id; });
+  });
+
+  items = merged.concat(customItems);
+
+  try { var v = localStorage.getItem(DISC_KEY); if (v) discItems = JSON.parse(v); } catch(e) { discItems = []; }
+  try { var v = localStorage.getItem(SAVED_KEY); if (v) savedItems = JSON.parse(v); } catch(e) { savedItems = []; }
 }
 
 function saveData() {
-  _saveLocal();
-  _pushToJSONBin();
+  // Save progress separately
+  saveProgress_JSON();
+  // Save custom (non-default) animes
+  var custom = items.filter(function(a) {
+    return !DEFAULT_ANIMES.find(function(d) { return d.id === a.id; });
+  });
+  try { localStorage.setItem(KEY, JSON.stringify(custom)); } catch(e) {}
 }
-function saveDisc() {
-  _saveLocal();
-  _pushToJSONBin();
-}
-function saveSaved() {
-  _saveLocal();
-  _pushToJSONBin();
-}
+function saveDisc() { try { localStorage.setItem(DISC_KEY, JSON.stringify(discItems)); } catch(e) {} }
+function saveSaved() { try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedItems)); } catch(e) {} }
 
 function catLabel(){return 'Anime';}
 function catEmoji(){return '⚔️';}
