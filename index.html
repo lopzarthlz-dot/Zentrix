@@ -64,7 +64,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-sub{font-size:10px;color:var(--text3);margin-top:2px;}
 .cw-card{width:300px;flex-shrink:0;cursor:pointer;background:var(--bg3);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border2);}
 .cw-thumb{width:100%;height:165px;background:var(--bg4);position:relative;display:flex;align-items:center;justify-content:center;font-size:64px;}
-.cw-play-ic{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;background:rgba(139,92,246,.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;box-shadow:0 0 20px var(--purple-glow);}
+.cw-play-ic{position:absolute;left:14px;bottom:14px;width:36px;height:36px;background:rgba(255,255,255,.15);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
+.cw-mins{position:absolute;right:10px;bottom:14px;font-size:10px;font-weight:700;color:rgba(255,255,255,.9);background:rgba(0,0,0,.55);padding:2px 8px;border-radius:99px;}
 .cw-prog{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.15);}
 .cw-prog-fill{height:100%;background:var(--grad2);border-radius:99px;}
 .cw-info{padding:10px 12px;}
@@ -662,8 +663,17 @@ function mkCW(a){
   for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>5&&!eps[i].watched){targetIdx=i;break;}}
   var ep=eps[targetIdx]||null;
   var prog=ep&&ep.savedTime?Math.min(85,Math.round(ep.savedTime/3)):0;
+  var minsLabel='';
+  if(ep&&ep.watched){minsLabel='Assistido';}
+  else if(ep&&ep.duration&&ep.duration>0&&ep.savedTime&&ep.savedTime>0){
+    var rem=Math.ceil((ep.duration-ep.savedTime)/60);
+    if(rem>0)minsLabel=rem+'min restantes';
+  }
   return '<div class="cw-card" onclick="openPlayer(\''+a.id+'\','+targetIdx+')">' +
-    '<div class="cw-thumb"><div>⚔️</div><div class="cw-play-ic">▶</div>' +
+    '<div class="cw-thumb"><div>⚔️</div>' +
+    '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.75) 0%,transparent 60%);pointer-events:none;"></div>' +
+    '<div class="cw-play-ic">▶</div>' +
+    (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
     '<div class="cw-prog"><div class="cw-prog-fill" style="width:'+prog+'%"></div></div></div>' +
     '<div class="cw-info"><div class="cw-title">'+a.name+'</div></div></div>';
 }
