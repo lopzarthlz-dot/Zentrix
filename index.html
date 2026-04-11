@@ -321,7 +321,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="login-top"></div>
   <div class="login-bottom">
     <div style="display:flex;align-items:center;justify-content:center;margin-bottom:-50px;position:relative;z-index:2;margin-left:-50px;">
-      <img src="https://ia600706.us.archive.org/9/items/30-af-5-d-2-c-fa-2-a-43-c-3-9-b-63-d-0-c-47-cbba-131/30AF5D2C-FA2A-43C3-9B63-D0C47CBBA131.png" style="width:120px;height:120px;object-fit:contain;margin-right:-48px;"/>
+      <img src="https://ia600706.us.archive.org/9/items/30-af-5-d-2-c-fa-2-a-43-c-3-9-b-63-d-0-c-47-cbba-131/30AF5D2C-FA2A-43C3-9B63-D0C47CBBA131.png" style="width:120px;height:120px;object-fit:contain;margin-right:-30px;"/>
       <div style="font-size:26px;font-weight:900;background:linear-gradient(90deg,#8b5cf6,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;">Zentrix</div>
     </div>
     <div class="login-tagline-bottom">Todos os seus animes favoritos. Agora<br>num só lugar.</div>
@@ -346,7 +346,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
     <div>
       <div class="auth-label">Senha</div>
-      <input class="auth-input" id="auth-pass" placeholder="Mínimo 6 caracteres" type="password"/>
+      <div style="position:relative;">
+        <input class="auth-input" id="auth-pass" placeholder="Mínimo 6 caracteres" type="password" style="padding-right:50px;"/>
+        <button type="button" onclick="togglePassView()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);" id="pass-toggle">EXIBIR</button>
+      </div>
     </div>
     <div class="auth-error" id="auth-error"></div>
     <button class="auth-submit" id="auth-submit" onclick="submitAuth()">Criar Conta</button>
@@ -392,10 +395,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="section-header"><div class="section-title">Favoritos ⭐</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
       <div class="cards-scroll"><div class="cards-row" id="favs-row"></div></div>
     </div>
-    <div class="section" id="sec-watched" style="display:none;">
-      <div class="section-header"><div class="section-title">Concluídos ✅</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
-      <div class="cards-scroll"><div class="cards-row" id="watched-row"></div></div>
-    </div>
+
     <div class="section" id="sec-saved-h" style="display:none;">
       <div class="section-header"><div class="section-title">Salvos 💾</div><button class="section-more" onclick="goTo('salvos')">Ver tudo</button></div>
       <div class="cards-scroll"><div class="cards-row" id="saved-h-row"></div></div>
@@ -849,7 +849,7 @@ function renderHome(){
   showSec('sec-new','new-row',novos,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
 
   showSec('sec-favs','favs-row',favs,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
-  showSec('sec-watched','watched-row',watched,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
+
   var ss=g('sec-saved-h'),sr=g('saved-h-row');
   if(ss&&sr){if(savedItems.length){ss.style.display='block';sr.innerHTML=savedItems.slice(0,8).map(mkSavedPC).join('');}else ss.style.display='none';}
 }
@@ -1274,6 +1274,20 @@ function closeAuthForm(){
 }
 window.closeAuthForm = closeAuthForm;
 
+function togglePassView(){
+  var inp = g('auth-pass');
+  var btn = g('pass-toggle');
+  if(!inp) return;
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    if(btn) btn.textContent = 'OCULTAR';
+  } else {
+    inp.type = 'password';
+    if(btn) btn.textContent = 'EXIBIR';
+  }
+}
+window.togglePassView = togglePassView;
+
 function submitAuth(){
   var email = (g('auth-email')||{}).value||'';
   var pass = (g('auth-pass')||{}).value||'';
@@ -1323,7 +1337,7 @@ window.submitAuth = submitAuth;
 function enterApp(email){
   var loginEl = g('login-screen');
   var authEl = g('auth-form');
-  if(loginEl) loginEl.classList.add('hidden');
+  if(loginEl){ loginEl.classList.add('hidden'); loginEl.style.display='none'; }
   if(authEl) authEl.classList.remove('active');
   // Update profile with user info
   var users = getUsers();
@@ -1335,6 +1349,7 @@ function enterApp(email){
   if(pname) pname.textContent = userName;
   if(phandle) phandle.textContent = email;
   if(pav) pav.textContent = userName.charAt(0).toUpperCase();
+  renderAll();
 }
 
 function logoutUser(){
@@ -1353,6 +1368,13 @@ function logoutUser(){
 window.logoutUser = logoutUser;
 
 function checkSession(){
+  // Remove old gmail if stored
+  var users = getUsers();
+  if(users['lopz.hhzw1@gmail.com']){
+    delete users['lopz.hhzw1@gmail.com'];
+    saveUsers(users);
+  }
+  if(getSession() === 'lopz.hhzw1@gmail.com') clearSession();
   var sessionEmail = getSession();
   if(sessionEmail){
     enterApp(sessionEmail);
