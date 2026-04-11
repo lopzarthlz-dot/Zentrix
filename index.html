@@ -303,13 +303,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </div>
       </div>
     </div>
-    <div class="section" id="sec-cw" style="display:none;margin-top:16px;">
+    <div class="section" id="sec-all" style="display:none;margin-top:16px;">
+      <div class="section-header"><div class="section-title">Em Alta</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
+      <div class="cards-scroll"><div class="cards-row" id="all-row"></div></div>
+    </div>
+    <div class="section" id="sec-cw" style="display:none;">
       <div class="section-header"><div class="section-title">Continue Assistindo</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
       <div class="cards-scroll"><div class="cards-row" id="cw-row"></div></div>
     </div>
-    <div class="section" id="sec-all" style="display:none;">
-      <div class="section-header"><div class="section-title">Em Alta 🔥</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
-      <div class="cards-scroll"><div class="cards-row" id="all-row"></div></div>
+    <div class="section" id="sec-new" style="display:none;">
+      <div class="section-header"><div class="section-title">Novos lançamentos no Zentrix</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
+      <div class="cards-scroll"><div class="cards-row" id="new-row"></div></div>
     </div>
     <div class="section" id="sec-favs" style="display:none;">
       <div class="section-header"><div class="section-title">Favoritos ⭐</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
@@ -406,10 +410,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="detail-tags-row" id="detail-tags-row"></div>
     <div class="season-header"><div class="season-label"><span class="season-arrow">▼</span> Temporada 1</div></div>
     <div style="padding-top:4px;">
-      <div class="detail-add-ep">
-        <input id="detail-ep-input" placeholder="Nome do episódio (ex: Episódio 1)"/>
-        <button class="detail-add-ep-btn" onclick="addEpFromDetail()">+ Ep</button>
-      </div>
+
       <div class="eps-list" id="detail-eps-list"></div>
     </div>
   </div>
@@ -529,6 +530,10 @@ var DEFAULT_ANIMES = [
     progress: {},
     cover: '',
     lastEp: -1,
+    views: 15000,
+    trending: true,
+    engagement: 92,
+    dataLancamento: '2026-04-11',
     episodes: [
       { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false },
       { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false },
@@ -736,8 +741,35 @@ function renderHome(){
   else if(items.length>0){heroItemId=items[0].id;g('hero-badge').textContent='📋 Sua lista';g('hero-title').textContent=items[0].name;g('hero-sub').textContent='Anime';g('hero-play-btn').textContent='▶ Assistir';}
   else{heroItemId=null;}
   function showSec(id,rowId,data,fn){var sec=g(id),row=g(rowId);if(!sec||!row)return;if(data.length){sec.style.display='block';row.innerHTML=data.slice(0,10).map(fn).join('');}else sec.style.display='none';}
-  showSec('sec-cw','cw-row',watching,mkCW);
-  showSec('sec-all','all-row',items.slice(0,10),function(a){return mkPC(a,"openDetail('"+a.id+"')");});
+
+  // EM ALTA: sort by trending first, then views, then engagement
+  var emAlta=items.slice().sort(function(a,b){
+    var ta=a.trending?1:0, tb=b.trending?1:0;
+    if(tb!==ta)return tb-ta;
+    var va=(a.views||0), vb=(b.views||0);
+    if(vb!==va)return vb-va;
+    return (b.engagement||0)-(a.engagement||0);
+  });
+  showSec('sec-all','all-row',emAlta,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
+
+  // CONTINUE ASSISTINDO
+  // Only show in CW if user actually watched something (savedTime > 5s)
+  var cwList=watching.filter(function(a){
+    return a.episodes&&a.episodes.some(function(ep){return ep.savedTime&&ep.savedTime>1;});
+  });
+  showSec('sec-cw','cw-row',cwList,mkCW);
+
+  // NOVOS LANÇAMENTOS: only items released in last 7 days
+  var hoje=new Date();
+  var novos=items.filter(function(a){
+    if(!a.dataLancamento)return false;
+    var partes=a.dataLancamento.split('-');
+    var dataItem=new Date(parseInt(partes[0]),parseInt(partes[1])-1,parseInt(partes[2]));
+    var diffDias=Math.floor((hoje-dataItem)/(1000*60*60*24));
+    return diffDias>=0&&diffDias<=7;
+  });
+  showSec('sec-new','new-row',novos,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
+
   showSec('sec-favs','favs-row',favs,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
   showSec('sec-watched','watched-row',watched,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
   var ss=g('sec-saved-h'),sr=g('saved-h-row');
@@ -847,13 +879,6 @@ function renderDetailEps(){
       '</div>'+
       '<div class="ep-row-right">'+
         (hasSrc?'<button class="ep-row-play" onclick="event.stopPropagation();playEpFromDetail('+i+')">▶</button>':'')+
-        '<div style="display:flex;gap:4px;">'+
-          '<button style="font-size:10px;padding:3px 7px;border-radius:99px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);color:var(--blue);cursor:pointer;font-family:var(--font);" onclick="event.stopPropagation();openLinkModalForDetailEp('+i+')">🔗</button>'+
-          '<button style="font-size:10px;padding:3px 7px;border-radius:99px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);color:var(--purple3);cursor:pointer;font-family:var(--font);" onclick="event.stopPropagation();pickDetailEpFile('+i+')">📂</button>'+
-          '<button onclick="event.stopPropagation();toggleEpWatched('+i+')" style="font-size:10px;padding:3px 7px;border-radius:99px;background:'+(isWatched?'rgba(56,189,248,.15)':'rgba(255,255,255,.05)')+';border:1px solid '+(isWatched?'rgba(56,189,248,.4)':'var(--border2)')+';color:'+(isWatched?'var(--blue)':'var(--text3)')+';cursor:pointer;font-family:var(--font);">'+(isWatched?'✓':'○')+'</button>'+
-          '<button onclick="event.stopPropagation();editEpNamePrompt('+i+')" style="font-size:10px;padding:3px 7px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text3);cursor:pointer;font-family:var(--font);">✏️</button>'+
-          '<button onclick="event.stopPropagation();removeDetailEp('+i+')" style="background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:0 2px;">✕</button>'+
-        '</div>'+
       '</div>'+
       (prog>2?'<div class="ep-row-prog-bar"><div class="ep-row-prog-fill" style="width:'+prog+'%"></div></div>':'')+
     '</div>';
@@ -1118,7 +1143,7 @@ window.getSuggestion=async function(){
 window.watchNowByName=function(name,btn){if(!items.find(function(x){return x.name.toLowerCase()===name.toLowerCase();})){items.unshift(newItem(name,'d'));saveData();renderAll();}if(btn){btn.textContent='✓ Adicionado!';btn.classList.add('done');btn.disabled=true;}};
 
 // ===== INIT =====
-var inputMap={'add-name':addItem,'disc-name':addDiscItem,'saved-add-name':addSavedItem,'ep-name-input':addEpisode,'detail-ep-input':addEpFromDetail};
+var inputMap={'add-name':addItem,'disc-name':addDiscItem,'saved-add-name':addSavedItem,'ep-name-input':addEpisode};
 Object.keys(inputMap).forEach(function(id){var el=g(id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')inputMap[id]();});});
 var si=g('search-input');if(si)si.addEventListener('input',renderBusca);
 var ds=g('disc-search');if(ds)ds.addEventListener('input',renderDisc);
