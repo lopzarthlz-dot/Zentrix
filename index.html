@@ -22,14 +22,14 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;}
 
 /* LOGIN SCREEN */
-#login-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 28px;max-width:480px;margin:0 auto;left:0;right:0;}
+#login-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 28px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
 #login-screen.hidden{display:none;}
 .login-bg{position:absolute;inset:0;overflow:hidden;z-index:0;}
 .login-top{display:none;}
 .login-logo-row{display:flex;align-items:center;gap:10px;}
 .login-logo-text{font-size:32px;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;}
 .login-tagline{font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-top:8px;}
-.login-bottom{display:flex;flex-direction:column;gap:10px;width:100%;position:absolute;bottom:50px;left:28px;right:28px;z-index:1;align-items:center;}
+.login-bottom{display:flex;flex-direction:column;gap:10px;width:100%;position:relative;z-index:1;align-items:center;}
 .login-tagline-bottom{font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-bottom:4px;}
 .login-btn-primary{width:100%;padding:16px;border-radius:var(--radius);background:transparent;border:2px solid var(--blue);color:var(--blue);font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);}
 .login-btn-secondary{background:none;border:none;color:var(--purple3);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);padding:8px;text-align:center;width:100%;}
@@ -318,7 +318,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
   <div class="login-top"></div>
   <div class="login-bottom">
-    <div style="display:flex;align-items:center;justify-content:center;">
+    <div style="display:flex;align-items:center;justify-content:center;margin-top:260px;">
       <img src="https://ia600706.us.archive.org/9/items/30-af-5-d-2-c-fa-2-a-43-c-3-9-b-63-d-0-c-47-cbba-131/30AF5D2C-FA2A-43C3-9B63-D0C47CBBA131.png" style="width:160px;height:160px;object-fit:contain;margin-right:-48px;"/>
       <div style="font-size:28px;font-weight:900;background:linear-gradient(90deg,#8b5cf6,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;">Zentrix</div>
     </div>
