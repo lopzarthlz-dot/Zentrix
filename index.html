@@ -680,7 +680,7 @@ function mkCW(a){
     '<div class="cw-play-ic">▶</div>' +
     (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
     '<div class="cw-prog"><div class="cw-prog-fill" style="width:'+prog+'%"></div></div></div>' +
-    '<div class="cw-info"><div class="cw-title">'+a.name+'</div></div></div>';
+    '<div class="cw-info"><div class="cw-title">'+a.name+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">Episódio '+(targetIdx+1)+'</div></div></div>';
 }
 function mkLI(a){
   var isDone=a.status==='watched', prog=formatProg(a.progress), isOpen=expandedId===a.id;
