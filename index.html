@@ -356,6 +356,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="auth-switch" id="auth-switch">
       Já tem conta? <span onclick="showAuthForm('login')">Fazer login</span>
     </div>
+    <div class="auth-switch" id="forgot-link" style="display:none;">
+      <span onclick="showForgotPass()" style="color:var(--text3);font-size:12px;">Esqueci minha senha</span>
+    </div>
   </div>
 </div>
 <div class="app">
@@ -1251,18 +1254,21 @@ function showAuthForm(mode){
   if(err) err.textContent = '';
   // Clear inputs
   ['auth-name','auth-email','auth-pass'].forEach(function(id){var el=g(id);if(el)el.value='';});
+  var forgotLink = g('forgot-link');
   if(mode === 'login'){
     if(title) title.textContent = 'Login';
     if(sub) sub.textContent = 'Bem-vindo de volta!';
     if(submit) submit.textContent = 'Entrar';
     if(sw) sw.innerHTML = 'Não tem conta? <span onclick="showAuthForm(&quot;register&quot;)">Criar conta</span>';
     if(nameGroup) nameGroup.style.display = 'none';
+    if(forgotLink) forgotLink.style.display = 'block';
   } else {
     if(title) title.textContent = 'Criar Conta';
-    if(sub) sub.textContent = 'Junte-se ao Zentrix';
+    if(sub) sub.textContent = 'Bem-vindo ao LopzTracker!';
     if(submit) submit.textContent = 'Criar Conta';
     if(sw) sw.innerHTML = 'Já tem conta? <span onclick="showAuthForm(&quot;login&quot;)">Fazer login</span>';
     if(nameGroup) nameGroup.style.display = 'block';
+    if(forgotLink) forgotLink.style.display = 'none';
   }
   if(form) form.classList.add('active');
 }
@@ -1273,6 +1279,26 @@ function closeAuthForm(){
   if(form) form.classList.remove('active');
 }
 window.closeAuthForm = closeAuthForm;
+
+function showForgotPass(){
+  var email = prompt('Digite seu email para resetar a senha:');
+  if(!email) return;
+  email = email.trim().toLowerCase();
+  var users = getUsers();
+  if(!users[email]){
+    alert('Email não encontrado. Verifique o email digitado.');
+    return;
+  }
+  var newPass = prompt('Digite sua nova senha (mínimo 6 caracteres):');
+  if(!newPass || newPass.length < 6){
+    alert('Senha deve ter pelo menos 6 caracteres.');
+    return;
+  }
+  users[email].pass = newPass;
+  saveUsers(users);
+  alert('Senha alterada com sucesso! Faça login com sua nova senha.');
+}
+window.showForgotPass = showForgotPass;
 
 function togglePassView(){
   var inp = g('auth-pass');
@@ -1368,13 +1394,6 @@ function logoutUser(){
 window.logoutUser = logoutUser;
 
 function checkSession(){
-  // Remove old gmail if stored
-  var users = getUsers();
-  if(users['lopz.hhzw1@gmail.com']){
-    delete users['lopz.hhzw1@gmail.com'];
-    saveUsers(users);
-  }
-  if(getSession() === 'lopz.hhzw1@gmail.com') clearSession();
   var sessionEmail = getSession();
   if(sessionEmail){
     enterApp(sessionEmail);
