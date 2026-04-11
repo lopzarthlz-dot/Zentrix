@@ -64,7 +64,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-sub{font-size:10px;color:var(--text3);margin-top:2px;}
 .cw-card{width:300px;flex-shrink:0;cursor:pointer;background:var(--bg3);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border2);}
 .cw-thumb{width:100%;height:165px;background:var(--bg4);position:relative;display:flex;align-items:center;justify-content:center;font-size:64px;}
-.cw-play-ic{position:absolute;left:14px;bottom:14px;width:36px;height:36px;background:rgba(255,255,255,.15);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
+.cw-play-ic{position:absolute;left:14px;bottom:14px;width:40px;height:40px;background:rgba(0,0,0,.45);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.cw-play-ic svg{width:18px;height:18px;}
 .cw-mins{position:absolute;right:10px;bottom:14px;font-size:10px;font-weight:700;color:rgba(255,255,255,.9);background:rgba(0,0,0,.55);padding:2px 8px;border-radius:99px;}
 .cw-prog{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.15);}
 .cw-prog-fill{height:100%;background:var(--grad2);border-radius:99px;}
@@ -677,7 +678,7 @@ function mkCW(a){
   return '<div class="cw-card" onclick="openPlayer(\''+a.id+'\','+targetIdx+')">' +
     '<div class="cw-thumb"><div>⚔️</div>' +
     '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.75) 0%,transparent 60%);pointer-events:none;"></div>' +
-    '<div class="cw-play-ic">▶</div>' +
+    '<div class="cw-play-ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="8,6 26,16 8,26" fill="white"/></svg></div>' +
     (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
     '<div class="cw-prog"><div class="cw-prog-fill" style="width:'+prog+'%"></div></div></div>' +
     '<div class="cw-info"><div class="cw-title">'+a.name+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">Episódio '+(targetIdx+1)+'</div></div></div>';
