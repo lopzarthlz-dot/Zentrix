@@ -25,13 +25,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 #login-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 28px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
 #login-screen.hidden{display:none;}
 .login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(109,40,217,.35) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(14,165,233,.25) 0%,transparent 50%),var(--bg);z-index:0;}
-.login-top{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;z-index:1;width:100%;}
+.login-top{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1;width:100%;}
 .login-logo-row{display:flex;align-items:center;gap:10px;}
 .login-logo-text{font-size:32px;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;}
 .login-tagline{font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-top:8px;}
 .login-bottom{display:flex;flex-direction:column;gap:14px;width:100%;position:relative;z-index:1;}
-.login-btn-primary{width:100%;padding:16px;border-radius:var(--radius);background:var(--grad2);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);box-shadow:0 0 24px rgba(56,189,248,.3);}
-.login-btn-secondary{width:100%;padding:15px;border-radius:var(--radius);background:transparent;border:1.5px solid var(--border2);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.login-btn-primary{width:100%;padding:16px;border-radius:var(--radius);background:transparent;border:2px solid var(--blue);color:var(--blue);font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);}
+.login-btn-secondary{background:none;border:none;color:var(--purple3);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);padding:8px;text-align:center;width:100%;}
 .login-divider{text-align:center;font-size:12px;color:var(--text3);margin:4px 0;}
 .auth-form{position:fixed;inset:0;z-index:10000;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;}
 .auth-form.active{display:flex;}
@@ -314,13 +314,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="login-bg"></div>
   <div class="login-top">
     <div class="login-logo-row">
-      <div class="login-logo-text">ZENTRIX</div>
+      <div class="login-logo-text">Zentrix</div>
     </div>
     <div class="login-tagline">Todos os seus animes favoritos.<br>Agora num só lugar.</div>
   </div>
   <div class="login-bottom">
-    <button class="login-btn-primary" onclick="showAuthForm('register')">Criar Conta</button>
-    <button class="login-btn-secondary" onclick="showAuthForm('login')">Login</button>
+    <button class="login-btn-primary" onclick="showAuthForm('login')">Login</button>
+    <button class="login-btn-secondary" onclick="showAuthForm('register')">Criar Conta</button>
   </div>
 </div>
 <!-- AUTH FORM -->
