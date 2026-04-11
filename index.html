@@ -952,11 +952,22 @@ function openPlayer(itemId,epIdx){
   if(eps.length>0)loadEpisode(idx);else showNoFile();
 }
 function closePlayer(){
+  // Save final progress before closing
+  if(playerItemId&&playerEpIdx>=0&&vid&&vid.currentTime>0){
+    var a=items.find(function(x){return x.id===playerItemId;});
+    if(a&&a.episodes&&a.episodes[playerEpIdx]){
+      a.episodes[playerEpIdx].savedTime=vid.currentTime;
+      if(vid.duration)a.episodes[playerEpIdx].duration=vid.duration;
+      saveData();
+    }
+  }
   var ov=g('player-overlay');if(ov)ov.classList.remove('active');
   document.body.style.overflow='';
   if(vid){vid.pause();vid.removeAttribute('src');vid.load();}
   hideLoading();setPlayIcon(false);updateProgress(0,0);
   playerItemId=null;playerEpIdx=-1;
+  // Refresh home so CW shows updated progress immediately
+  renderHome();
 }
 window.openPlayer=openPlayer;window.closePlayer=closePlayer;
 function renderEpList(){
