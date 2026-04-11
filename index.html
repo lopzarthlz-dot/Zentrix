@@ -528,7 +528,7 @@ var DEFAULT_ANIMES = [
     fav: false,
     rating: null,
     progress: {},
-    cover: '',
+    cover: 'https://ia600907.us.archive.org/17/items/img-4024_202604/IMG_4024.jpeg',
     lastEp: -1,
     views: 15000,
     trending: true,
@@ -650,7 +650,8 @@ window.selAud=selAud;window.setFilter=setFilter;window.setSearchFilter=setSearch
 // ===== CARDS =====
 function mkPC(a,fn){
   return '<div class="p-card" onclick="'+fn+'">'+
-    '<div class="p-card-img"><div class="p-card-emoji">⚔️</div>'+
+    '<div class="p-card-img">'+
+    (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
