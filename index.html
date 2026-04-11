@@ -671,10 +671,18 @@ function mkCW(a){
     if(prog<0)prog=0;
   }
   var minsLabel='';
-  if(ep&&ep.watched){minsLabel='Assistido';}
-  else if(ep&&ep.duration&&ep.duration>0&&ep.savedTime&&ep.savedTime>0){
-    var rem=Math.ceil((ep.duration-ep.savedTime)/60);
-    if(rem>0)minsLabel=rem+'m';
+  if(ep&&ep.watched){
+    minsLabel='Assistido';
+  } else if(ep&&ep.duration&&ep.duration>0){
+    if(ep.savedTime&&ep.savedTime>10){
+      // In progress - show remaining
+      var rem=Math.ceil((ep.duration-ep.savedTime)/60);
+      if(rem>0)minsLabel=rem+'m restantes';
+    } else {
+      // Not started yet - show total duration
+      var tot=Math.ceil(ep.duration/60);
+      if(tot>0)minsLabel=tot+'m';
+    }
   }
   return '<div class="cw-card" onclick="openPlayer(\''+a.id+'\','+targetIdx+')">' +
     '<div class="cw-thumb">' +
