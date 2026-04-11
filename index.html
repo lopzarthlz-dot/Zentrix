@@ -662,7 +662,12 @@ function mkCW(a){
   var targetIdx=a.lastEp>=0?a.lastEp:0;
   for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>5&&!eps[i].watched){targetIdx=i;break;}}
   var ep=eps[targetIdx]||null;
-  var prog=ep&&ep.savedTime?Math.min(85,Math.round(ep.savedTime/3)):0;
+  var prog=0;
+  if(ep&&ep.savedTime&&ep.duration&&ep.duration>0){
+    prog=Math.round((ep.savedTime/ep.duration)*100);
+    if(prog>100)prog=100;
+    if(prog<0)prog=0;
+  }
   var minsLabel='';
   if(ep&&ep.watched){minsLabel='Assistido';}
   else if(ep&&ep.duration&&ep.duration>0&&ep.savedTime&&ep.savedTime>0){
@@ -1017,16 +1022,27 @@ window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInp
 vid.addEventListener('timeupdate',function(){
   if(isSeeking||!vid.duration)return;
   updateProgress(vid.currentTime,vid.duration);
-  if(playerItemId&&playerEpIdx>=0&&Math.floor(vid.currentTime)%5===0){
+  // Save every 3 seconds for more accurate progress
+  if(playerItemId&&playerEpIdx>=0&&Math.floor(vid.currentTime)%3===0){
     var a=items.find(function(x){return x.id===playerItemId;});
     if(a&&a.episodes&&a.episodes[playerEpIdx]){
       a.episodes[playerEpIdx].savedTime=vid.currentTime;
-      if(vid.duration)a.episodes[playerEpIdx].duration=vid.duration;
+      a.episodes[playerEpIdx].duration=vid.duration;
       saveData();
     }
   }
 });
-vid.addEventListener('loadedmetadata',function(){updateProgress(vid.currentTime,vid.duration);});
+vid.addEventListener('loadedmetadata',function(){
+  updateProgress(vid.currentTime,vid.duration);
+  // Save duration immediately when video loads so CW shows correct time
+  if(playerItemId&&playerEpIdx>=0&&vid.duration){
+    var a=items.find(function(x){return x.id===playerItemId;});
+    if(a&&a.episodes&&a.episodes[playerEpIdx]){
+      a.episodes[playerEpIdx].duration=vid.duration;
+      saveData();
+    }
+  }
+});
 vid.addEventListener('play',function(){setPlayIcon(true);});
 vid.addEventListener('pause',function(){setPlayIcon(false);});
 vid.addEventListener('ended',function(){
