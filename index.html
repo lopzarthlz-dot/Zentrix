@@ -1060,11 +1060,29 @@ vid.addEventListener('ended',function(){
   setPlayIcon(false);
   if(playerItemId&&playerEpIdx>=0){
     var a=items.find(function(x){return x.id===playerItemId;});
-    if(a&&a.episodes&&a.episodes[playerEpIdx]){a.episodes[playerEpIdx].watched=true;saveData();}
+    if(a&&a.episodes&&a.episodes[playerEpIdx]){
+      // Mark current ep as watched and reset savedTime
+      a.episodes[playerEpIdx].watched=true;
+      a.episodes[playerEpIdx].savedTime=0;
+      saveData();
+      // Check if ALL episodes are watched
+      var allWatched=a.episodes.every(function(ep){return ep.watched;});
+      if(allWatched){
+        // Mark anime as watched so it leaves CW automatically
+        a.status='watched';
+        saveData();
+        // Close player and refresh home
+        setTimeout(function(){closePlayer();},800);
+        return;
+      }
+    }
+    // Auto-advance to next episode
+    var a2=items.find(function(x){return x.id===playerItemId;});
+    if(!a2||!a2.episodes)return;
+    if(playerEpIdx<a2.episodes.length-1){
+      setTimeout(function(){loadEpisode(playerEpIdx+1);},1500);
+    }
   }
-  var a2=items.find(function(x){return x.id===playerItemId;});
-  if(!a2||!a2.episodes)return;
-  if(playerEpIdx<a2.episodes.length-1)setTimeout(function(){loadEpisode(playerEpIdx+1);},1500);
 });
 
 // ===== IA =====
