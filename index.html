@@ -20,6 +20,33 @@
   --font:'Inter',sans-serif;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;}
+
+/* LOGIN SCREEN */
+#login-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 28px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
+#login-screen.hidden{display:none;}
+.login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(109,40,217,.35) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(14,165,233,.25) 0%,transparent 50%),var(--bg);z-index:0;}
+.login-top{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;z-index:1;width:100%;}
+.login-logo-row{display:flex;align-items:center;gap:10px;}
+.login-logo-text{font-size:32px;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;}
+.login-tagline{font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-top:8px;}
+.login-bottom{display:flex;flex-direction:column;gap:14px;width:100%;position:relative;z-index:1;}
+.login-btn-primary{width:100%;padding:16px;border-radius:var(--radius);background:var(--grad2);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);box-shadow:0 0 24px rgba(56,189,248,.3);}
+.login-btn-secondary{width:100%;padding:15px;border-radius:var(--radius);background:transparent;border:1.5px solid var(--border2);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.login-divider{text-align:center;font-size:12px;color:var(--text3);margin:4px 0;}
+.auth-form{position:fixed;inset:0;z-index:10000;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;}
+.auth-form.active{display:flex;}
+.auth-form-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(109,40,217,.35) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(14,165,233,.25) 0%,transparent 50%),var(--bg);}
+.auth-form-inner{position:relative;z-index:1;display:flex;flex-direction:column;padding:60px 28px 40px;height:100%;gap:20px;}
+.auth-back{background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer;align-self:flex-start;padding:0;margin-bottom:8px;}
+.auth-title{font-size:26px;font-weight:900;color:#fff;}
+.auth-sub{font-size:13px;color:var(--text3);margin-top:-12px;}
+.auth-input{width:100%;padding:14px 16px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);font-size:14px;color:var(--text);font-family:var(--font);margin-top:4px;}
+.auth-input:focus{outline:none;border-color:var(--purple);}
+.auth-label{font-size:12px;color:var(--text2);font-weight:600;}
+.auth-submit{width:100%;padding:16px;border-radius:var(--radius);background:var(--grad2);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);margin-top:8px;box-shadow:0 0 24px rgba(56,189,248,.3);}
+.auth-error{font-size:12px;color:#f87171;text-align:center;min-height:18px;}
+.auth-switch{font-size:13px;color:var(--text3);text-align:center;}
+.auth-switch span{color:var(--blue);cursor:pointer;font-weight:600;}
 .app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg);position:relative;}
 .screen{display:none;flex:1;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding-bottom:100px;}
 .screen.active{display:flex;}
@@ -282,6 +309,46 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </style>
 </head>
 <body>
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-top">
+    <div class="login-logo-row">
+      <div class="login-logo-text">ZENTRIX</div>
+    </div>
+    <div class="login-tagline">Todos os seus animes favoritos.<br>Agora num só lugar.</div>
+  </div>
+  <div class="login-bottom">
+    <button class="login-btn-primary" onclick="showAuthForm('register')">Criar Conta</button>
+    <button class="login-btn-secondary" onclick="showAuthForm('login')">Login</button>
+  </div>
+</div>
+<!-- AUTH FORM -->
+<div class="auth-form" id="auth-form">
+  <div class="auth-form-bg"></div>
+  <div class="auth-form-inner">
+    <button class="auth-back" onclick="closeAuthForm()">←</button>
+    <div class="auth-title" id="auth-title">Criar Conta</div>
+    <div class="auth-sub" id="auth-sub">Junte-se ao Zentrix</div>
+    <div id="auth-name-group">
+      <div class="auth-label">Nome</div>
+      <input class="auth-input" id="auth-name" placeholder="Seu nome..." type="text"/>
+    </div>
+    <div>
+      <div class="auth-label">Email</div>
+      <input class="auth-input" id="auth-email" placeholder="seu@email.com" type="email"/>
+    </div>
+    <div>
+      <div class="auth-label">Senha</div>
+      <input class="auth-input" id="auth-pass" placeholder="Mínimo 6 caracteres" type="password"/>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+    <button class="auth-submit" id="auth-submit" onclick="submitAuth()">Criar Conta</button>
+    <div class="auth-switch" id="auth-switch">
+      Já tem conta? <span onclick="showAuthForm('login')">Fazer login</span>
+    </div>
+  </div>
+</div>
 <div class="app">
   <div class="screen active" id="screen-home">
     <div class="top-bar">
@@ -373,8 +440,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="screen" id="screen-perfil">
     <div class="profile-banner"><div class="profile-banner-fade"></div></div>
     <div class="profile-av-row">
-      <div class="profile-av">Z</div>
-      <div><div class="profile-name">Zentrix</div><div class="profile-handle">@zentrix · Anime Streaming 🎌</div></div>
+      <div class="profile-av" id="profile-av">Z</div>
+      <div style="flex:1;">
+        <div class="profile-name" id="profile-name">Zentrix</div>
+        <div class="profile-handle" id="profile-handle">@zentrix</div>
+      </div>
+      <button onclick="logoutUser()" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:#f87171;font-size:12px;font-weight:700;padding:8px 16px;border-radius:99px;cursor:pointer;font-family:var(--font);flex-shrink:0;">Sair</button>
     </div>
     <div class="stats-strip">
       <div class="stat-block"><div class="stat-n" id="p-watching">0</div><div class="stat-l">Assistindo</div></div>
@@ -1150,8 +1221,147 @@ var si=g('search-input');if(si)si.addEventListener('input',renderBusca);
 var ds=g('disc-search');if(ds)ds.addEventListener('input',renderDisc);
 var li=g('link-modal-input');if(li)li.addEventListener('keydown',function(e){if(e.key==='Enter')submitLinkModal();});
 
+// ===== AUTH SYSTEM =====
+var AUTH_KEY = 'zentrix_users';
+var SESSION_KEY = 'zentrix_session';
+
+function getUsers(){return JSON.parse(localStorage.getItem(AUTH_KEY)||'{}');}
+function saveUsers(u){localStorage.setItem(AUTH_KEY,JSON.stringify(u));}
+function getSession(){return localStorage.getItem(SESSION_KEY)||null;}
+function saveSession(email){localStorage.setItem(SESSION_KEY,email);}
+function clearSession(){localStorage.removeItem(SESSION_KEY);}
+
+var _authMode = 'register';
+
+function showAuthForm(mode){
+  _authMode = mode;
+  var form = g('auth-form');
+  var title = g('auth-title');
+  var sub = g('auth-sub');
+  var submit = g('auth-submit');
+  var sw = g('auth-switch');
+  var nameGroup = g('auth-name-group');
+  var err = g('auth-error');
+  if(err) err.textContent = '';
+  // Clear inputs
+  ['auth-name','auth-email','auth-pass'].forEach(function(id){var el=g(id);if(el)el.value='';});
+  if(mode === 'login'){
+    if(title) title.textContent = 'Login';
+    if(sub) sub.textContent = 'Bem-vindo de volta!';
+    if(submit) submit.textContent = 'Entrar';
+    if(sw) sw.innerHTML = 'Não tem conta? <span onclick="showAuthForm(&quot;register&quot;)">Criar conta</span>';
+    if(nameGroup) nameGroup.style.display = 'none';
+  } else {
+    if(title) title.textContent = 'Criar Conta';
+    if(sub) sub.textContent = 'Junte-se ao Zentrix';
+    if(submit) submit.textContent = 'Criar Conta';
+    if(sw) sw.innerHTML = 'Já tem conta? <span onclick="showAuthForm(&quot;login&quot;)">Fazer login</span>';
+    if(nameGroup) nameGroup.style.display = 'block';
+  }
+  if(form) form.classList.add('active');
+}
+window.showAuthForm = showAuthForm;
+
+function closeAuthForm(){
+  var form = g('auth-form');
+  if(form) form.classList.remove('active');
+}
+window.closeAuthForm = closeAuthForm;
+
+function submitAuth(){
+  var email = (g('auth-email')||{}).value||'';
+  var pass = (g('auth-pass')||{}).value||'';
+  var name = (g('auth-name')||{}).value||'';
+  var err = g('auth-error');
+  email = email.trim().toLowerCase();
+
+  if(!email || !pass){
+    if(err) err.textContent = 'Preencha todos os campos.';
+    return;
+  }
+  if(!email.includes('@')){
+    if(err) err.textContent = 'Email inválido.';
+    return;
+  }
+  if(pass.length < 6){
+    if(err) err.textContent = 'Senha deve ter pelo menos 6 caracteres.';
+    return;
+  }
+
+  var users = getUsers();
+
+  if(_authMode === 'register'){
+    if(users[email]){
+      if(err) err.textContent = 'Este email já está cadastrado.';
+      return;
+    }
+    users[email] = {name: name||email.split('@')[0], email: email, pass: pass, createdAt: Date.now()};
+    saveUsers(users);
+    saveSession(email);
+    enterApp(email);
+  } else {
+    if(!users[email]){
+      if(err) err.textContent = 'Email não encontrado.';
+      return;
+    }
+    if(users[email].pass !== pass){
+      if(err) err.textContent = 'Senha incorreta.';
+      return;
+    }
+    saveSession(email);
+    enterApp(email);
+  }
+}
+window.submitAuth = submitAuth;
+
+function enterApp(email){
+  var loginEl = g('login-screen');
+  var authEl = g('auth-form');
+  if(loginEl) loginEl.classList.add('hidden');
+  if(authEl) authEl.classList.remove('active');
+  // Update profile with user info
+  var users = getUsers();
+  var user = users[email]||{};
+  var userName = user.name||email.split('@')[0];
+  var pname = g('profile-name');
+  var phandle = g('profile-handle');
+  var pav = g('profile-av');
+  if(pname) pname.textContent = userName;
+  if(phandle) phandle.textContent = email;
+  if(pav) pav.textContent = userName.charAt(0).toUpperCase();
+}
+
+function logoutUser(){
+  if(!confirm('Tem certeza que quer sair?')) return;
+  clearSession();
+  var loginEl = g('login-screen');
+  if(loginEl) { loginEl.classList.remove('hidden'); loginEl.style.display='flex'; }
+  // Reset profile
+  var pname = g('profile-name');
+  var phandle = g('profile-handle');
+  var pav = g('profile-av');
+  if(pname) pname.textContent = 'Zentrix';
+  if(phandle) phandle.textContent = '@zentrix';
+  if(pav) pav.textContent = 'Z';
+}
+window.logoutUser = logoutUser;
+
+function checkSession(){
+  var sessionEmail = getSession();
+  if(sessionEmail){
+    enterApp(sessionEmail);
+    return true;
+  }
+  return false;
+}
+
+// ===== INIT =====
 loadData();
 renderAll();
+if(!checkSession()){
+  var loginScr = g('login-screen');
+  if(loginScr) loginScr.style.display = 'flex';
+}
 console.log('Zentrix OK!');
 
 });
