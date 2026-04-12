@@ -233,6 +233,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
+@keyframes ripple{0%{transform:scale(0);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
+.profile-circle-wrap{position:relative;overflow:visible;}
+.profile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);pointer-events:none;animation:ripple .6s ease-out forwards;}
 .float-1{} .float-2{}
 .detail-screen{position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;}
 .detail-screen.active{display:flex;}
@@ -1626,17 +1629,19 @@ function renderProfileGrid(){
     var fc = floatClasses[i]||'';
 
     if(slot.type === 'profile'){
-      html += '<div class="profile-slot '+fc+'" style="position:absolute;'+posStyle+'" onclick="selectProfile('+slot.idx+')">' +
-        '<div class="profile-circle filled" style="width:120px;height:120px;">' +
+      html += '<div class="profile-slot '+fc+'" style="position:absolute;'+posStyle+'" onclick="selectProfile('+slot.idx+')" ontouchstart="profileCirclePress(this)" ontouchend="profileCircleRelease(this)">' +
+        '<div class="profile-circle-wrap">' +
+        '<div class="profile-circle filled" style="width:120px;height:120px;transition:transform .15s;">' +
           '<img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:80px;height:80px;object-fit:contain;"/>' +
-        '</div>' +
+        '</div></div>' +
         '<div class="profile-slot-name">'+(slot.name)+'</div>' +
       '</div>';
     } else {
-      html += '<div class="profile-slot '+fc+'" style="position:absolute;'+posStyle+'" onclick="openCreateProfile()">' +
-        '<div class="profile-circle add" style="width:120px;height:120px;">' +
+      html += '<div class="profile-slot '+fc+'" style="position:absolute;'+posStyle+'" onclick="openCreateProfile()" ontouchstart="profileCirclePress(this)" ontouchend="profileCircleRelease(this)">' +
+        '<div class="profile-circle-wrap">' +
+        '<div class="profile-circle add" style="width:120px;height:120px;transition:transform .15s;">' +
           '<span style="font-size:40px;color:rgba(255,255,255,.5);line-height:1;">+</span>' +
-        '</div>' +
+        '</div></div>' +
         '<div class="profile-slot-name" style="color:rgba(255,255,255,.5);">Adicionar Perfil</div>' +
       '</div>';
     }
@@ -2280,6 +2285,31 @@ if(!_tabAlive){
   if(_se) saveActiveProfile(_se, null);
 }
 sessionStorage.setItem('zentrix_tab', '1');
+
+function profileCirclePress(el){
+  var circle = el.querySelector('.profile-circle');
+  if(circle) circle.style.transform = 'scale(0.92)';
+}
+function profileCircleRelease(el){
+  var circle = el.querySelector('.profile-circle');
+  if(circle){
+    circle.style.transform = 'scale(1)';
+    // Onda de ripple
+    var wrap = el.querySelector('.profile-circle-wrap');
+    if(wrap){
+      var ripple = document.createElement('div');
+      ripple.className = 'profile-ripple';
+      ripple.style.width = '120px';
+      ripple.style.height = '120px';
+      ripple.style.left = '0';
+      ripple.style.top = '0';
+      wrap.appendChild(ripple);
+      setTimeout(function(){ if(ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 700);
+    }
+  }
+}
+window.profileCirclePress = profileCirclePress;
+window.profileCircleRelease = profileCircleRelease;
 
 // ===== FLOATING ANIMATION =====
 var _floatRAF = null;
