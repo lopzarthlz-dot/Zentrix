@@ -377,9 +377,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
     <div class="auth-field">
       <div class="auth-float-wrap">
-        <input class="auth-input" id="auth-pass" type="password" placeholder=" " style="padding-right:60px;" autocomplete="current-password" onfocus="g('pass-toggle').style.display='block'" onblur="if(!this.value)g('pass-toggle').style.display='none'"/>
+        <input class="auth-input" id="auth-pass" type="password" placeholder=" " style="padding-right:60px;" autocomplete="current-password" onfocus="showPassToggle()" onblur="hidePassToggle()"/>
         <label class="auth-float-label" for="auth-pass">Senha</label>
-        <button type="button" onclick="togglePassView()" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);letter-spacing:.5px;display:none;" id="pass-toggle">EXIBIR</button>
+        <button type="button" onmousedown="event.preventDefault();togglePassView()" ontouchstart="event.preventDefault();togglePassView()" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);letter-spacing:.5px;display:none;" id="pass-toggle">EXIBIR</button>
       </div>
     </div>
     <div class="auth-error" id="auth-error"></div>
@@ -1431,7 +1431,7 @@ function showAuthForm(mode){
       forgotLink.style.display='block';
       forgotLink.innerHTML='<span style="color:var(--text3);font-size:13px;">Já possui uma conta? </span><span class="auth-link-btn" onclick="showAuthForm(\'login\')">LOGIN</span>';
     }
-    if(nameGroup) nameGroup.style.display = 'block';
+    if(nameGroup) nameGroup.style.display = 'none';
   }
   if(form) form.classList.add('active');
   var overlay = g('auth-overlay');
@@ -1535,6 +1535,18 @@ function submitForgotPass(){
   }
 }
 window.submitForgotPass = submitForgotPass;
+
+function showPassToggle(){
+  var btn = g('pass-toggle');
+  if(btn) btn.style.display='block';
+}
+function hidePassToggle(){
+  var inp = g('auth-pass');
+  var btn = g('pass-toggle');
+  if(btn && inp && !inp.value) btn.style.display='none';
+}
+window.showPassToggle=showPassToggle;
+window.hidePassToggle=hidePassToggle;
 
 function togglePassView(){
   var inp = g('auth-pass');
