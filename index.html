@@ -1735,16 +1735,44 @@ function submitEditProfile(){
 }
 window.submitEditProfile = submitEditProfile;
 
-function addProfileBtnFeedback(id){
+function addProfileBtnFeedback(id, action){
   var btn = g(id);
   if(!btn) return;
-  btn.addEventListener('touchstart', function(){ btn.style.transform='scale(0.96)'; btn.style.opacity='0.7'; }, {passive:true});
-  btn.addEventListener('touchend', function(){ btn.style.transform=''; btn.style.opacity=''; }, {passive:true});
-  btn.addEventListener('touchcancel', function(){ btn.style.transform=''; btn.style.opacity=''; }, {passive:true});
+  var startX, startY, moved;
+  // Remove onclick pra controlar manualmente
+  btn.removeAttribute('onclick');
+  btn.addEventListener('touchstart', function(e){
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    moved = false;
+    btn.style.transform='scale(0.96)';
+    btn.style.opacity='0.7';
+  }, {passive:true});
+  btn.addEventListener('touchmove', function(e){
+    var dx = Math.abs(e.touches[0].clientX - startX);
+    var dy = Math.abs(e.touches[0].clientY - startY);
+    if(dx > 10 || dy > 10){
+      moved = true;
+      btn.style.transform='';
+      btn.style.opacity='';
+    }
+  }, {passive:true});
+  btn.addEventListener('touchend', function(e){
+    btn.style.transform='';
+    btn.style.opacity='';
+    if(!moved && action) action();
+    e.preventDefault();
+  });
+  // Fallback desktop
+  btn.addEventListener('click', function(){
+    if('ontouchstart' in window) return;
+    if(action) action();
+  });
 }
 setTimeout(function(){
-  addProfileBtnFeedback('btn-manage-profiles');
-  addProfileBtnFeedback('btn-logout-profile');
+  addProfileBtnFeedback('btn-manage-profiles', openManageProfiles);
+  addProfileBtnFeedback('btn-logout-profile', logoutFromProfileScreen);
+  addProfileBtnFeedback('btn-manage-done', closeManageProfiles);
 }, 100);
 
 function submitCreateProfile(){
