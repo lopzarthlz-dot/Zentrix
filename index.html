@@ -396,7 +396,40 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
 </div>
-<div class="app">
+<!-- FORGOT PASSWORD SHEET -->
+<div class="auth-form" id="forgot-form">
+  <div class="auth-form-bg"></div>
+  <div class="auth-header">
+    <button class="auth-close" onclick="closeForgotForm()">✕</button>
+    <div class="auth-header-logo">
+      <div style="width:60px;height:60px;overflow:visible;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <img src="https://ia600706.us.archive.org/9/items/30-af-5-d-2-c-fa-2-a-43-c-3-9-b-63-d-0-c-47-cbba-131/30AF5D2C-FA2A-43C3-9B63-D0C47CBBA131.png" style="width:130px;height:130px;object-fit:contain;"/>
+      </div>
+      <span style="font-size:28px;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;margin-left:4px;">Zentrix</span>
+    </div>
+    <div style="width:36px;"></div>
+  </div>
+  <div class="auth-form-inner">
+    <div class="auth-title">Redefinir Senha</div>
+    <div class="auth-field">
+      <div class="auth-float-wrap">
+        <input class="auth-input" id="forgot-email" type="email" placeholder=" " autocomplete="email" oninput="checkForgotEmail()"/>
+        <label class="auth-float-label" for="forgot-email">Endereço de E-mail</label>
+      </div>
+    </div>
+    <div class="auth-error" id="forgot-error"></div>
+    <!-- Campo nova senha — aparece só depois de validar o email -->
+    <div id="forgot-newpass-group" style="display:none;">
+      <div class="auth-field">
+        <div class="auth-float-wrap">
+          <input class="auth-input" id="forgot-newpass" type="password" placeholder=" "/>
+          <label class="auth-float-label" for="forgot-newpass">Nova Senha</label>
+        </div>
+      </div>
+    </div>
+    <button class="auth-submit" id="forgot-submit" onclick="submitForgotPass()">CONTINUAR</button>
+  </div>
+</div>
   <div class="screen active" id="screen-home">
     <div class="top-bar">
       <div class="logo">ZENTRIX</div>
@@ -1436,25 +1469,72 @@ function updateAuthBtn(){
   if(el) el.addEventListener('input', updateAuthBtn);
 });
 
+var _forgotEmailValidated = false;
+
+function checkForgotEmail(){
+  // Reseta se o email mudar
+  var group = g('forgot-newpass-group');
+  var btn = g('forgot-submit');
+  var err = g('forgot-error');
+  if(group) group.style.display='none';
+  if(btn) btn.textContent='CONTINUAR';
+  if(err) err.textContent='';
+  _forgotEmailValidated = false;
+}
+
 function showForgotPass(){
-  var email = prompt('Digite seu email para resetar a senha:');
-  if(!email) return;
-  email = email.trim().toLowerCase();
-  var users = getUsers();
-  if(!users[email]){
-    alert('Email não encontrado. Verifique o email digitado.');
-    return;
-  }
-  var newPass = prompt('Digite sua nova senha (mínimo 6 caracteres):');
-  if(!newPass || newPass.length < 6){
-    alert('Senha deve ter pelo menos 6 caracteres.');
-    return;
-  }
-  users[email].pass = newPass;
-  saveUsers(users);
-  alert('Senha alterada com sucesso! Faça login com sua nova senha.');
+  var authForm = g('auth-form');
+  if(authForm) authForm.classList.remove('active');
+  var form = g('forgot-form');
+  var overlay = g('auth-overlay');
+  var fi = g('forgot-email'); if(fi) fi.value='';
+  var fp = g('forgot-newpass'); if(fp) fp.value='';
+  var fe = g('forgot-error'); if(fe) fe.textContent='';
+  var group = g('forgot-newpass-group'); if(group) group.style.display='none';
+  var btn = g('forgot-submit'); if(btn) btn.textContent='CONTINUAR';
+  _forgotEmailValidated = false;
+  if(form) form.classList.add('active');
+  if(overlay) overlay.classList.add('active');
 }
 window.showForgotPass = showForgotPass;
+
+function closeForgotForm(){
+  var form = g('forgot-form');
+  var overlay = g('auth-overlay');
+  if(form) form.classList.remove('active');
+  if(overlay) overlay.classList.remove('active');
+}
+window.closeForgotForm = closeForgotForm;
+
+function submitForgotPass(){
+  var email = (g('forgot-email')||{}).value||'';
+  var err = g('forgot-error');
+  email = email.trim().toLowerCase();
+
+  if(!_forgotEmailValidated){
+    // Passo 1: validar email
+    if(!email||!email.includes('@')){if(err)err.textContent='Email inválido.';return;}
+    var users = getUsers();
+    if(!users[email]){if(err)err.textContent='Email não encontrado.';return;}
+    // Email válido — mostrar campo nova senha
+    _forgotEmailValidated = true;
+    if(err) err.textContent='';
+    var group = g('forgot-newpass-group');
+    if(group){ group.style.display='block'; }
+    var btn = g('forgot-submit'); if(btn) btn.textContent='SALVAR NOVA SENHA';
+    var inp = g('forgot-newpass'); if(inp) setTimeout(function(){inp.focus();},100);
+  } else {
+    // Passo 2: salvar nova senha
+    var newPass = (g('forgot-newpass')||{}).value||'';
+    if(!newPass||newPass.length<6){if(err)err.textContent='Senha deve ter pelo menos 6 caracteres.';return;}
+    var users = getUsers();
+    users[email].pass = newPass;
+    saveUsers(users);
+    closeForgotForm();
+    setTimeout(function(){ showAuthForm('login'); }, 200);
+  }
+}
+window.submitForgotPass = submitForgotPass;
 
 function togglePassView(){
   var inp = g('auth-pass');
