@@ -228,7 +228,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .empty-title{font-size:16px;font-weight:700;}
 .empty-sub{font-size:13px;color:var(--text3);line-height:1.6;}
 .empty-cta{margin-top:8px;padding:10px 24px;border-radius:99px;background:var(--grad2);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
-.loading-msg{text-align:center;padding:2rem;color:var(--text3);font-size:13px;}
+.profile-slot{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;}
+.profile-circle{width:100px;height:100px;border-radius:50%;border:3px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;transition:border-color .2s,transform .15s;}
+.profile-circle:active{transform:scale(.95);}
+.profile-circle.add{background:rgba(255,255,255,.06);}
+.profile-circle.filled{background:var(--grad2);}
+.profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:110px;word-break:break-word;}
 .detail-screen{position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;}
 .detail-screen.active{display:flex;}
 .detail-screen::-webkit-scrollbar{width:2px;}
@@ -430,6 +435,139 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <button class="auth-submit" id="forgot-submit" onclick="submitForgotPass()">CONTINUAR</button>
   </div>
 </div>
+</div>
+
+<!-- PROFILE SELECTION SCREEN -->
+<div id="profile-screen" style="display:none;position:fixed;inset:0;z-index:800;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 28px 0;background:radial-gradient(ellipse at 30% 20%,rgba(109,40,217,.7) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(14,165,233,.5) 0%,transparent 50%),#08080f;">
+  <div style="width:100%;">
+    <div style="font-size:26px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px;">Quem vai sair<br>em uma aventura?</div>
+  </div>
+  <div style="display:flex;gap:32px;justify-content:center;align-items:flex-start;flex:1;padding-top:60px;" id="profiles-grid">
+    <!-- Perfis são inseridos aqui via JS -->
+  </div>
+  <!-- Botões rodapé -->
+  <div style="width:100%;padding:24px 0 48px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <button id="btn-manage-profiles" onclick="openManageProfiles()" style="width:100%;padding:16px;border-radius:99px;background:transparent;border:2px solid rgba(255,255,255,.3);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .15s,opacity .15s;-webkit-user-select:none;">Gerenciar Perfis</button>
+    <button id="btn-logout-profile" onclick="logoutFromProfileScreen()" style="width:100%;padding:14px;border-radius:99px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font);transition:transform .15s,opacity .15s;-webkit-user-select:none;">Sair</button>
+  </div>
+</div>
+
+<!-- MANAGE PROFILES SCREEN -->
+<div id="manage-profiles-screen" style="display:none;position:fixed;inset:0;z-index:850;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 28px 0;background:radial-gradient(ellipse at 30% 20%,rgba(109,40,217,.7) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(14,165,233,.5) 0%,transparent 50%),#08080f;">
+  <div style="width:100%;text-align:center;">
+    <div style="font-size:26px;font-weight:900;color:#fff;">Gerenciar Perfis</div>
+  </div>
+  <div style="display:flex;gap:32px;justify-content:center;align-items:flex-start;flex:1;padding-top:60px;" id="manage-profiles-grid">
+  </div>
+  <div style="width:100%;padding:24px 0 48px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <button id="btn-manage-done" onclick="closeManageProfiles()" style="width:100%;padding:16px;border-radius:99px;background:transparent;border:2px solid rgba(255,255,255,.3);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .15s,opacity .15s;-webkit-user-select:none;">Pronto</button>
+  </div>
+</div>
+
+<!-- EDIT PROFILE SCREEN -->
+<div id="edit-profile-screen" style="display:none;position:fixed;inset:0;z-index:950;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;background:#0a0a0f;">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;flex-shrink:0;position:relative;background:#0a0a0f;">
+    <button onclick="closeEditProfile()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;font-family:var(--font);">←</button>
+    <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:700;color:#fff;white-space:nowrap;">Editar Perfil</div>
+    <!-- Lápis decorativo canto superior direito -->
+    <div style="width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;opacity:.9;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </div>
+  </div>
+
+  <!-- Corpo scrollável -->
+  <div style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;">
+
+    <!-- Fundo gradiente com avatar + nome -->
+    <div style="position:relative;width:100%;flex-shrink:0;background:radial-gradient(ellipse at 50% 50%,rgba(109,40,217,.8) 0%,rgba(14,165,233,.3) 55%,transparent 80%),#08080f;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 0 24px;overflow:hidden;">
+      <div style="position:absolute;width:340px;height:340px;border-radius:50%;border:1px solid rgba(255,255,255,.05);"></div>
+      <div style="position:absolute;width:250px;height:250px;border-radius:50%;border:1px solid rgba(255,255,255,.05);"></div>
+      <!-- Avatar com lápis decorativo -->
+      <div style="position:relative;margin-bottom:12px;">
+        <div style="width:110px;height:110px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;overflow:hidden;border:3px solid rgba(255,255,255,.3);box-shadow:0 0 30px rgba(139,92,246,.4);">
+          <img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:85px;height:85px;object-fit:contain;"/>
+        </div>
+        <!-- Lápis decorativo no avatar -->
+        <div style="position:absolute;bottom:4px;right:-4px;width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </div>
+      <!-- Nome do perfil embaixo do avatar -->
+      <div id="edit-avatar-name" style="font-size:16px;font-weight:800;color:#fff;text-align:center;"></div>
+    </div>
+
+    <!-- Campos -->
+    <div style="background:#0a0a0f;flex:1;">
+      <!-- Nome do Perfil -->
+      <div style="padding:16px 24px;border-bottom:1px solid #1e1e2a;">
+        <div style="font-size:12px;color:#888;margin-bottom:6px;font-weight:600;">Nome do Perfil</div>
+        <input id="edit-profile-name" type="text" style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;" oninput="updateEditSaveBtn();updateAvatarName()"/>
+        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+      </div>
+      <!-- Nome de Usuário -->
+      <div style="padding:16px 24px;border-bottom:1px solid #1e1e2a;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:12px;color:#888;font-weight:600;">Nome de Usuário</div>
+        </div>
+        <input id="edit-profile-username" type="text" style="width:100%;background:transparent;border:none;color:#555;font-size:16px;font-family:var(--font);outline:none;" readonly/>
+        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Crie um Nome de Usuário para se preparar para experiências futuras que vão compartilhar o seu amor por anime! Escolha um que você ama, você não poderá alterar depois!</div>
+      </div>
+      <div style="font-size:12px;color:#f87171;padding:0 24px;margin-top:12px;min-height:18px;" id="edit-profile-error"></div>
+      <div style="height:100px;"></div>
+    </div>
+  </div>
+
+  <!-- Botão Salvar fixo -->
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 24px 32px;background:linear-gradient(to top,#0a0a0f 70%,transparent);">
+    <button id="edit-profile-save-btn" onclick="submitEditProfile()" style="width:100%;padding:16px;border-radius:4px;background:transparent;border:1px solid #444;color:#888;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--font);letter-spacing:1px;text-transform:uppercase;transition:border-color .2s,color .2s;">SALVAR</button>
+  </div>
+</div>
+<div id="create-profile-screen" style="display:none;position:fixed;inset:0;z-index:900;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;background:#0a0a0f;">
+
+  <!-- Header estilo Crunchyroll -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;flex-shrink:0;position:relative;">
+    <button onclick="closeCreateProfile()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;font-family:var(--font);">←</button>
+    <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:700;color:#fff;white-space:nowrap;">Adicionar Perfil</div>
+    <div style="width:36px;"></div>
+  </div>
+
+  <!-- Corpo scrollável -->
+  <div style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;">
+
+    <!-- Fundo gradiente com avatar -->
+    <div style="position:relative;width:100%;height:220px;flex-shrink:0;background:radial-gradient(ellipse at 50% 60%,rgba(109,40,217,.8) 0%,rgba(14,165,233,.4) 50%,transparent 80%),#08080f;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <!-- Círculos decorativos como Crunchyroll -->
+      <div style="position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(255,255,255,.06);"></div>
+      <div style="position:absolute;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.06);"></div>
+      <!-- Avatar -->
+      <div style="width:110px;height:110px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;overflow:hidden;border:3px solid rgba(255,255,255,.3);box-shadow:0 0 30px rgba(139,92,246,.4);">
+        <img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:85px;height:85px;object-fit:contain;"/>
+      </div>
+    </div>
+
+    <!-- Campos e botão -->
+    <div style="padding:0 24px 100px;display:flex;flex-direction:column;gap:0;background:#0a0a0f;">
+      <div style="border-bottom:1px solid #1e1e2a;padding:20px 0 8px;">
+        <input id="profile-name-input" type="text" placeholder="Nome do Perfil" style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;"/>
+        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+      </div>
+      <div style="border-bottom:1px solid #1e1e2a;padding:20px 0 8px;display:flex;align-items:center;gap:8px;">
+        <input id="profile-username-input" type="text" placeholder="Nome de Usuário" style="flex:1;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;"/>
+        <button onclick="randomizeUsername()" style="background:none;border:none;color:var(--purple3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;padding:0;">Aleatorizar</button>
+      </div>
+      <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Crie um Nome de Usuário único para sua conta no Zentrix!</div>
+      <div style="font-size:12px;color:#f87171;margin-top:16px;min-height:18px;" id="profile-create-error"></div>
+    </div>
+  </div>
+
+  <!-- Botão Salvar fixo no rodapé -->
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 24px 32px;background:linear-gradient(to top,#0a0a0f 60%,transparent);">
+    <button id="profile-create-btn" onclick="submitCreateProfile()" style="width:100%;padding:16px;border-radius:4px;background:transparent;border:1px solid #444;color:#888;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--font);letter-spacing:1px;text-transform:uppercase;transition:border-color .2s,color .2s;">SALVAR</button>
+  </div>
+</div>
+
   <div class="screen active" id="screen-home">
     <div class="top-bar">
       <div class="logo">ZENTRIX</div>
@@ -522,7 +660,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div class="profile-name" id="profile-name">Zentrix</div>
         <div class="profile-handle" id="profile-handle">@zentrix</div>
       </div>
-      <button onclick="logoutUser()" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:#f87171;font-size:12px;font-weight:700;padding:8px 16px;border-radius:99px;cursor:pointer;font-family:var(--font);flex-shrink:0;">Sair</button>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <button onclick="switchProfile()" style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);color:var(--purple3);font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;cursor:pointer;font-family:var(--font);">Trocar Perfil</button>
+        <button onclick="logoutUser()" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:#f87171;font-size:12px;font-weight:700;padding:7px 14px;border-radius:99px;cursor:pointer;font-family:var(--font);">Sair</button>
+      </div>
     </div>
     <div class="stats-strip">
       <div class="stat-block"><div class="stat-n" id="p-watching">0</div><div class="stat-l">Assistindo</div></div>
@@ -745,7 +886,8 @@ function lsGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
 function loadData(){
-  var prog = lsGet(PROG_KEY) || {};
+  var progKey = (_currentEmail && _currentProfileIdx !== null) ? _profileKey(PROG_KEY) : PROG_KEY;
+  var prog = lsGet(progKey) || {};
   items = DEFAULT_ANIMES.map(function(anime){
     var p = prog[anime.id] || {};
     var a = JSON.parse(JSON.stringify(anime));
@@ -766,13 +908,23 @@ function loadData(){
     }
     return a;
   });
-  var custom = lsGet(KEY) || [];
+  var customKey = (_currentEmail && _currentProfileIdx !== null) ? _profileKey(KEY) : KEY;
+  var custom = lsGet(customKey) || [];
   custom = custom.filter(function(ci){
     return !DEFAULT_ANIMES.some(function(d){return d.id===ci.id;});
   });
   items = items.concat(custom);
-  discItems = lsGet(DISC_KEY) || [];
-  savedItems = lsGet(SAVED_KEY) || [];
+  var discKey = (_currentEmail && _currentProfileIdx !== null) ? _profileKey(DISC_KEY) : DISC_KEY;
+  var savedKey = (_currentEmail && _currentProfileIdx !== null) ? _profileKey(SAVED_KEY) : SAVED_KEY;
+  discItems = lsGet(discKey) || [];
+  savedItems = lsGet(savedKey) || [];
+}
+
+function _profileKey(suffix){
+  if(_currentEmail && _currentProfileIdx !== null){
+    return suffix + '_' + _currentEmail + '_' + _currentProfileIdx;
+  }
+  return suffix;
 }
 
 function saveProgress(){
@@ -788,19 +940,19 @@ function saveProgress(){
     });
     prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg};
   });
-  lsSet(PROG_KEY, prog);
+  lsSet(_profileKey(PROG_KEY), prog);
 }
 
 function saveCustom(){
   var custom = items.filter(function(a){
     return !DEFAULT_ANIMES.some(function(d){return d.id===a.id;});
   });
-  lsSet(KEY, custom);
+  lsSet(_profileKey(KEY), custom);
 }
 
 function saveData(){ saveProgress(); saveCustom(); }
-function saveDisc(){ lsSet(DISC_KEY, discItems); }
-function saveSaved(){ lsSet(SAVED_KEY, savedItems); }
+function saveDisc(){ lsSet(_profileKey(DISC_KEY), discItems); }
+function saveSaved(){ lsSet(_profileKey(SAVED_KEY), savedItems); }
 
 // ===== HELPERS =====
 function audioLabel(a){return a==='ld'?'Dub | Leg':a==='l'?'Leg':'Dub';}
@@ -1388,7 +1540,240 @@ var si=g('search-input');if(si)si.addEventListener('input',renderBusca);
 var ds=g('disc-search');if(ds)ds.addEventListener('input',renderDisc);
 var li=g('link-modal-input');if(li)li.addEventListener('keydown',function(e){if(e.key==='Enter')submitLinkModal();});
 
-// ===== AUTH SYSTEM =====
+// ===== PROFILE SYSTEM =====
+var PROFILES_KEY = 'zentrix_profiles';
+var ACTIVE_PROFILE_KEY = 'zentrix_active_profile';
+var _currentEmail = null;
+var _currentProfileIdx = null;
+
+function getProfiles(email){
+  var all = JSON.parse(localStorage.getItem(PROFILES_KEY)||'{}');
+  return all[email] || [];
+}
+function saveProfiles(email, profiles){
+  var all = JSON.parse(localStorage.getItem(PROFILES_KEY)||'{}');
+  all[email] = profiles;
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(all));
+}
+function getActiveProfile(email){
+  var key = ACTIVE_PROFILE_KEY + '_' + email;
+  var v = localStorage.getItem(key);
+  return v !== null ? parseInt(v) : null;
+}
+function saveActiveProfile(email, idx){
+  var key = ACTIVE_PROFILE_KEY + '_' + email;
+  if(idx === null) localStorage.removeItem(key);
+  else localStorage.setItem(key, idx);
+}
+
+function showProfileScreen(email){
+  _currentEmail = email;
+  // Hide login, auth overlay
+  var loginEl = g('login-screen');
+  var authEl = g('auth-form');
+  var overlay = g('auth-overlay');
+  if(loginEl){ loginEl.classList.add('hidden'); loginEl.style.display='none'; }
+  if(authEl) authEl.classList.remove('active');
+  if(overlay) overlay.classList.remove('active');
+  renderProfileGrid();
+  var ps = g('profile-screen');
+  if(ps) ps.style.display='flex';
+}
+
+function renderProfileGrid(){
+  var grid = g('profiles-grid');
+  if(!grid) return;
+  var profiles = getProfiles(_currentEmail);
+  var html = '';
+  // Show existing profiles
+  profiles.forEach(function(p, i){
+    html += '<div class="profile-slot" onclick="selectProfile('+i+')">' +
+      '<div class="profile-circle filled">' +
+        '<img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:65px;height:65px;object-fit:contain;"/>' +
+      '</div>' +
+      '<div class="profile-slot-name">'+(p.name||'Perfil')+'</div>' +
+    '</div>';
+  });
+  // Show add buttons (max 2 profiles)
+  var slots = 2 - profiles.length;
+  for(var i=0;i<slots;i++){
+    html += '<div class="profile-slot" onclick="openCreateProfile()">' +
+      '<div class="profile-circle add">' +
+        '<span style="font-size:36px;color:rgba(255,255,255,.5);line-height:1;">+</span>' +
+      '</div>' +
+      '<div class="profile-slot-name" style="color:rgba(255,255,255,.5);">Adicionar Perfil</div>' +
+    '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function openCreateProfile(){
+  var ps = g('create-profile-screen');
+  if(ps) ps.style.display='flex';
+  var ni = g('profile-name-input'); if(ni){ ni.value=''; ni.addEventListener('input', updateProfileSaveBtn); }
+  var ui = g('profile-username-input'); if(ui) ui.value='';
+  var err = g('profile-create-error'); if(err) err.textContent='';
+  updateProfileSaveBtn();
+}
+window.openCreateProfile = openCreateProfile;
+
+function closeCreateProfile(){
+  var ps = g('create-profile-screen');
+  if(ps) ps.style.display='none';
+}
+window.closeCreateProfile = closeCreateProfile;
+
+function logoutFromProfileScreen(){
+  clearSession();
+  saveActiveProfile(_currentEmail, null);
+  _currentEmail = null;
+  _currentProfileIdx = null;
+  var ps = g('profile-screen');
+  if(ps) ps.style.display='none';
+  var loginEl = g('login-screen');
+  if(loginEl){ loginEl.classList.remove('hidden'); loginEl.style.display='flex'; }
+}
+window.logoutFromProfileScreen = logoutFromProfileScreen;
+
+function openManageProfiles(){
+  var ms = g('manage-profiles-screen');
+  if(ms){ renderManageGrid(); ms.style.display='flex'; }
+  addProfileBtnFeedback('btn-manage-done');
+}
+window.openManageProfiles = openManageProfiles;
+
+function closeManageProfiles(){
+  var ms = g('manage-profiles-screen');
+  if(ms) ms.style.display='none';
+}
+window.closeManageProfiles = closeManageProfiles;
+
+function renderManageGrid(){
+  var grid = g('manage-profiles-grid');
+  if(!grid) return;
+  var profiles = getProfiles(_currentEmail);
+  var html = '';
+  profiles.forEach(function(p, i){
+    html += '<div class="profile-slot" style="position:relative;">' +
+      '<div class="profile-circle filled" onclick="openEditProfile('+i+')">' +
+        '<img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:65px;height:65px;object-fit:contain;"/>' +
+      '</div>' +
+      // Lápis no canto inferior direito
+      '<div onclick="openEditProfile('+i+')" style="position:absolute;bottom:30px;right:-8px;width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);">'+
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'+
+      '</div>'+
+      '<div class="profile-slot-name">'+(p.name||'Perfil')+'</div>' +
+    '</div>';
+  });
+  // Slots vazios ainda mostram o +
+  var slots = 2 - profiles.length;
+  for(var i=0;i<slots;i++){
+    html += '<div class="profile-slot" onclick="openCreateProfile()">' +
+      '<div class="profile-circle add"><span style="font-size:36px;color:rgba(255,255,255,.5);line-height:1;">+</span></div>' +
+      '<div class="profile-slot-name" style="color:rgba(255,255,255,.5);">Adicionar Perfil</div>' +
+    '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+var _editingProfileIdx = null;
+
+function updateAvatarName(){
+  var ni = g('edit-profile-name');
+  var an = g('edit-avatar-name');
+  if(an && ni) an.textContent = ni.value || '';
+}
+window.updateAvatarName = updateAvatarName;
+
+function openEditProfile(idx){
+  _editingProfileIdx = idx;
+  var profiles = getProfiles(_currentEmail);
+  var p = profiles[idx] || {};
+  var ni = g('edit-profile-name'); if(ni) ni.value = p.name || '';
+  var ui = g('edit-profile-username'); if(ui) ui.value = p.username || '';
+  var err = g('edit-profile-error'); if(err) err.textContent='';
+  updateEditSaveBtn();
+  updateAvatarName();
+  var es = g('edit-profile-screen');
+  if(es) es.style.display='flex';
+}
+window.openEditProfile = openEditProfile;
+
+function closeEditProfile(){
+  var es = g('edit-profile-screen');
+  if(es) es.style.display='none';
+  _editingProfileIdx = null;
+}
+window.closeEditProfile = closeEditProfile;
+
+function updateEditSaveBtn(){
+  var name = (g('edit-profile-name')||{}).value||'';
+  var btn = g('edit-profile-save-btn');
+  if(!btn) return;
+  if(name.trim().length > 0){
+    btn.style.borderColor = 'var(--purple)';
+    btn.style.color = '#fff';
+  } else {
+    btn.style.borderColor = '#444';
+    btn.style.color = '#888';
+  }
+}
+window.updateEditSaveBtn = updateEditSaveBtn;
+
+function submitEditProfile(){
+  var name = (g('edit-profile-name')||{}).value||'';
+  var err = g('edit-profile-error');
+  name = name.trim();
+  if(!name){ if(err) err.textContent='Nome do perfil é obrigatório.'; return; }
+  var profiles = getProfiles(_currentEmail);
+  if(_editingProfileIdx === null || !profiles[_editingProfileIdx]) return;
+  profiles[_editingProfileIdx].name = name;
+  saveProfiles(_currentEmail, profiles);
+  closeEditProfile();
+  renderManageGrid();
+  renderProfileGrid();
+}
+window.submitEditProfile = submitEditProfile;
+
+function addProfileBtnFeedback(id){
+  var btn = g(id);
+  if(!btn) return;
+  btn.addEventListener('touchstart', function(){ btn.style.transform='scale(0.96)'; btn.style.opacity='0.7'; }, {passive:true});
+  btn.addEventListener('touchend', function(){ btn.style.transform=''; btn.style.opacity=''; }, {passive:true});
+  btn.addEventListener('touchcancel', function(){ btn.style.transform=''; btn.style.opacity=''; }, {passive:true});
+}
+setTimeout(function(){
+  addProfileBtnFeedback('btn-manage-profiles');
+  addProfileBtnFeedback('btn-logout-profile');
+}, 100);
+
+function submitCreateProfile(){
+  var name = (g('profile-name-input')||{}).value||'';
+  var username = (g('profile-username-input')||{}).value||'';
+  var err = g('profile-create-error');
+  name = name.trim();
+  if(!name){ if(err) err.textContent='Nome do perfil é obrigatório.'; return; }
+  var profiles = getProfiles(_currentEmail);
+  if(profiles.length >= 2){ if(err) err.textContent='Máximo de 2 perfis.'; return; }
+  profiles.push({name:name, username:username.trim(), createdAt:Date.now()});
+  saveProfiles(_currentEmail, profiles);
+  closeCreateProfile();
+  // Enter app with this new profile
+  var idx = profiles.length - 1;
+  selectProfile(idx);
+}
+window.submitCreateProfile = submitCreateProfile;
+
+function selectProfile(idx){
+  _currentProfileIdx = idx;
+  saveActiveProfile(_currentEmail, idx);
+  // Hide profile screen
+  var ps = g('profile-screen');
+  if(ps) ps.style.display='none';
+  // Enter app
+  enterAppWithProfile(_currentEmail, idx);
+}
+window.selectProfile = selectProfile;
 var AUTH_KEY = 'zentrix_users';
 var SESSION_KEY = 'zentrix_session';
 
@@ -1399,6 +1784,48 @@ function saveSession(email){localStorage.setItem(SESSION_KEY,email);}
 function clearSession(){localStorage.removeItem(SESSION_KEY);}
 
 var _authMode = 'register';
+
+function randomizeUsername(){
+  var adj = ['Sombrio','Veloz','Nobre','Épico','Lendário','Místico','Furioso','Eterno','Selvagem','Astral'];
+  var noun = ['Ninja','Samurai','Dragão','Fênix','Guerreiro','Espírito','Caçador','Herói','Demônio','Anjo'];
+  var num = Math.floor(Math.random()*900)+100;
+  var inp = g('profile-username-input');
+  if(inp) inp.value = adj[Math.floor(Math.random()*adj.length)] + noun[Math.floor(Math.random()*noun.length)] + num;
+}
+window.randomizeUsername = randomizeUsername;
+
+function updateProfileSaveBtn(){
+  var name = (g('profile-name-input')||{}).value||'';
+  var btn = g('profile-create-btn');
+  if(!btn) return;
+  if(name.trim().length > 0){
+    btn.style.borderColor = 'var(--purple)';
+    btn.style.color = '#fff';
+  } else {
+    btn.style.borderColor = '#444';
+    btn.style.color = '#888';
+  }
+}
+
+// Listener adicionado ao abrir a tela de criar perfil
+function updateProfileSaveBtn(){
+  var name = (g('profile-name-input')||{}).value||'';
+  var btn = g('profile-create-btn');
+  if(!btn) return;
+  if(name.trim().length > 0){
+    btn.style.borderColor = 'var(--purple)';
+    btn.style.color = '#fff';
+  } else {
+    btn.style.borderColor = '#444';
+    btn.style.color = '#888';
+  }
+}
+window.updateProfileSaveBtn = updateProfileSaveBtn;
+
+function loadProfileData(email, idx){
+  _currentProfileIdx = idx;
+  loadData();
+}
 
 function showAuthForm(mode){
   _authMode = mode;
@@ -1609,37 +2036,71 @@ function submitAuth(){
 window.submitAuth = submitAuth;
 
 function enterApp(email){
-  var loginEl = g('login-screen');
+  _currentEmail = email;
   var authEl = g('auth-form');
-  if(loginEl){ loginEl.classList.add('hidden'); loginEl.style.display='none'; }
+  var forgotEl = g('forgot-form');
+  var overlay = g('auth-overlay');
   if(authEl) authEl.classList.remove('active');
-  // Update profile with user info
-  var users = getUsers();
-  var user = users[email]||{};
-  var userName = user.name||email.split('@')[0];
+  if(forgotEl) forgotEl.classList.remove('active');
+  if(overlay) overlay.classList.remove('active');
+  // Check if session has active profile (tab still open)
+  var activeIdx = getActiveProfile(email);
+  var profiles = getProfiles(email);
+  if(activeIdx !== null && profiles[activeIdx]){
+    // Profile already selected this session — go straight to app
+    enterAppWithProfile(email, activeIdx);
+  } else {
+    // Show profile selection
+    showProfileScreen(email);
+  }
+}
+
+function enterAppWithProfile(email, idx){
+  _currentEmail = email;
+  _currentProfileIdx = idx;
+  var profiles = getProfiles(email);
+  var profile = profiles[idx] || {};
+  var profileName = profile.name || email.split('@')[0];
+  // Hide all auth/profile screens
+  var loginEl = g('login-screen');
+  var ps = g('profile-screen');
+  if(loginEl){ loginEl.classList.add('hidden'); loginEl.style.display='none'; }
+  if(ps) ps.style.display='none';
+  // Update profile UI
   var pname = g('profile-name');
   var phandle = g('profile-handle');
   var pav = g('profile-av');
-  if(pname) pname.textContent = userName;
-  if(phandle) phandle.textContent = email;
-  if(pav) pav.textContent = userName.charAt(0).toUpperCase();
+  if(pname) pname.textContent = profileName;
+  if(phandle) phandle.textContent = profile.username ? '@'+profile.username : email;
+  if(pav) pav.innerHTML = '<img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:100%;height:100%;object-fit:contain;border-radius:50%;"/>';
+  // Load profile-specific data
+  loadProfileData(email, idx);
   renderAll();
 }
 
 function logoutUser(){
-  if(!confirm('Tem certeza que quer sair?')) return;
+  if(!confirm('Tem certeza que quer sair da conta?')) return;
   clearSession();
+  saveActiveProfile(_currentEmail, null);
+  _currentEmail = null;
+  _currentProfileIdx = null;
+  // Hide app screens
+  var ps = g('profile-screen');
+  if(ps) ps.style.display='none';
+  // Show login
   var loginEl = g('login-screen');
-  if(loginEl) { loginEl.classList.remove('hidden'); loginEl.style.display='flex'; }
-  // Reset profile
-  var pname = g('profile-name');
-  var phandle = g('profile-handle');
-  var pav = g('profile-av');
-  if(pname) pname.textContent = 'Zentrix';
-  if(phandle) phandle.textContent = '@zentrix';
-  if(pav) pav.textContent = 'Z';
+  if(loginEl){ loginEl.classList.remove('hidden'); loginEl.style.display='flex'; }
 }
 window.logoutUser = logoutUser;
+
+function switchProfile(){
+  // Volta pra tela de perfis sem fazer logout
+  saveActiveProfile(_currentEmail, null);
+  _currentProfileIdx = null;
+  var ps = g('profile-screen');
+  if(ps){ renderProfileGrid(); ps.style.display='flex'; }
+}
+window.switchProfile = switchProfile;
 
 function checkSession(){
   var sessionEmail = getSession();
@@ -1652,6 +2113,16 @@ function checkSession(){
 
 // ===== INIT =====
 loadData();
+// Usa sessionStorage pra detectar se a aba foi reaberta
+// sessionStorage é limpo automaticamente quando fecha a aba/browser
+var _tabAlive = sessionStorage.getItem('zentrix_tab');
+if(!_tabAlive){
+  // Nova sessão de aba — limpa perfil ativo pra mostrar tela de perfis
+  var _se = getSession();
+  if(_se) saveActiveProfile(_se, null);
+}
+sessionStorage.setItem('zentrix_tab', '1');
+
 renderAll();
 if(!checkSession()){
   var loginScr = g('login-screen');
