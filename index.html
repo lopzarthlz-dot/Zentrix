@@ -238,6 +238,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);pointer-events:none;animation:ripple .6s ease-out forwards;}
 @keyframes trailFade{0%{transform:scale(1);opacity:.5;}100%{transform:scale(0);opacity:0;}}
 .trail-drop{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(139,92,246,.6),rgba(56,189,248,.3));animation:trailFade .8s ease-out forwards;}
+@keyframes burstBubble{0%{transform:translate(0,0) scale(1);opacity:.8;}100%{transform:translate(var(--bx),var(--by)) scale(0);opacity:0;}}
+.burst-bubble{position:absolute;border-radius:50%;pointer-events:none;border:1.5px solid rgba(255,255,255,.6);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.5),rgba(139,92,246,.3));animation:burstBubble .8s ease-out forwards;}
 @keyframes rippleWave{0%{transform:scale(0);opacity:.6;}100%{transform:scale(1);opacity:0;}}
 .tap-ripple{position:absolute;border-radius:50%;pointer-events:none;border:2px solid rgba(139,92,246,.6);animation:rippleWave 2s ease-out forwards;}
 .float-1{} .float-2{}
@@ -1932,10 +1934,16 @@ window.submitCreateProfile = submitCreateProfile;
 function selectProfile(idx){
   _currentProfileIdx = idx;
   saveActiveProfile(_currentEmail, idx);
-  stopFloatAnimation();
-  var ps = g('profile-screen');
-  if(ps) ps.style.display='none';
-  enterAppWithProfile(_currentEmail, idx);
+  // Burst bubbles no círculo clicado
+  var slots = document.querySelectorAll('#profiles-grid .profile-slot');
+  if(slots[idx]) burstProfileBubbles(slots[idx]);
+  // Espera 1s antes de entrar
+  setTimeout(function(){
+    stopFloatAnimation();
+    var ps = g('profile-screen');
+    if(ps) ps.style.display='none';
+    enterAppWithProfile(_currentEmail, idx);
+  }, 1000);
 }
 window.selectProfile = selectProfile;
 var AUTH_KEY = 'zentrix_users';
@@ -2350,7 +2358,39 @@ function initWaterTrail(){
   }, {passive:true});
 }
 
-// ===== TAP RIPPLE SYSTEM =====
+function burstProfileBubbles(slotEl){
+  var circle = slotEl.querySelector('.profile-circle');
+  if(!circle) return;
+  var rect = circle.getBoundingClientRect();
+  var screenRect = g('profile-screen').getBoundingClientRect();
+  var cx = rect.left - screenRect.left + rect.width/2;
+  var cy = rect.top - screenRect.top + rect.height/2;
+  var screen = g('profile-screen');
+  var count = 12;
+  for(var i=0; i<count; i++){
+    (function(i){
+      setTimeout(function(){
+        var size = Math.random() * 16 + 8;
+        var angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+        var dist = Math.random() * 80 + 40;
+        var bx = Math.cos(angle) * dist;
+        var by = Math.sin(angle) * dist;
+        var b = document.createElement('div');
+        b.className = 'burst-bubble';
+        b.style.width = size+'px';
+        b.style.height = size+'px';
+        b.style.left = (cx - size/2)+'px';
+        b.style.top = (cy - size/2)+'px';
+        b.style.setProperty('--bx', bx+'px');
+        b.style.setProperty('--by', by+'px');
+        b.style.animationDuration = (Math.random() * 0.4 + 0.6)+'s';
+        screen.appendChild(b);
+        setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); }, 1200);
+      }, i * 30);
+    })(i);
+  }
+}
+window.burstProfileBubbles = burstProfileBubbles;
 function createTapRipple(x, y, container){
   var maxSize = Math.random() * 80 + 60; // 60-140px
   // Cria 3 anéis com delays diferentes
