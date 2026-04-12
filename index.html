@@ -363,7 +363,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="auth-form-inner">
     <div class="auth-title" id="auth-title">Criar Conta</div>
     <div class="auth-sub" id="auth-sub">Junte-se ao Zentrix</div>
-    <div class="auth-field" id="auth-name-group">
+    <div class="auth-field" id="auth-name-group" style="display:none;">
       <div class="auth-float-wrap">
         <input class="auth-input" id="auth-name" type="text" placeholder=" " autocomplete="name"/>
         <label class="auth-float-label" for="auth-name">Nome</label>
@@ -377,9 +377,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
     <div class="auth-field">
       <div class="auth-float-wrap">
-        <input class="auth-input" id="auth-pass" type="password" placeholder=" " style="padding-right:60px;" autocomplete="current-password"/>
+        <input class="auth-input" id="auth-pass" type="password" placeholder=" " style="padding-right:60px;" autocomplete="current-password" onfocus="g('pass-toggle').style.display='block'" onblur="if(!this.value)g('pass-toggle').style.display='none'"/>
         <label class="auth-float-label" for="auth-pass">Senha</label>
-        <button type="button" onclick="togglePassView()" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);letter-spacing:.5px;" id="pass-toggle">EXIBIR</button>
+        <button type="button" onclick="togglePassView()" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);letter-spacing:.5px;display:none;" id="pass-toggle">EXIBIR</button>
       </div>
     </div>
     <div class="auth-error" id="auth-error"></div>
