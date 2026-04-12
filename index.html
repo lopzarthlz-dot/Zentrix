@@ -30,7 +30,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .login-logo-text{font-size:32px;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;}
 .login-tagline{font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-top:8px;}
 .login-bottom{display:flex;flex-direction:column;gap:10px;width:100%;position:relative;z-index:1;align-items:center;}
-.login-tagline-bottom{font-size:17px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-bottom:4px;}
+.login-tagline-bottom{font-size:20px;font-weight:800;color:#fff;text-align:center;line-height:1.4;margin-bottom:20px;}
 .login-btn-primary{width:100%;padding:18px 16px;border-radius:var(--radius);background:transparent;border:2px solid var(--blue);color:var(--blue);font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);transition:transform .15s ease,box-shadow .15s ease,background .15s ease;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
 .login-btn-primary:active{transform:scale(.95);background:rgba(56,189,248,.12);box-shadow:0 0 24px rgba(56,189,248,.35);}
 .login-btn-secondary{background:none;border:none;color:var(--purple3);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);padding:6px 8px;text-align:center;width:auto;transition:transform .15s ease,opacity .15s ease;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
@@ -316,15 +316,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <div id="login-screen">
   <div class="login-bg">
   <img src="https://ia600909.us.archive.org/21/items/copy_4D5CD3EA-7251-4ACE-BFAE-17D72D5EA516/copy_4D5CD3EA-7251-4ACE-BFAE-17D72D5EA516.jpeg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;"/>
-  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,15,0) 0%,rgba(8,8,15,0) 45%,rgba(8,8,15,0.8) 65%,rgba(8,8,15,1) 75%,rgba(8,8,15,1) 100%);"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,15,0) 0%,rgba(8,8,15,0) 38%,rgba(8,8,15,0.85) 60%,rgba(8,8,15,1) 72%,rgba(8,8,15,1) 100%);"></div>
 </div>
   <div class="login-top"></div>
   <div class="login-bottom">
-    <div style="display:flex;align-items:center;justify-content:center;margin-bottom:-50px;position:relative;z-index:2;margin-left:-50px;">
+    <div style="display:flex;align-items:center;justify-content:center;margin-bottom:-30px;position:relative;z-index:2;margin-left:-50px;">
       <img src="https://ia600706.us.archive.org/9/items/30-af-5-d-2-c-fa-2-a-43-c-3-9-b-63-d-0-c-47-cbba-131/30AF5D2C-FA2A-43C3-9B63-D0C47CBBA131.png" style="width:120px;height:120px;object-fit:contain;margin-right:-30px;"/>
       <div style="font-size:26px;font-weight:900;background:linear-gradient(90deg,#8b5cf6,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;">Zentrix</div>
     </div>
-    <div class="login-tagline-bottom">Todos os seus animes favoritos. Agora<br>num só lugar.</div>
+    <div class="login-tagline-bottom">Todos os seus animes favoritos.<br>Agora num só lugar.</div>
     <button class="login-btn-primary" id="btn-login-main" onclick="showAuthForm('login')">Login</button>
     <div style="display:flex;justify-content:center;width:100%;"><button class="login-btn-secondary" id="btn-register-main" onclick="showAuthForm('register')">Criar Conta</button></div>
   </div>
