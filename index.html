@@ -31,10 +31,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .login-tagline{font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-top:8px;}
 .login-bottom{display:flex;flex-direction:column;gap:10px;width:100%;position:relative;z-index:1;align-items:center;}
 .login-tagline-bottom{font-size:17px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-bottom:4px;}
-.login-btn-primary{width:100%;padding:16px;border-radius:var(--radius);background:transparent;border:2px solid var(--blue);color:var(--blue);font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);transition:transform .12s ease,border-color .12s ease;}
-.login-btn-primary:active{transform:scale(.96);border-color:rgba(56,189,248,.5);}
-.login-btn-secondary{background:none;border:none;color:var(--purple3);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);padding:8px;text-align:center;width:100%;transition:color .12s ease,opacity .12s ease;}
-.login-btn-secondary:active{color:#6d28d9;opacity:.7;}
+.login-btn-primary{width:100%;padding:18px 16px;border-radius:var(--radius);background:transparent;border:2px solid var(--blue);color:var(--blue);font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);transition:transform .15s ease,box-shadow .15s ease,background .15s ease;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.login-btn-primary:active{transform:scale(.95);background:rgba(56,189,248,.12);box-shadow:0 0 24px rgba(56,189,248,.35);}
+.login-btn-secondary{background:none;border:none;color:var(--purple3);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);padding:6px 8px;text-align:center;width:auto;transition:transform .15s ease,opacity .15s ease;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.login-btn-secondary:active{transform:scale(.95);opacity:.6;}
 .login-divider{text-align:center;font-size:12px;color:var(--text3);margin:4px 0;}
 .auth-form{position:fixed;inset:0;z-index:10000;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;}
 .auth-form.active{display:flex;}
@@ -325,8 +325,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div style="font-size:26px;font-weight:900;background:linear-gradient(90deg,#8b5cf6,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;">Zentrix</div>
     </div>
     <div class="login-tagline-bottom">Todos os seus animes favoritos. Agora<br>num só lugar.</div>
-    <button class="login-btn-primary" onclick="showAuthForm('login')">Login</button>
-    <button class="login-btn-secondary" onclick="showAuthForm('register')">Criar Conta</button>
+    <button class="login-btn-primary" id="btn-login-main" onclick="showAuthForm('login')">Login</button>
+    <div style="display:flex;justify-content:center;width:100%;"><button class="login-btn-secondary" id="btn-register-main" onclick="showAuthForm('register')">Criar Conta</button></div>
   </div>
 </div>
 <!-- AUTH FORM -->
@@ -596,6 +596,43 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
+// ===== TOUCH FEEDBACK =====
+(function(){
+  function addTouchFeedback(id, action){
+    var btn = document.getElementById(id);
+    if(!btn) return;
+    var startX, startY, moved;
+    // Remove onclick to control manually
+    btn.removeAttribute('onclick');
+    btn.addEventListener('touchstart', function(e){
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      moved = false;
+      btn.style.transform = 'scale(0.95)';
+      btn.style.opacity = '0.85';
+    }, {passive:true});
+    btn.addEventListener('touchmove', function(e){
+      var dx = Math.abs(e.touches[0].clientX - startX);
+      var dy = Math.abs(e.touches[0].clientY - startY);
+      if(dx > 10 || dy > 10) moved = true;
+      if(moved){ btn.style.transform = ''; btn.style.opacity = ''; }
+    }, {passive:true});
+    btn.addEventListener('touchend', function(e){
+      btn.style.transform = '';
+      btn.style.opacity = '';
+      if(!moved) action();
+      e.preventDefault();
+    });
+    // Fallback for non-touch (desktop)
+    btn.addEventListener('click', function(e){
+      if('ontouchstart' in window) return;
+      action();
+    });
+  }
+  addTouchFeedback('btn-login-main', function(){ showAuthForm('login'); });
+  addTouchFeedback('btn-register-main', function(){ showAuthForm('register'); });
+})();
 
 // ===== ANIMES PADRÃO =====
 var DEFAULT_ANIMES = [
