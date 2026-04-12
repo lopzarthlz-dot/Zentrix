@@ -22,9 +22,9 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;}
 
 /* LOGIN SCREEN */
-#login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 16px 50px;max-width:480px;margin:0 auto;left:0;right:0;transition:background .2s;}
+#login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 16px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
 #login-screen.hidden{display:none;}
-#login-screen.auth-open{background:transparent;}
+#login-screen.auth-open{clip-path:inset(0 0 88% 0);background:transparent;pointer-events:none;}
 .login-bg{position:absolute;inset:0;overflow:hidden;z-index:0;}
 .login-top{display:none;}
 .login-logo-row{display:flex;align-items:center;gap:10px;}
