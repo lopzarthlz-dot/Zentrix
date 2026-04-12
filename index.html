@@ -233,6 +233,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
+@keyframes bubbleFloat{0%{transform:translateY(0) scale(1);opacity:.7;}100%{transform:translateY(-100vh) scale(0.8);opacity:0;}}
+@keyframes bubblePop{0%{transform:scale(1);opacity:.7;}50%{transform:scale(1.3);opacity:.4;}100%{transform:scale(0);opacity:0;}}
+.bubble{position:absolute;border-radius:50%;pointer-events:auto;cursor:pointer;border:2px solid rgba(255,255,255,.5);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.4),rgba(139,92,246,.2) 50%,rgba(56,189,248,.1));box-shadow:inset 0 0 10px rgba(255,255,255,.2),0 0 8px rgba(139,92,246,.3);animation:bubbleFloat linear forwards;}
+.bubble.popping{animation:bubblePop .25s ease-out forwards;pointer-events:none;}
 @keyframes ripple{0%{transform:scale(0);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
 .profile-circle-wrap{position:relative;overflow:visible;}
 .profile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);pointer-events:none;animation:ripple .6s ease-out forwards;}
@@ -1595,6 +1599,7 @@ function showProfileScreen(email){
   var ps = g('profile-screen');
   if(ps) ps.style.display='flex';
   startFloatAnimation();
+  initBubbleSystem();
 }
 
 function renderProfileGrid(){
@@ -2310,6 +2315,61 @@ function profileCircleRelease(el){
 }
 window.profileCirclePress = profileCirclePress;
 window.profileCircleRelease = profileCircleRelease;
+
+// ===== BUBBLE SYSTEM =====
+function createBubble(x, y, container){
+  var size = Math.random() * 40 + 20; // 20-60px
+  var duration = Math.random() * 3 + 2; // 2-5s
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.style.width = size+'px';
+  bubble.style.height = size+'px';
+  bubble.style.left = (x - size/2)+'px';
+  bubble.style.top = (y - size/2)+'px';
+  bubble.style.animationDuration = duration+'s';
+  bubble.addEventListener('click', function(e){
+    e.stopPropagation();
+    popBubble(bubble);
+  });
+  bubble.addEventListener('touchstart', function(e){
+    e.stopPropagation();
+    popBubble(bubble);
+  }, {passive:true});
+  container.appendChild(bubble);
+  // Remove when animation ends
+  bubble.addEventListener('animationend', function(){
+    if(bubble.parentNode) bubble.parentNode.removeChild(bubble);
+  });
+}
+
+function popBubble(bubble){
+  if(bubble.classList.contains('popping')) return;
+  bubble.classList.add('popping');
+  setTimeout(function(){ if(bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 280);
+}
+
+function initBubbleSystem(){
+  var screen = g('profile-screen');
+  if(!screen) return;
+  screen.addEventListener('click', function(e){
+    // Só cria bolha se clicou em área vazia (não em botão ou círculo)
+    var target = e.target;
+    var isSlot = target.closest && target.closest('.profile-slot');
+    var isBtn = target.closest && target.closest('button');
+    if(isSlot || isBtn) return;
+    var rect = screen.getBoundingClientRect();
+    createBubble(e.clientX - rect.left, e.clientY - rect.top, screen);
+  });
+  screen.addEventListener('touchstart', function(e){
+    var target = e.target;
+    var isSlot = target.closest && target.closest('.profile-slot');
+    var isBtn = target.closest && target.closest('button');
+    if(isSlot || isBtn) return;
+    var rect = screen.getBoundingClientRect();
+    var touch = e.touches[0];
+    createBubble(touch.clientX - rect.left, touch.clientY - rect.top, screen);
+  }, {passive:true});
+}
 
 // ===== FLOATING ANIMATION =====
 var _floatRAF = null;
