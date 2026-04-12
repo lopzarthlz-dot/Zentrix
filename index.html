@@ -234,10 +234,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.filled{background:var(--grad2);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
 @keyframes bubbleFloat{0%{transform:translateY(0) scale(1);opacity:.7;}90%{transform:translateY(-105vh) scale(0.85);opacity:.6;}100%{transform:translateY(-110vh) scale(0.85);opacity:.6;}}
-@keyframes bubblePop{0%{transform:scale(1);opacity:.8;}40%{transform:scale(1.4);opacity:.5;}100%{transform:scale(0);opacity:0;}}
-.bubble{position:absolute;border-radius:50%;pointer-events:auto;cursor:pointer;border:2px solid rgba(255,255,255,.5);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.4),rgba(139,92,246,.2) 50%,rgba(56,189,248,.1));box-shadow:inset 0 0 10px rgba(255,255,255,.2),0 0 8px rgba(139,92,246,.3);}
-.bubble.floating{animation:bubbleFloat linear forwards;}
-.bubble.popping{animation:bubblePop .35s ease-out forwards;pointer-events:none;}
+@keyframes bubblePop{0%{transform:scale(1);opacity:.9;}30%{transform:scale(1.5);opacity:.7;}60%{transform:scale(1.8);opacity:.3;}100%{transform:scale(2);opacity:0;}}
+@keyframes bubbleSpawn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.15);opacity:.8;}100%{transform:scale(1);opacity:.7;}}
+.bubble{position:absolute;border-radius:50%;pointer-events:auto;cursor:pointer;border:2px solid rgba(255,255,255,.5);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.4),rgba(139,92,246,.2) 50%,rgba(56,189,248,.1));box-shadow:inset 0 0 10px rgba(255,255,255,.2),0 0 8px rgba(139,92,246,.3);animation:bubbleSpawn .3s ease-out forwards;}
+.bubble.floating{animation:bubbleSpawn .3s ease-out forwards, bubbleFloat linear forwards;}
+.bubble.popping{animation:bubblePop .4s ease-out forwards !important;pointer-events:none;}
 @keyframes ripple{0%{transform:scale(0);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
 .profile-circle-wrap{position:relative;overflow:visible;}
 .profile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);pointer-events:none;animation:ripple .6s ease-out forwards;}
@@ -2319,43 +2320,40 @@ window.profileCircleRelease = profileCircleRelease;
 
 // ===== BUBBLE SYSTEM =====
 function createBubble(x, y, container){
-  var size = Math.random() * 40 + 20; // 20-60px
-  var duration = Math.random() * 4 + 5; // 5-9s — mais lento
+  var size = Math.random() * 40 + 20;
+  var floatDuration = Math.random() * 4 + 5;
   var bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.style.width = size+'px';
   bubble.style.height = size+'px';
   bubble.style.left = (x - size/2)+'px';
   bubble.style.top = (y - size/2)+'px';
-  bubble.style.animationDuration = duration+'s';
-
-  // Adiciona floating class depois de um frame pra não conflitar
-  requestAnimationFrame(function(){
-    bubble.classList.add('floating');
-  });
 
   container.appendChild(bubble);
 
-  // Tempo aleatório pra estourar sozinha: 0.5s a 5s
+  // Após spawn, inicia flutuação
+  setTimeout(function(){
+    if(!bubble.parentNode) return;
+    bubble.style.animation = 'none';
+    bubble.offsetHeight;
+    bubble.classList.add('floating');
+    bubble.style.animationDuration = '.3s, '+floatDuration+'s';
+  }, 300);
+
+  // Timer aleatório pra estourar: 0.5s a 5s
   var autoPopTime = Math.random() * 4500 + 500;
-  var autoPopTimer = setTimeout(function(){
-    popBubble(bubble);
-  }, autoPopTime);
+  var autoPopTimer = setTimeout(function(){ popBubble(bubble); }, autoPopTime);
 
-  // Cancela o timer se clicar antes
-  bubble.addEventListener('click', function(e){
+  function onPop(e){
     e.stopPropagation();
+    if(e.cancelable) e.preventDefault();
     clearTimeout(autoPopTimer);
     popBubble(bubble);
-  });
-  bubble.addEventListener('touchstart', function(e){
-    e.stopPropagation();
-    e.preventDefault();
-    clearTimeout(autoPopTimer);
-    popBubble(bubble);
-  }, {passive:false});
+  }
 
-  // Remove quando animação de float termina (chegou ao topo)
+  bubble.addEventListener('click', onPop);
+  bubble.addEventListener('touchend', onPop, {passive:false});
+
   bubble.addEventListener('animationend', function(e){
     if(e.animationName === 'bubbleFloat'){
       clearTimeout(autoPopTimer);
