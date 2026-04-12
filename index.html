@@ -1598,7 +1598,7 @@ function showProfileScreen(email){
   renderProfileGrid();
   var ps = g('profile-screen');
   if(ps) ps.style.display='flex';
-  startFloatAnimation();
+  setTimeout(function(){ startFloatAnimation(); }, 100);
   initTapRippleSystem();
 }
 
