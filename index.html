@@ -1738,31 +1738,54 @@ window.submitEditProfile = submitEditProfile;
 function addProfileBtnFeedback(id, action){
   var btn = g(id);
   if(!btn) return;
-  var startX, startY, moved;
-  // Remove onclick pra controlar manualmente
+  var startX, startY, cancelled, farOut;
   btn.removeAttribute('onclick');
   btn.addEventListener('touchstart', function(e){
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
-    moved = false;
+    cancelled = false;
+    farOut = false;
     btn.style.transform='scale(0.96)';
     btn.style.opacity='0.7';
   }, {passive:true});
   btn.addEventListener('touchmove', function(e){
-    var dx = Math.abs(e.touches[0].clientX - startX);
-    var dy = Math.abs(e.touches[0].clientY - startY);
-    if(dx > 10 || dy > 10){
-      moved = true;
-      btn.style.transform='';
-      btn.style.opacity='';
+    var rect = btn.getBoundingClientRect();
+    var tx = e.touches[0].clientX;
+    var ty = e.touches[0].clientY;
+    var dx = Math.abs(tx - startX);
+    var dy = Math.abs(ty - startY);
+    var insideBtn = tx >= rect.left && tx <= rect.right && ty >= rect.top && ty <= rect.bottom;
+    // Dentro do botão — animação continua, conta como clique
+    if(insideBtn){
+      cancelled = false;
+      farOut = false;
+      btn.style.transform='scale(0.96)';
+      btn.style.opacity='0.7';
+    } else {
+      cancelled = true; // fora da área = não conta como clique
+      var distOut = Math.max(
+        Math.max(rect.left - tx, tx - rect.right, 0),
+        Math.max(rect.top - ty, ty - rect.bottom, 0)
+      );
+      if(distOut > 30){
+        // Saiu muito — some animação
+        farOut = true;
+        btn.style.transform='';
+        btn.style.opacity='';
+      }
+      // Saiu pouco — animação continua mas não conta como clique
     }
   }, {passive:true});
   btn.addEventListener('touchend', function(e){
     btn.style.transform='';
     btn.style.opacity='';
-    if(!moved && action) action();
+    if(!cancelled && action) action();
     e.preventDefault();
   });
+  btn.addEventListener('touchcancel', function(){
+    btn.style.transform='';
+    btn.style.opacity='';
+  }, {passive:true});
   // Fallback desktop
   btn.addEventListener('click', function(){
     if('ontouchstart' in window) return;
