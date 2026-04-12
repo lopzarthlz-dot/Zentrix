@@ -228,12 +228,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .empty-title{font-size:16px;font-weight:700;}
 .empty-sub{font-size:13px;color:var(--text3);line-height:1.6;}
 .empty-cta{margin-top:8px;padding:10px 24px;border-radius:99px;background:var(--grad2);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+@keyframes floatUp{0%{transform:translateY(0px);}50%{transform:translateY(-12px);}100%{transform:translateY(0px);}}
+@keyframes floatUp2{0%{transform:translateY(0px);}50%{transform:translateY(-10px);}100%{transform:translateY(0px);}}
 .profile-slot{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;}
-.profile-circle{width:155px;height:155px;border-radius:50%;border:3px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;transition:border-color .2s,transform .15s;}
+.profile-circle{width:135px;height:135px;border-radius:50%;border:3px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;transition:border-color .2s,transform .15s;}
 .profile-circle:active{transform:scale(.95);}
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
+.float-1{animation:floatUp 3.5s ease-in-out infinite;}
+.float-2{animation:floatUp2 4.2s ease-in-out infinite 0.8s;}
 .detail-screen{position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;}
 .detail-screen.active{display:flex;}
 .detail-screen::-webkit-scrollbar{width:2px;}
@@ -1614,6 +1618,7 @@ function renderProfileGrid(){
     slots.push({type:'add', pos:positions[i]});
   }
 
+  var floatClasses = ['float-1', 'float-2'];
   var html = '';
   slots.forEach(function(slot, i){
     var posStyle = '';
@@ -1621,18 +1626,19 @@ function renderProfileGrid(){
     if(slot.pos.right) posStyle += 'right:'+slot.pos.right+';';
     if(slot.pos.top) posStyle += 'top:'+slot.pos.top+';';
     if(slot.pos.bottom) posStyle += 'bottom:'+slot.pos.bottom+';';
+    var fc = floatClasses[i]||'';
 
     if(slot.type === 'profile'){
-      html += '<div class="profile-slot" style="position:absolute;'+posStyle+'" onclick="selectProfile('+slot.idx+')">' +
-        '<div class="profile-circle filled" style="width:155px;height:155px;">' +
+      html += '<div class="profile-slot '+fc+'" style="position:absolute;'+posStyle+'" onclick="selectProfile('+slot.idx+')">' +
+        '<div class="profile-circle filled" style="width:135px;height:135px;">' +
           '<img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:80px;height:80px;object-fit:contain;"/>' +
         '</div>' +
         '<div class="profile-slot-name">'+(slot.name)+'</div>' +
       '</div>';
     } else {
-      html += '<div class="profile-slot" style="position:absolute;'+posStyle+'" onclick="openCreateProfile()">' +
-        '<div class="profile-circle add" style="width:155px;height:155px;">' +
-          '<span style="font-size:52px;color:rgba(255,255,255,.5);line-height:1;">+</span>' +
+      html += '<div class="profile-slot '+fc+'" style="position:absolute;'+posStyle+'" onclick="openCreateProfile()">' +
+        '<div class="profile-circle add" style="width:135px;height:135px;">' +
+          '<span style="font-size:44px;color:rgba(255,255,255,.5);line-height:1;">+</span>' +
         '</div>' +
         '<div class="profile-slot-name" style="color:rgba(255,255,255,.5);">Adicionar Perfil</div>' +
       '</div>';
