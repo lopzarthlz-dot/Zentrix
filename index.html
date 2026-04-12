@@ -19,7 +19,7 @@
   --radius:8px;--radius2:5px;--radius3:14px;
   --font:'Inter',sans-serif;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;position:fixed;width:100%;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;}
 
 /* LOGIN SCREEN */
 #login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 16px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
@@ -65,8 +65,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .auth-switch-simple{font-size:13px;color:var(--text3);text-align:center;margin-top:4px;}
 .auth-switch{font-size:13px;color:var(--text3);text-align:center;}
 .auth-switch span{color:var(--blue);cursor:pointer;font-weight:700;}
-.app{display:flex;flex-direction:column;height:100vh;height:-webkit-fill-available;max-width:480px;margin:0 auto;background:var(--bg);position:fixed;top:0;left:0;right:0;bottom:0;}
-.screen{display:none;flex:1;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:80px;min-height:0;}
+.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:var(--bg);position:relative;}
+.screen{display:none;flex:1;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:80px;}
 .screen.active{display:flex;}
 .screen::-webkit-scrollbar{width:2px;}
 .screen::-webkit-scrollbar-thumb{background:var(--purple2);border-radius:99px;}
@@ -236,10 +236,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 @keyframes ripple{0%{transform:scale(0);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
 .profile-circle-wrap{position:relative;overflow:visible;}
 .profile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);pointer-events:none;animation:ripple .6s ease-out forwards;}
-@keyframes trailFade{0%{transform:scale(1);opacity:.5;}100%{transform:scale(0);opacity:0;}}
-.trail-drop{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(139,92,246,.6),rgba(56,189,248,.3));animation:trailFade .8s ease-out forwards;}
-@keyframes burstBubble{0%{transform:translate(0,0) scale(1);opacity:.8;}100%{transform:translate(var(--bx),var(--by)) scale(0);opacity:0;}}
-.burst-bubble{position:absolute;border-radius:50%;pointer-events:none;border:1.5px solid rgba(255,255,255,.6);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.5),rgba(139,92,246,.3));animation:burstBubble .8s ease-out forwards;}
 @keyframes rippleWave{0%{transform:scale(0);opacity:.6;}100%{transform:scale(1);opacity:0;}}
 .tap-ripple{position:absolute;border-radius:50%;pointer-events:none;border:2px solid rgba(139,92,246,.6);animation:rippleWave 2s ease-out forwards;}
 .float-1{} .float-2{}
@@ -1604,7 +1600,6 @@ function showProfileScreen(email){
   if(ps) ps.style.display='flex';
   startFloatAnimation();
   initTapRippleSystem();
-  initWaterTrail();
 }
 
 function renderProfileGrid(){
@@ -1936,16 +1931,10 @@ window.submitCreateProfile = submitCreateProfile;
 function selectProfile(idx){
   _currentProfileIdx = idx;
   saveActiveProfile(_currentEmail, idx);
-  // Burst bubbles no círculo clicado
-  var slots = document.querySelectorAll('#profiles-grid .profile-slot');
-  if(slots[idx]) burstProfileBubbles(slots[idx]);
-  // Espera 1s antes de entrar
-  setTimeout(function(){
-    stopFloatAnimation();
-    var ps = g('profile-screen');
-    if(ps) ps.style.display='none';
-    enterAppWithProfile(_currentEmail, idx);
-  }, 1000);
+  stopFloatAnimation();
+  var ps = g('profile-screen');
+  if(ps) ps.style.display='none';
+  enterAppWithProfile(_currentEmail, idx);
 }
 window.selectProfile = selectProfile;
 var AUTH_KEY = 'zentrix_users';
@@ -2327,72 +2316,7 @@ function profileCircleRelease(el){
 window.profileCirclePress = profileCirclePress;
 window.profileCircleRelease = profileCircleRelease;
 
-// ===== WATER TRAIL SYSTEM =====
-function initWaterTrail(){
-  var screen = g('profile-screen');
-  if(!screen || screen._trailInit) return;
-  screen._trailInit = true;
-  var lastTrailTime = 0;
-
-  function spawnDrop(x, y){
-    var now = Date.now();
-    if(now - lastTrailTime < 40) return; // max ~25 drops/s
-    lastTrailTime = now;
-    var size = Math.random() * 10 + 6; // 6-16px
-    var drop = document.createElement('div');
-    drop.className = 'trail-drop';
-    drop.style.width = size+'px';
-    drop.style.height = size+'px';
-    drop.style.left = (x - size/2)+'px';
-    drop.style.top = (y - size/2)+'px';
-    screen.appendChild(drop);
-    setTimeout(function(){ if(drop.parentNode) drop.parentNode.removeChild(drop); }, 850);
-  }
-
-  screen.addEventListener('touchmove', function(e){
-    var target = e.target;
-    var isSlot = target.closest && target.closest('.profile-slot');
-    var isBtn = target.closest && target.closest('button');
-    if(isSlot || isBtn) return;
-    var rect = screen.getBoundingClientRect();
-    var touch = e.touches[0];
-    spawnDrop(touch.clientX - rect.left, touch.clientY - rect.top);
-  }, {passive:true});
-}
-
-function burstProfileBubbles(slotEl){
-  var circle = slotEl.querySelector('.profile-circle');
-  if(!circle) return;
-  var rect = circle.getBoundingClientRect();
-  var screenRect = g('profile-screen').getBoundingClientRect();
-  var cx = rect.left - screenRect.left + rect.width/2;
-  var cy = rect.top - screenRect.top + rect.height/2;
-  var screen = g('profile-screen');
-  var count = 12;
-  for(var i=0; i<count; i++){
-    (function(i){
-      setTimeout(function(){
-        var size = Math.random() * 16 + 8;
-        var angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
-        var dist = Math.random() * 80 + 40;
-        var bx = Math.cos(angle) * dist;
-        var by = Math.sin(angle) * dist;
-        var b = document.createElement('div');
-        b.className = 'burst-bubble';
-        b.style.width = size+'px';
-        b.style.height = size+'px';
-        b.style.left = (cx - size/2)+'px';
-        b.style.top = (cy - size/2)+'px';
-        b.style.setProperty('--bx', bx+'px');
-        b.style.setProperty('--by', by+'px');
-        b.style.animationDuration = (Math.random() * 0.4 + 0.6)+'s';
-        screen.appendChild(b);
-        setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); }, 1200);
-      }, i * 30);
-    })(i);
-  }
-}
-window.burstProfileBubbles = burstProfileBubbles;
+// ===== TAP RIPPLE SYSTEM =====
 function createTapRipple(x, y, container){
   var maxSize = Math.random() * 80 + 60; // 60-140px
   // Cria 3 anéis com delays diferentes
