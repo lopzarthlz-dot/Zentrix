@@ -440,7 +440,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <!-- PROFILE SELECTION SCREEN -->
 <div id="profile-screen" style="display:none;position:fixed;inset:0;z-index:800;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 28px 0;background:radial-gradient(ellipse at 30% 20%,rgba(109,40,217,.7) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(14,165,233,.5) 0%,transparent 50%),#08080f;">
   <div style="width:100%;">
-    <div style="font-size:26px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px;">Quem vai sair<br>em uma aventura?</div>
+    <div style="font-size:20px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px;white-space:nowrap;">Quem vai sair em uma aventura?</div>
   </div>
   <div style="display:flex;gap:32px;justify-content:center;align-items:flex-start;flex:1;padding-top:60px;" id="profiles-grid">
     <!-- Perfis são inseridos aqui via JS -->
@@ -501,18 +501,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <!-- Campos -->
     <div style="background:#0a0a0f;flex:1;">
       <!-- Nome do Perfil -->
-      <div style="padding:16px 24px;border-bottom:1px solid #1e1e2a;">
-        <div style="font-size:12px;color:#888;margin-bottom:6px;font-weight:600;">Nome do Perfil</div>
-        <input id="edit-profile-name" type="text" style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;" oninput="updateEditSaveBtn();updateAvatarName()"/>
-        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+      <div style="padding:0 24px;border-bottom:1px solid #1e1e2a;">
+        <div style="position:relative;padding-top:20px;">
+          <label for="edit-profile-name" id="label-edit-name" style="position:absolute;top:20px;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome do Perfil</label>
+          <input id="edit-profile-name" type="text" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" oninput="updateEditSaveBtn();updateAvatarName();floatLabel('label-edit-name',this.value.length>0||document.activeElement===this)" onfocus="floatLabel('label-edit-name',true)" onblur="floatLabel('label-edit-name',this.value.length>0)"/>
+        </div>
+        <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:16px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
       </div>
       <!-- Nome de Usuário -->
-      <div style="padding:16px 24px;border-bottom:1px solid #1e1e2a;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <div style="font-size:12px;color:#888;font-weight:600;">Nome de Usuário</div>
+      <div style="padding:0 24px;border-bottom:1px solid #1e1e2a;">
+        <div style="position:relative;padding-top:20px;">
+          <label for="edit-profile-username" id="label-edit-username" style="position:absolute;top:20px;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome de Usuário</label>
+          <input id="edit-profile-username" type="text" placeholder=" " style="width:100%;background:transparent;border:none;color:#555;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" readonly/>
         </div>
-        <input id="edit-profile-username" type="text" style="width:100%;background:transparent;border:none;color:#555;font-size:16px;font-family:var(--font);outline:none;" readonly/>
-        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Crie um Nome de Usuário para se preparar para experiências futuras que vão compartilhar o seu amor por anime! Escolha um que você ama, você não poderá alterar depois!</div>
+        <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:16px;line-height:1.5;">Crie um Nome de Usuário para se preparar para experiências futuras que vão compartilhar o seu amor por anime! Escolha um que você ama, você não poderá alterar depois!</div>
       </div>
       <div style="font-size:12px;color:#f87171;padding:0 24px;margin-top:12px;min-height:18px;" id="edit-profile-error"></div>
       <div style="height:100px;"></div>
@@ -542,23 +544,34 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div style="position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(255,255,255,.06);"></div>
       <div style="position:absolute;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.06);"></div>
       <!-- Avatar -->
-      <div style="width:110px;height:110px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;overflow:hidden;border:3px solid rgba(255,255,255,.3);box-shadow:0 0 30px rgba(139,92,246,.4);">
-        <img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:85px;height:85px;object-fit:contain;"/>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="width:110px;height:110px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;overflow:hidden;border:3px solid rgba(255,255,255,.3);box-shadow:0 0 30px rgba(139,92,246,.4);">
+          <img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:85px;height:85px;object-fit:contain;"/>
+        </div>
+        <div id="create-avatar-name" style="font-size:16px;font-weight:800;color:#fff;text-align:center;min-height:24px;"></div>
       </div>
     </div>
 
     <!-- Campos e botão -->
     <div style="padding:0 24px 100px;display:flex;flex-direction:column;gap:0;background:#0a0a0f;">
-      <div style="border-bottom:1px solid #1e1e2a;padding:20px 0 8px;">
-        <input id="profile-name-input" type="text" placeholder="Nome do Perfil" style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;"/>
-        <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+      <!-- Nome do Perfil com floating label -->
+      <div style="position:relative;padding-top:20px;border-bottom:1px solid #1e1e2a;margin-bottom:4px;">
+        <label for="profile-name-input" id="label-profile-name" style="position:absolute;top:20px;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome do Perfil</label>
+        <input id="profile-name-input" type="text" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;"/>
       </div>
-      <div style="border-bottom:1px solid #1e1e2a;padding:20px 0 8px;display:flex;align-items:center;gap:8px;">
-        <input id="profile-username-input" type="text" placeholder="Nome de Usuário" style="flex:1;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;"/>
-        <button onclick="randomizeUsername()" style="background:none;border:none;color:var(--purple3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;padding:0;">Aleatorizar</button>
+      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:20px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+
+      <!-- Nome de Usuário com floating label -->
+      <div style="position:relative;padding-top:20px;border-bottom:1px solid #1e1e2a;margin-bottom:4px;display:flex;align-items:flex-end;gap:8px;">
+        <div style="flex:1;position:relative;">
+          <label for="profile-username-input" id="label-profile-username" style="position:absolute;top:0;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome de Usuário</label>
+          <input id="profile-username-input" type="text" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;"/>
+        </div>
+        <button onclick="randomizeUsername()" style="background:none;border:none;color:var(--purple3);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;padding:0 0 10px;">Aleatorizar</button>
       </div>
-      <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.5;">Crie um Nome de Usuário único para sua conta no Zentrix!</div>
-      <div style="font-size:12px;color:#f87171;margin-top:16px;min-height:18px;" id="profile-create-error"></div>
+      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:20px;line-height:1.5;">Crie um Nome de Usuário único para sua conta no Zentrix!</div>
+
+      <div style="font-size:12px;color:#f87171;min-height:18px;" id="profile-create-error"></div>
     </div>
   </div>
 
@@ -1610,11 +1623,48 @@ function renderProfileGrid(){
 function openCreateProfile(){
   var ps = g('create-profile-screen');
   if(ps) ps.style.display='flex';
-  var ni = g('profile-name-input'); if(ni){ ni.value=''; ni.addEventListener('input', updateProfileSaveBtn); }
-  var ui = g('profile-username-input'); if(ui) ui.value='';
+  var ni = g('profile-name-input');
+  if(ni){
+    ni.value='';
+    ni.addEventListener('input', updateProfileSaveBtn);
+    ni.addEventListener('input', updateCreateAvatarName);
+    ni.addEventListener('focus', function(){ floatLabel('label-profile-name', true); });
+    ni.addEventListener('blur', function(){ floatLabel('label-profile-name', this.value.length > 0); });
+  }
+  var ui = g('profile-username-input');
+  if(ui){
+    ui.value='';
+    ui.addEventListener('focus', function(){ floatLabel('label-profile-username', true); });
+    ui.addEventListener('blur', function(){ floatLabel('label-profile-username', this.value.length > 0); });
+  }
   var err = g('profile-create-error'); if(err) err.textContent='';
+  floatLabel('label-profile-name', false);
+  floatLabel('label-profile-username', false);
   updateProfileSaveBtn();
+  updateCreateAvatarName();
 }
+
+function updateCreateAvatarName(){
+  var ni = g('profile-name-input');
+  var an = g('create-avatar-name');
+  if(an && ni) an.textContent = ni.value || '';
+}
+window.updateCreateAvatarName = updateCreateAvatarName;
+
+function floatLabel(labelId, up){
+  var lbl = g(labelId);
+  if(!lbl) return;
+  if(up){
+    lbl.style.top = '-4px';
+    lbl.style.fontSize = '12px';
+    lbl.style.color = 'var(--purple3)';
+  } else {
+    lbl.style.top = '20px';
+    lbl.style.fontSize = '16px';
+    lbl.style.color = '#666';
+  }
+}
+window.floatLabel = floatLabel;
 window.openCreateProfile = openCreateProfile;
 
 function closeCreateProfile(){
@@ -1692,6 +1742,9 @@ function openEditProfile(idx){
   var ni = g('edit-profile-name'); if(ni) ni.value = p.name || '';
   var ui = g('edit-profile-username'); if(ui) ui.value = p.username || '';
   var err = g('edit-profile-error'); if(err) err.textContent='';
+  // Inicializa floating labels
+  floatLabel('label-edit-name', (p.name||'').length > 0);
+  floatLabel('label-edit-username', (p.username||'').length > 0);
   updateEditSaveBtn();
   updateAvatarName();
   var es = g('edit-profile-screen');
