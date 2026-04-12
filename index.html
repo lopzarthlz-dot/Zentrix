@@ -257,17 +257,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .season-label{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px;}
 .season-arrow{font-size:11px;color:var(--text3);}
 .eps-list{display:flex;flex-direction:column;}
-.ep-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;position:relative;}
-.ep-row-num{font-size:12px;font-weight:800;color:var(--text3);min-width:24px;flex-shrink:0;}
-.ep-row-info{flex:1;min-width:0;}
-.ep-row-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
-.ep-row-meta{display:flex;align-items:center;gap:8px;}
-.ep-row-aud{font-size:11px;color:var(--text3);}
-.ep-row-dur{font-size:11px;color:var(--text3);}
-.ep-row-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
-.ep-row-play{width:34px;height:34px;border-radius:50%;background:var(--grad2);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px var(--neon-glow);}
-.ep-row-prog-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,.06);}
-.ep-row-prog-fill{height:100%;background:var(--grad2);border-radius:99px;}
+.ep-card{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.ep-card:active{background:var(--bg2);}
+.ep-card-thumb{width:120px;height:68px;border-radius:6px;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--bg4),var(--bg3));}
+.ep-card-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.ep-card-prog{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.15);}
+.ep-card-prog-fill{height:100%;background:var(--grad2);}
+.ep-card-time-overlay{position:absolute;bottom:4px;right:6px;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+.ep-card-info{flex:1;min-width:0;padding-top:2px;}
+.ep-card-num-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.ep-card-meta{display:flex;align-items:center;gap:4px;margin-top:5px;}
 .detail-continue-bar{position:sticky;bottom:0;padding:12px 16px;background:linear-gradient(to top,var(--bg) 80%,transparent);z-index:10;}
 .detail-continue-btn{width:100%;padding:14px;border-radius:var(--radius);background:var(--grad2);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 24px rgba(56,189,248,.3);}
 .detail-add-ep{display:flex;gap:8px;padding:14px 0;border-bottom:1px solid var(--border);}
@@ -881,10 +880,10 @@ var DEFAULT_ANIMES = [
     engagement: 92,
     dataLancamento: '2026-04-11',
     episodes: [
-      { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false },
-      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false },
-      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false },
-      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false }
+      { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
+      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
+      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
+      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -1240,19 +1239,24 @@ function renderDetailEps(){
         timeLabel=Math.ceil(ep.duration/60)+'min';
       }
     }
-    return '<div class="ep-row" onclick="playEpFromDetail('+i+')">'+
-      '<span class="ep-row-num">'+(i+1)+'</span>'+
-      '<div class="ep-row-info">'+
-        '<div class="ep-row-name">'+ep.name+'</div>'+
-        '<div class="ep-row-meta">'+
-          '<span class="ep-row-aud">'+audioLabel(a.audio)+'</span>'+
-          (timeLabel?'<span class="ep-row-dur" style="color:'+timeLabelColor+';">· '+timeLabel+'</span>':'')+
-        '</div>'+
-      '</div>'+
-      '<div class="ep-row-right">'+
-        (hasSrc?'<button class="ep-row-play" onclick="event.stopPropagation();playEpFromDetail('+i+')">▶</button>':'')+
-      '</div>'+
-      (prog>0?'<div class="ep-row-prog-bar"><div class="ep-row-prog-fill" style="width:'+prog+'%"></div></div>':'')+
+    return '<div class="ep-card" onclick="playEpFromDetail('+i+')">' +
+      // Thumbnail à esquerda
+      '<div class="ep-card-thumb">' +
+        (ep.coverUrl
+          ? '<img src="'+ep.coverUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/>'
+          : '<div class="ep-card-thumb-placeholder"><span style="font-size:28px;opacity:.3;">▶</span></div>'
+        ) +
+        (prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
+        (timeLabel&&!isWatched&&ep.savedTime>10 ? '<div class="ep-card-time-overlay">'+timeLabel+'</div>' : '') +
+      '</div>' +
+      // Info à direita
+      '<div class="ep-card-info">' +
+        '<div class="ep-card-num-name">'+(i+1)+'. '+ep.name+'</div>' +
+        '<div class="ep-card-meta">' +
+          '<span style="color:var(--text3);font-size:11px;">'+audioLabel(a.audio)+'</span>' +
+          (timeLabel ? '<span style="color:'+(isWatched?'var(--blue)':timeLabelColor)+';font-size:11px;"> · '+timeLabel+'</span>' : '') +
+        '</div>' +
+      '</div>' +
     '</div>';
   }).join('');
 }
