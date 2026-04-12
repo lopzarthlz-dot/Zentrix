@@ -233,10 +233,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
-@keyframes bubbleFloat{0%{transform:translateY(0) scale(1);opacity:.7;}100%{transform:translateY(-100vh) scale(0.8);opacity:0;}}
-@keyframes bubblePop{0%{transform:scale(1);opacity:.7;}50%{transform:scale(1.3);opacity:.4;}100%{transform:scale(0);opacity:0;}}
-.bubble{position:absolute;border-radius:50%;pointer-events:auto;cursor:pointer;border:2px solid rgba(255,255,255,.5);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.4),rgba(139,92,246,.2) 50%,rgba(56,189,248,.1));box-shadow:inset 0 0 10px rgba(255,255,255,.2),0 0 8px rgba(139,92,246,.3);animation:bubbleFloat linear forwards;}
-.bubble.popping{animation:bubblePop .25s ease-out forwards;pointer-events:none;}
+@keyframes bubbleFloat{0%{transform:translateY(0) scale(1);opacity:.7;}90%{transform:translateY(-105vh) scale(0.85);opacity:.6;}100%{transform:translateY(-110vh) scale(0.85);opacity:.6;}}
+@keyframes bubblePop{0%{transform:scale(1);opacity:.8;}40%{transform:scale(1.4);opacity:.5;}100%{transform:scale(0);opacity:0;}}
+.bubble{position:absolute;border-radius:50%;pointer-events:auto;cursor:pointer;border:2px solid rgba(255,255,255,.5);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.4),rgba(139,92,246,.2) 50%,rgba(56,189,248,.1));box-shadow:inset 0 0 10px rgba(255,255,255,.2),0 0 8px rgba(139,92,246,.3);}
+.bubble.floating{animation:bubbleFloat linear forwards;}
+.bubble.popping{animation:bubblePop .35s ease-out forwards;pointer-events:none;}
 @keyframes ripple{0%{transform:scale(0);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
 .profile-circle-wrap{position:relative;overflow:visible;}
 .profile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);pointer-events:none;animation:ripple .6s ease-out forwards;}
@@ -2319,7 +2320,7 @@ window.profileCircleRelease = profileCircleRelease;
 // ===== BUBBLE SYSTEM =====
 function createBubble(x, y, container){
   var size = Math.random() * 40 + 20; // 20-60px
-  var duration = Math.random() * 3 + 2; // 2-5s
+  var duration = Math.random() * 4 + 5; // 5-9s — mais lento
   var bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.style.width = size+'px';
@@ -2327,25 +2328,53 @@ function createBubble(x, y, container){
   bubble.style.left = (x - size/2)+'px';
   bubble.style.top = (y - size/2)+'px';
   bubble.style.animationDuration = duration+'s';
+
+  // Adiciona floating class depois de um frame pra não conflitar
+  requestAnimationFrame(function(){
+    bubble.classList.add('floating');
+  });
+
+  container.appendChild(bubble);
+
+  // Tempo aleatório pra estourar sozinha: 0.5s a 5s
+  var autoPopTime = Math.random() * 4500 + 500;
+  var autoPopTimer = setTimeout(function(){
+    popBubble(bubble);
+  }, autoPopTime);
+
+  // Cancela o timer se clicar antes
   bubble.addEventListener('click', function(e){
     e.stopPropagation();
+    clearTimeout(autoPopTimer);
     popBubble(bubble);
   });
   bubble.addEventListener('touchstart', function(e){
     e.stopPropagation();
+    e.preventDefault();
+    clearTimeout(autoPopTimer);
     popBubble(bubble);
-  }, {passive:true});
-  container.appendChild(bubble);
-  // Remove when animation ends
-  bubble.addEventListener('animationend', function(){
-    if(bubble.parentNode) bubble.parentNode.removeChild(bubble);
+  }, {passive:false});
+
+  // Remove quando animação de float termina (chegou ao topo)
+  bubble.addEventListener('animationend', function(e){
+    if(e.animationName === 'bubbleFloat'){
+      clearTimeout(autoPopTimer);
+      popBubble(bubble);
+    }
+    if(e.animationName === 'bubblePop'){
+      if(bubble.parentNode) bubble.parentNode.removeChild(bubble);
+    }
   });
 }
 
 function popBubble(bubble){
   if(bubble.classList.contains('popping')) return;
+  // Para o float e inicia o pop
+  bubble.classList.remove('floating');
+  bubble.style.animation = 'none';
+  bubble.offsetHeight; // force reflow
   bubble.classList.add('popping');
-  setTimeout(function(){ if(bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 280);
+  setTimeout(function(){ if(bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 400);
 }
 
 function initBubbleSystem(){
