@@ -22,8 +22,9 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;}
 
 /* LOGIN SCREEN */
-#login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 16px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
+#login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 16px 50px;max-width:480px;margin:0 auto;left:0;right:0;transition:background .2s;}
 #login-screen.hidden{display:none;}
+#login-screen.auth-open{background:transparent;}
 .login-bg{position:absolute;inset:0;overflow:hidden;z-index:0;}
 .login-top{display:none;}
 .login-logo-row{display:flex;align-items:center;gap:10px;}
@@ -1403,9 +1404,8 @@ function showAuthForm(mode){
   if(form) form.classList.add('active');
   var overlay = g('auth-overlay');
   if(overlay) overlay.classList.add('active');
-  // Remove background do login-screen pra animes aparecerem
   var ls = g('login-screen');
-  if(ls) ls.style.background = 'transparent';
+  if(ls) ls.classList.add('auth-open');
 }
 window.showAuthForm = showAuthForm;
 
@@ -1414,9 +1414,8 @@ function closeAuthForm(){
   var overlay = g('auth-overlay');
   if(form) form.classList.remove('active');
   if(overlay) overlay.classList.remove('active');
-  // Restaura background do login-screen
   var ls = g('login-screen');
-  if(ls) ls.style.background = '';
+  if(ls) ls.classList.remove('auth-open');
 }
 window.closeAuthForm = closeAuthForm;
 
