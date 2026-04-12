@@ -65,8 +65,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .auth-switch-simple{font-size:13px;color:var(--text3);text-align:center;margin-top:4px;}
 .auth-switch{font-size:13px;color:var(--text3);text-align:center;}
 .auth-switch span{color:var(--blue);cursor:pointer;font-weight:700;}
-.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:var(--bg);position:relative;}
-.screen{display:none;flex:1;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding-bottom:100px;}
+.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:var(--bg);position:relative;}
+.screen{display:none;flex:1;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:80px;}
 .screen.active{display:flex;}
 .screen::-webkit-scrollbar{width:2px;}
 .screen::-webkit-scrollbar-thumb{background:var(--purple2);border-radius:99px;}
