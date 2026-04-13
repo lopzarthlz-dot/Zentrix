@@ -1072,7 +1072,7 @@ function mkCW(a){
   if(ep&&ep.watched){
     minsLabel='Assistido';
   } else if(ep&&ep.duration&&ep.duration>0){
-    if(ep.savedTime&&ep.savedTime>10){
+    if(ep.savedTime&&ep.savedTime>0){
       var rem=Math.floor((ep.duration-ep.savedTime)/60);
       if(rem>0)minsLabel=rem+'m restantes';
     } else {
@@ -1152,7 +1152,7 @@ function renderHome(){
   // CONTINUE ASSISTINDO
   // Only show in CW if user actually watched something (savedTime > 5s)
   var cwList=watching.filter(function(a){
-    return a.episodes&&a.episodes.some(function(ep){return ep.savedTime&&ep.savedTime>1;});
+    return a.episodes&&a.episodes.length>0&&(a.lastEp>=0||a.episodes.some(function(ep){return ep.savedTime&&ep.savedTime>0;}));
   });
   showSec('sec-cw','cw-row',cwList,mkCW);
 
@@ -1271,8 +1271,8 @@ function renderDetailEps(){
       timeLabel='Assistido';
       timeLabelColor='var(--blue)';
     } else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>10){
-        var rem=Math.ceil((ep.duration-ep.savedTime)/60);
+      if(ep.savedTime&&ep.savedTime>0){
+        var rem=Math.floor((ep.duration-ep.savedTime)/60);
         timeLabel=rem>0?rem+'m restantes':'Assistido';
         timeLabelColor='var(--blue)';
       } else {
@@ -1291,7 +1291,7 @@ function renderDetailEps(){
               '<span style="font-size:10px;color:rgba(255,255,255,.7);font-weight:600;">Assistido</span>' +
             '</div>'
           : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">' +
-              '<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;">' +
+              '<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;">' +
                 '<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>' +
               '</div>' +
             '</div>'
@@ -1419,12 +1419,12 @@ function toggleDetailQueue(){
     showToast('Removido da Fila', '🔖');
   } else {
     btn.dataset.queued = '1';
-    btn.style.background = 'rgba(255,255,255,.08)';
-    btn.style.borderColor = 'rgba(255,255,255,.9)';
-    btn.innerHTML = '<div style="position:relative;width:20px;height:20px;display:flex;align-items:center;justify-content:center;">' +
-      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
-      '<span style="position:absolute;font-size:10px;line-height:1;top:50%;left:50%;transform:translate(-50%,-40%);">✅</span>' +
-    '</div>';
+    btn.style.background = 'transparent';
+    btn.style.borderColor = 'var(--purple)';
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--purple)" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>' +
+      '<polyline points="9,12 11,14 15,10" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' +
+    '</svg>';
     showToast('Adicionado à Fila', '✅');
   }
 }
@@ -1577,11 +1577,11 @@ function renderEpList(){
     if(ep.watched){
       timeInfo='Assistido';
     } else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>10){
-        var rem=Math.ceil((ep.duration-ep.savedTime)/60);
+      if(ep.savedTime&&ep.savedTime>0){
+        var rem=Math.floor((ep.duration-ep.savedTime)/60);
         timeInfo=rem>0?rem+' min restantes':'Assistido';
       } else {
-        timeInfo=Math.ceil(ep.duration/60)+'min';
+        timeInfo=Math.floor(ep.duration/60)+'min';
       }
     } else if(ep.linkUrl){
       timeInfo='🔗 Link salvo';
