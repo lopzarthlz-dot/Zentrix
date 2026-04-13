@@ -1440,7 +1440,38 @@ function submitLinkModal(){
   saveData();closeLinkModal();
   if(detailItemId){renderDetailEps();updateContinueBar();}
   if(playerItemId){loadEpisode(idx);renderEpList();}
+  // Auto-detecta duração em background
+  autoDetectDuration(itemId, idx, url);
 }
+
+function autoDetectDuration(itemId, epIdx, url){
+  var tempVid = document.createElement('video');
+  tempVid.preload = 'metadata';
+  tempVid.style.display = 'none';
+  tempVid.src = url;
+  document.body.appendChild(tempVid);
+  tempVid.onloadedmetadata = function(){
+    var dur = tempVid.duration;
+    if(dur && isFinite(dur) && dur > 0){
+      var a = items.find(function(x){ return x.id === itemId; });
+      if(a && a.episodes && a.episodes[epIdx]){
+        a.episodes[epIdx].duration = dur;
+        saveData();
+        if(detailItemId === itemId) renderDetailEps();
+        if(playerItemId === itemId) renderEpList();
+      }
+    }
+    document.body.removeChild(tempVid);
+  };
+  tempVid.onerror = function(){
+    if(tempVid.parentNode) document.body.removeChild(tempVid);
+  };
+  // Segurança: remove depois de 30s se não carregar
+  setTimeout(function(){
+    if(tempVid.parentNode) document.body.removeChild(tempVid);
+  }, 30000);
+}
+window.autoDetectDuration = autoDetectDuration;
 window.openLinkModal=openLinkModal;window.openLinkModalForEp=openLinkModalForEp;window.closeLinkModal=closeLinkModal;window.submitLinkModal=submitLinkModal;
 function loadEpisode(idx){
   var a=items.find(function(x){return x.id===playerItemId;});if(!a||!a.episodes||!a.episodes[idx])return;
