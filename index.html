@@ -724,8 +724,34 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
   <div class="detail-continue-bar" id="detail-continue-bar" style="display:none;">
-    <button class="detail-continue-btn" id="detail-continue-btn" onclick="continueWatching()">▶ Continuar Assistindo</button>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="detail-continue-btn" id="detail-continue-btn" onclick="continueWatching()" style="flex:1;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1" stroke-linejoin="round">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+        <span id="detail-continue-label">Continuar Assistindo</span>
+      </button>
+      <button id="detail-queue-btn" onclick="toggleDetailQueue()" style="width:48px;height:48px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,border-color .2s;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+    </div>
   </div>
+</div>
+
+<!-- Episode menu -->
+<div id="ep-menu" style="display:none;position:fixed;inset:0;z-index:9000;" onclick="closeEpMenu()">
+  <div id="ep-menu-sheet" style="position:absolute;background:#1a1a2e;border-radius:14px 14px 0 0;width:100%;max-width:480px;left:50%;transform:translateX(-50%);bottom:0;padding:8px 0 32px;box-shadow:0 -4px 30px rgba(0,0,0,.6);">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:99px;margin:8px auto 16px;"></div>
+    <button id="ep-menu-play" onclick="event.stopPropagation();epMenuPlay()" style="width:100%;padding:16px 24px;background:none;border:none;color:#fff;font-size:15px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Começar a Assistir</button>
+    <div style="height:1px;background:rgba(255,255,255,.06);margin:0 16px;"></div>
+    <button id="ep-menu-watched" onclick="event.stopPropagation();epMenuToggleWatched()" style="width:100%;padding:16px 24px;background:none;border:none;color:#fff;font-size:15px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Marcado como Assistido</button>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast-msg" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1e1e2e;border:1px solid rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:99px;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .25s;">
+  <span id="toast-icon" style="font-size:16px;">✅</span>
+  <span id="toast-text">Mensagem</span>
 </div>
 <div class="modal-wrap" id="add-modal">
   <div class="modal-overlay" onclick="closeModal('add-modal')"></div>
@@ -1048,7 +1074,12 @@ function mkCW(a){
   }
   return '<div class="cw-card" onclick="openPlayer(\''+a.id+'\','+targetIdx+')">' +
     '<div class="cw-thumb">' +
-      '<div class="cw-thumb-emoji">⚔️</div>' +
+      (ep&&ep.coverUrl
+        ? '<img src="'+ep.coverUrl+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>'
+        : (a.cover
+            ? '<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>'
+            : '<div class="cw-thumb-emoji">⚔️</div>')
+      ) +
       '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.92) 0%,rgba(8,8,15,.3) 55%,transparent 100%);pointer-events:none;"></div>' +
       '<div class="cw-play-ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="8,6 26,16 8,26" fill="white"/></svg></div>' +
       (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
@@ -1237,25 +1268,36 @@ function renderDetailEps(){
         timeLabel=rem>0?rem+'m restantes':'Assistido';
         timeLabelColor='var(--blue)';
       } else {
-        timeLabel=Math.ceil(ep.duration/60)+'m';
+        timeLabel=Math.floor(ep.duration/60)+'m';
       }
     }
     return '<div class="ep-card" onclick="playEpFromDetail('+i+')">' +
-      // Thumbnail à esquerda
       '<div class="ep-card-thumb">' +
         (ep.coverUrl
-          ? '<img src="'+ep.coverUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/>'
-          : '<div class="ep-card-thumb-placeholder"><span style="font-size:28px;opacity:.3;">▶</span></div>'
+          ? '<img src="'+ep.coverUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px;'+(isWatched?'filter:brightness(0.4);':'')+'"/>'
+          : '<div class="ep-card-thumb-placeholder" style="'+(isWatched?'background:rgba(0,0,0,.6);':'')+'"><span style="font-size:28px;opacity:.3;">▶</span></div>'
         ) +
-        (prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
-        (timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
+        (isWatched
+          ? '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">' +
+              '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>' +
+              '<span style="font-size:10px;color:rgba(255,255,255,.7);font-weight:600;">Assistido</span>' +
+            '</div>'
+          : ''
+        ) +
+        (!isWatched && prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
+        (!isWatched && timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
       '</div>' +
-      // Info à direita
       '<div class="ep-card-info">' +
         '<div class="ep-card-num-name">'+(i+1)+'. '+ep.name+'</div>' +
         '<div class="ep-card-meta">' +
           '<span style="color:var(--text3);font-size:11px;">'+audioLabel(a.audio)+'</span>' +
         '</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;margin-left:4px;">' +
+        '<button onclick="event.stopPropagation();playEpFromDetail('+i+')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);color:#fff;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>' +
+        '</button>' +
+        '<button onclick="event.stopPropagation();openEpMenu('+i+',this)" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:16px;cursor:pointer;padding:2px 6px;font-family:var(--font);letter-spacing:1px;">···</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -1270,12 +1312,89 @@ function updateContinueBar(){
   if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
   if(nextIdx>=0&&eps.length>0){
     bar.style.display='block';
-    btn.textContent=eps[nextIdx].savedTime&&eps[nextIdx].savedTime>5?'▶ Continuar — Ep '+(nextIdx+1):'▶ Assistir Ep '+(nextIdx+1);
     btn.dataset.epIdx=nextIdx;
-  } else if(eps.length>0){bar.style.display='block';btn.textContent='▶ Assistir do início';btn.dataset.epIdx=0;}
+    var lbl=g('detail-continue-label');
+    if(lbl) lbl.textContent=eps[nextIdx].savedTime&&eps[nextIdx].savedTime>5?'Continuar — Ep '+(nextIdx+1):'Assistir Ep '+(nextIdx+1);
+  } else if(eps.length>0){bar.style.display='block';var lbl2=g('detail-continue-label');if(lbl2)lbl2.textContent='Assistir do início';btn.dataset.epIdx=0;}
   else{bar.style.display='none';}
 }
+var _epMenuIdx = -1;
+function openEpMenu(idx, btn){
+  _epMenuIdx = idx;
+  var a = items.find(function(x){ return x.id === detailItemId; });
+  var ep = a && a.episodes && a.episodes[idx];
+  var watchedBtn = g('ep-menu-watched');
+  if(watchedBtn){
+    watchedBtn.textContent = ep && ep.watched ? 'Desmarcar como Assistido' : 'Marcado como Assistido';
+    watchedBtn.style.color = ep && ep.watched ? 'rgba(255,255,255,.4)' : '#fff';
+  }
+  var menu = g('ep-menu');
+  if(menu) menu.style.display = 'flex';
+}
+function closeEpMenu(){
+  var menu = g('ep-menu');
+  if(menu) menu.style.display = 'none';
+  _epMenuIdx = -1;
+}
+function epMenuPlay(){
+  closeEpMenu();
+  playEpFromDetail(_epMenuIdx);
+}
+function epMenuToggleWatched(){
+  var a = items.find(function(x){ return x.id === detailItemId; });
+  if(!a || !a.episodes || !a.episodes[_epMenuIdx]) return;
+  var ep = a.episodes[_epMenuIdx];
+  ep.watched = !ep.watched;
+  if(ep.watched) ep.savedTime = ep.duration || 0;
+  saveData();
+  closeEpMenu();
+  renderDetailEps();
+  updateContinueBar();
+  showToast(ep.watched ? 'Marcado como Assistido' : 'Desmarcado', ep.watched ? '✅' : '↩️');
+}
+window.openEpMenu = openEpMenu;
+window.closeEpMenu = closeEpMenu;
+window.epMenuPlay = epMenuPlay;
+window.epMenuToggleWatched = epMenuToggleWatched;
+
+function showToast(text, icon){
+  var toast = g('toast-msg');
+  var toastText = g('toast-text');
+  var toastIcon = g('toast-icon');
+  if(!toast) return;
+  if(toastText) toastText.textContent = text;
+  if(toastIcon) toastIcon.textContent = icon || '✅';
+  toast.style.display = 'flex';
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function(){
+    toast.style.opacity = '0';
+    setTimeout(function(){ toast.style.display = 'none'; }, 260);
+  }, 2000);
+}
+window.showToast = showToast;
+
+function toggleDetailQueue(){
+  var btn = g('detail-queue-btn');
+  if(!btn) return;
+  var isQueued = btn.dataset.queued === '1';
+  if(isQueued){
+    btn.dataset.queued = '0';
+    btn.style.background = 'rgba(255,255,255,.08)';
+    btn.style.borderColor = 'rgba(255,255,255,.2)';
+    btn.querySelector('svg').setAttribute('stroke','rgba(255,255,255,.7)');
+    showToast('Removido da Fila', '🔖');
+  } else {
+    btn.dataset.queued = '1';
+    btn.style.background = 'var(--purple)';
+    btn.style.borderColor = 'var(--purple)';
+    btn.querySelector('svg').setAttribute('stroke','#fff');
+    showToast('Adicionado à Fila', '✅');
+  }
+}
+window.toggleDetailQueue = toggleDetailQueue;
 function continueWatching(){var btn=g('detail-continue-btn');if(!btn)return;playEpFromDetail(parseInt(btn.dataset.epIdx)||0);}
+window.continueWatching = continueWatching;
 function playEpFromDetail(idx){var a=items.find(function(x){return x.id===detailItemId;});if(!a)return;closeDetail();openPlayer(a.id,idx);}
 function addEpFromDetail(){
   var inp=g('detail-ep-input');var name=inp?inp.value.trim():'';
