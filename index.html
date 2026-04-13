@@ -738,13 +738,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   </div>
 </div>
 
-<!-- Episode menu -->
+<!-- Episode menu popover -->
 <div id="ep-menu" style="display:none;position:fixed;inset:0;z-index:9000;" onclick="closeEpMenu()">
-  <div id="ep-menu-sheet" style="position:absolute;background:#1a1a2e;border-radius:14px 14px 0 0;width:100%;max-width:480px;left:50%;transform:translateX(-50%);bottom:0;padding:8px 0 32px;box-shadow:0 -4px 30px rgba(0,0,0,.6);">
-    <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:99px;margin:8px auto 16px;"></div>
-    <button id="ep-menu-play" onclick="event.stopPropagation();epMenuPlay()" style="width:100%;padding:16px 24px;background:none;border:none;color:#fff;font-size:15px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Começar a Assistir</button>
-    <div style="height:1px;background:rgba(255,255,255,.06);margin:0 16px;"></div>
-    <button id="ep-menu-watched" onclick="event.stopPropagation();epMenuToggleWatched()" style="width:100%;padding:16px 24px;background:none;border:none;color:#fff;font-size:15px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Marcado como Assistido</button>
+  <div id="ep-menu-popover" onclick="event.stopPropagation()" style="position:fixed;background:#1e1e30;border-radius:12px;min-width:210px;box-shadow:0 4px 24px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.08);overflow:hidden;z-index:9001;">
+    <button id="ep-menu-play" onclick="event.stopPropagation();epMenuPlay()" style="width:100%;padding:14px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Continuar Assistindo</button>
+    <button id="ep-menu-watched" onclick="event.stopPropagation();epMenuToggleWatched()" style="width:100%;padding:14px 20px;background:none;border:none;color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Marcado como Assistido</button>
   </div>
 </div>
 
@@ -1273,14 +1271,18 @@ function renderDetailEps(){
       '<div class="ep-card-thumb">' +
         (ep.coverUrl
           ? '<img src="'+ep.coverUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px;'+(isWatched?'filter:brightness(0.4);':'')+'"/>'
-          : '<div class="ep-card-thumb-placeholder" style="'+(isWatched?'background:rgba(0,0,0,.6);':'')+'"><span style="font-size:28px;opacity:.3;">▶</span></div>'
+          : '<div class="ep-card-thumb-placeholder" style="'+(isWatched?'background:rgba(0,0,0,.6);':'')+'"></div>'
         ) +
         (isWatched
           ? '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">' +
               '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>' +
               '<span style="font-size:10px;color:rgba(255,255,255,.7);font-weight:600;">Assistido</span>' +
             '</div>'
-          : ''
+          : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">' +
+              '<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>' +
+              '</div>' +
+            '</div>'
         ) +
         (!isWatched && prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
         (!isWatched && timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
@@ -1291,10 +1293,7 @@ function renderDetailEps(){
           '<span style="color:var(--text3);font-size:11px;">'+audioLabel(a.audio)+'</span>' +
         '</div>' +
       '</div>' +
-      '<div style="display:flex;flex-direction:column;align-items:center;justify-content:space-between;flex-shrink:0;margin-left:4px;align-self:stretch;padding:4px 0;">' +
-        '<button onclick="event.stopPropagation();playEpFromDetail('+i+')" style="width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.5);color:#fff;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>' +
-        '</button>' +
+      '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px;align-self:stretch;padding:4px 0;position:relative;">' +
         '<button onclick="event.stopPropagation();openEpMenu('+i+',this)" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:4px 6px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.opacity=\'0.4\'" ontouchend="this.style.opacity=\'1\'">···</button>' +
       '</div>' +
     '</div>';
@@ -1326,14 +1325,38 @@ function openEpMenu(idx, btn){
     watchedBtn.textContent = ep && ep.watched ? 'Desmarcar como Assistido' : 'Marcado como Assistido';
     watchedBtn.style.color = ep && ep.watched ? 'rgba(255,255,255,.4)' : '#fff';
   }
+  var playBtn = g('ep-menu-play');
+  if(playBtn){
+    playBtn.textContent = ep && ep.savedTime && ep.savedTime > 5 && !ep.watched ? 'Continuar Assistindo' : 'Começar a Assistir';
+  }
   var menu = g('ep-menu');
-  if(menu) menu.style.display = 'flex';
+  var popover = g('ep-menu-popover');
+  if(!menu || !popover) return;
+  menu.style.display = 'block';
+  // Position popover above the ··· button
+  var rect = btn.getBoundingClientRect();
+  var popW = 210;
+  var appMaxW = 480;
+  var appLeft = Math.max(0, (window.innerWidth - appMaxW) / 2);
+  var appRight = appLeft + Math.min(window.innerWidth, appMaxW);
+  var left = rect.right - popW;
+  if(left < appLeft + 8) left = appLeft + 8;
+  if(left + popW > appRight - 8) left = appRight - popW - 8;
+  popover.style.left = left + 'px';
+  popover.style.top = '-999px';
+  setTimeout(function(){
+    var ph = popover.offsetHeight;
+    var t = rect.top - ph - 8;
+    if(t < 8) t = rect.bottom + 8;
+    popover.style.top = t + 'px';
+  }, 0);
 }
 function closeEpMenu(){
   var menu = g('ep-menu');
   if(menu) menu.style.display = 'none';
   _epMenuIdx = -1;
 }
+window.closeEpMenu = closeEpMenu;
 function epMenuPlay(){
   closeEpMenu();
   playEpFromDetail(_epMenuIdx);
