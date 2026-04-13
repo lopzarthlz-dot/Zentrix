@@ -76,10 +76,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .top-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;padding:2px;}
 .bottom-nav{position:sticky;bottom:0;background:rgba(8,8,15,.97);border-top:1px solid var(--border);display:flex;z-index:200;padding:6px 0 12px;flex-shrink:0;backdrop-filter:blur(12px);}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px 0;}
-.nav-icon{font-size:19px;line-height:1;}
+.nav-icon{font-size:19px;line-height:1;color:var(--text3);}
 .nav-label{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.3px;text-transform:uppercase;}
 .nav-btn.active .nav-label{color:var(--blue);}
-.nav-btn.active .nav-icon{filter:drop-shadow(0 0 8px var(--blue));}
+.nav-btn.active .nav-icon{filter:drop-shadow(0 0 8px var(--blue));color:var(--blue);}
 .hero{position:relative;width:100%;aspect-ratio:16/9;flex-shrink:0;overflow:hidden;background:var(--bg2);}
 .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(109,40,217,.5) 0%,transparent 60%),radial-gradient(ellipse at 75% 60%,rgba(14,165,233,.35) 0%,transparent 55%),var(--bg2);}
 .hero-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 32px,rgba(255,255,255,.018) 32px,rgba(255,255,255,.018) 33px),repeating-linear-gradient(90deg,transparent,transparent 32px,rgba(255,255,255,.018) 32px,rgba(255,255,255,.018) 33px);}
@@ -462,7 +462,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div style="width:100%;text-align:center;">
     <div style="font-size:26px;font-weight:900;color:#fff;">Gerenciar Perfis</div>
   </div>
-  <div style="display:flex;gap:32px;justify-content:center;align-items:flex-start;flex:1;padding-top:60px;" id="manage-profiles-grid">
+  <div style="position:relative;flex:1;width:100%;" id="manage-profiles-grid">
   </div>
   <div style="width:100%;padding:24px 0 48px;display:flex;flex-direction:column;align-items:center;gap:4px;">
     <button id="btn-manage-done" onclick="closeManageProfiles()" style="width:100%;padding:16px;border-radius:99px;background:transparent;border:2px solid rgba(255,255,255,.3);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .15s,opacity .15s;-webkit-user-select:none;">Pronto</button>
@@ -698,7 +698,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
   <div class="bottom-nav">
-    <button class="nav-btn active" data-nav="home" onclick="goTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">Início</span></button>
+    <button class="nav-btn active" data-nav="home" onclick="goTo('home')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span><span class="nav-label">Início</span></button>
     <button class="nav-btn" data-nav="lista" onclick="goTo('lista')"><span class="nav-icon">📋</span><span class="nav-label">Listas</span></button>
     <button class="nav-btn" data-nav="salvos" onclick="goTo('salvos')"><span class="nav-icon">💾</span><span class="nav-label">Salvos</span></button>
     <button class="nav-btn" data-nav="descobrir" onclick="goTo('descobrir')"><span class="nav-icon">✨</span><span class="nav-label">Descobrir</span></button>
@@ -920,7 +920,8 @@ var DEFAULT_ANIMES = [
       { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
       { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
       { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
-      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' }
+      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
+      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -1973,24 +1974,41 @@ function renderManageGrid(){
   var grid = g('manage-profiles-grid');
   if(!grid) return;
   var profiles = getProfiles(_currentEmail);
+  var positions = [
+    {left:'12%', top:'10%'},
+    {right:'12%', bottom:'18%'}
+  ];
   var html = '';
   profiles.forEach(function(p, i){
-    html += '<div class="profile-slot" style="position:relative;">' +
-      '<div class="profile-circle filled" onclick="openEditProfile('+i+')">' +
-        '<img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:65px;height:65px;object-fit:contain;"/>' +
-      '</div>' +
-      // Lápis no canto inferior direito
-      '<div onclick="openEditProfile('+i+')" style="position:absolute;bottom:30px;right:-8px;width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);">'+
+    var pos = positions[i] || positions[0];
+    var posStyle = '';
+    if(pos.left) posStyle += 'left:'+pos.left+';';
+    if(pos.right) posStyle += 'right:'+pos.right+';';
+    if(pos.top) posStyle += 'top:'+pos.top+';';
+    if(pos.bottom) posStyle += 'bottom:'+pos.bottom+';';
+    html += '<div class="profile-slot" style="position:absolute;'+posStyle+'">' +
+      '<div class="profile-circle-wrap">' +
+      '<div class="profile-circle filled" style="width:120px;height:120px;" onclick="openEditProfile('+i+')">' +
+        '<img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:80px;height:80px;object-fit:contain;"/>' +
+      '</div></div>' +
+      '<div onclick="openEditProfile('+i+')" style="position:absolute;bottom:34px;right:-8px;width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);">'+
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'+
       '</div>'+
       '<div class="profile-slot-name">'+(p.name||'Perfil')+'</div>' +
     '</div>';
   });
-  // Slots vazios ainda mostram o +
-  var slots = 2 - profiles.length;
-  for(var i=0;i<slots;i++){
-    html += '<div class="profile-slot" onclick="openCreateProfile()">' +
-      '<div class="profile-circle add"><span style="font-size:36px;color:rgba(255,255,255,.5);line-height:1;">+</span></div>' +
+  // Slots vazios
+  for(var i=profiles.length; i<2; i++){
+    var pos = positions[i];
+    var posStyle = '';
+    if(pos.left) posStyle += 'left:'+pos.left+';';
+    if(pos.right) posStyle += 'right:'+pos.right+';';
+    if(pos.top) posStyle += 'top:'+pos.top+';';
+    if(pos.bottom) posStyle += 'bottom:'+pos.bottom+';';
+    html += '<div class="profile-slot" style="position:absolute;'+posStyle+'" onclick="openCreateProfile()">' +
+      '<div class="profile-circle-wrap">' +
+      '<div class="profile-circle add" style="width:120px;height:120px;"><span style="font-size:40px;color:rgba(255,255,255,.5);line-height:1;">+</span></div>' +
+      '</div>' +
       '<div class="profile-slot-name" style="color:rgba(255,255,255,.5);">Adicionar Perfil</div>' +
     '</div>';
   }
