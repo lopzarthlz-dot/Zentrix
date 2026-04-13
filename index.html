@@ -277,7 +277,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;}
 .player-overlay.active{display:flex;}
 .player-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(0,0,0,.9);flex-shrink:0;border-bottom:1px solid #1a1a2e;}
-.player-back{background:none;border:none;cursor:pointer;color:#fff;font-size:26px;padding:0;line-height:1;font-family:var(--font);}
+.player-back{background:none;border:none;cursor:pointer;color:#fff;font-size:22px;padding:4px;line-height:1;font-family:var(--font);width:36px;height:36px;display:flex;align-items:center;justify-content:center;}
 .player-title-block{flex:1;min-width:0;}
 .player-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .player-ep-name{font-size:11px;color:#666;margin-top:2px;}
@@ -808,10 +808,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 <div class="player-overlay" id="player-overlay">
   <div class="player-topbar">
-    <button class="player-back" onclick="closePlayer()">←</button>
     <div class="player-title-block">
       <div class="player-name" id="player-title">Título</div>
       <div class="player-ep-name" id="player-ep-label">Selecione um episódio</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+      <button id="pip-btn-top" onclick="togglePiP()" title="Picture in Picture" style="display:none;background:none;border:none;cursor:pointer;color:#fff;padding:4px;width:36px;height:36px;display:none;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="11" width="8" height="6" rx="1"/></svg>
+      </button>
+      <button class="player-back" onclick="closePlayer()">✕</button>
     </div>
   </div>
   <div class="player-video-area">
@@ -939,7 +944,12 @@ var vid=document.getElementById('main-video');
 
 // ===== PICTURE IN PICTURE =====
 if(vid){
-  // Habilita PiP automaticamente quando o usuário sai do app
+  // Mostra o botão apenas se o browser suportar PiP
+  if(document.pictureInPictureEnabled){
+    var pipBtn = document.getElementById('pip-btn-top');
+    if(pipBtn) pipBtn.style.display = 'flex';
+  }
+  // Ativa PiP automaticamente quando sai do app
   document.addEventListener('visibilitychange', function(){
     if(document.visibilityState === 'hidden' && vid && !vid.paused && vid.src){
       if(document.pictureInPictureEnabled && !document.pictureInPictureElement){
@@ -953,11 +963,16 @@ if(vid){
       document.exitPictureInPicture().catch(function(){});
     }
   });
-  // Quando o PiP fechar, pausa o vídeo
-  vid.addEventListener('leavepictureinpicture', function(){
-    // não pausa — usuário pode querer continuar ao voltar
-  });
 }
+function togglePiP(){
+  if(!vid || !vid.src) return;
+  if(document.pictureInPictureElement){
+    document.exitPictureInPicture().catch(function(){});
+  } else if(document.pictureInPictureEnabled){
+    vid.requestPictureInPicture().catch(function(){});
+  }
+}
+window.togglePiP = togglePiP;
 
 function g(id){return document.getElementById(id);}
 
