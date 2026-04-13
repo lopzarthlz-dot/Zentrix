@@ -255,7 +255,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .detail-tags-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-top:4px;}
 .season-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:0 -16px 0;}
 .season-label{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px;}
-.season-arrow{font-size:11px;color:var(--text3);}
+.season-arrow{font-size:11px;color:#fff;}
 .eps-list{display:flex;flex-direction:column;}
 .ep-card{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
 .ep-card:active{background:var(--bg2);}
@@ -717,7 +717,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   </div>
   <div class="detail-body">
     <div class="detail-tags-row" id="detail-tags-row"></div>
-    <div class="season-header"><div class="season-label"><span class="season-arrow">▼</span> Temporada 1</div></div>
+    <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><span class="season-arrow">▼</span> Season 1</div></div>
     <div style="padding-top:4px;">
 
       <div class="eps-list" id="detail-eps-list"></div>
@@ -735,6 +735,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Season Picker Screen -->
+<div id="season-picker" style="display:none;position:fixed;inset:0;z-index:9500;background:#000;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1a1a1a;flex-shrink:0;">
+    <button onclick="closeSeasonPicker()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-family:var(--font);">✕</button>
+    <div style="font-size:16px;font-weight:700;color:#fff;">Temporadas</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div style="padding:20px 16px;">
+    <div id="season-picker-list"></div>
   </div>
 </div>
 
@@ -1403,16 +1415,40 @@ function toggleDetailQueue(){
     btn.dataset.queued = '0';
     btn.style.background = 'rgba(255,255,255,.08)';
     btn.style.borderColor = 'rgba(255,255,255,.2)';
-    btn.querySelector('svg').setAttribute('stroke','rgba(255,255,255,.7)');
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
     showToast('Removido da Fila', '🔖');
   } else {
     btn.dataset.queued = '1';
-    btn.style.background = 'var(--purple)';
-    btn.style.borderColor = 'var(--purple)';
-    btn.querySelector('svg').setAttribute('stroke','#fff');
+    btn.style.background = 'rgba(255,255,255,.08)';
+    btn.style.borderColor = 'rgba(255,255,255,.9)';
+    btn.innerHTML = '<div style="position:relative;width:20px;height:20px;display:flex;align-items:center;justify-content:center;">' +
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+      '<span style="position:absolute;font-size:10px;line-height:1;top:50%;left:50%;transform:translate(-50%,-40%);">✅</span>' +
+    '</div>';
     showToast('Adicionado à Fila', '✅');
   }
 }
+function openSeasonPicker(){
+  var a = items.find(function(x){ return x.id === detailItemId; });
+  if(!a) return;
+  var epCount = (a.episodes||[]).length;
+  var list = g('season-picker-list');
+  if(list){
+    list.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;cursor:pointer;" onclick="closeSeasonPicker()">' +
+      '<span style="color:var(--blue);font-size:15px;font-weight:700;">Season 1</span>' +
+      '<span style="color:var(--text3);font-size:13px;">'+epCount+' Episódios</span>' +
+    '</div>';
+  }
+  var sp = g('season-picker');
+  if(sp){ sp.style.display='flex'; }
+}
+function closeSeasonPicker(){
+  var sp = g('season-picker');
+  if(sp) sp.style.display='none';
+}
+window.openSeasonPicker = openSeasonPicker;
+window.closeSeasonPicker = closeSeasonPicker;
+
 window.toggleDetailQueue = toggleDetailQueue;
 function continueWatching(){var btn=g('detail-continue-btn');if(!btn)return;playEpFromDetail(parseInt(btn.dataset.epIdx)||0);}
 window.continueWatching = continueWatching;
