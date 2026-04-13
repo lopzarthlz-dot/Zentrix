@@ -264,6 +264,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .ep-card-prog{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.15);}
 .ep-card-prog-fill{height:100%;background:var(--grad2);}
 .ep-card-time-overlay{position:absolute;bottom:4px;right:6px;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+.ep-card-dur-badge{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;font-weight:700;padding:2px 5px;border-radius:3px;}
 .ep-card-info{flex:1;min-width:0;padding-top:2px;}
 .ep-card-num-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ep-card-meta{display:flex;align-items:center;gap:4px;margin-top:5px;}
@@ -1247,14 +1248,13 @@ function renderDetailEps(){
           : '<div class="ep-card-thumb-placeholder"><span style="font-size:28px;opacity:.3;">▶</span></div>'
         ) +
         (prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
-        (timeLabel&&!isWatched&&ep.savedTime>10 ? '<div class="ep-card-time-overlay">'+timeLabel+'</div>' : '') +
+        (timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
       '</div>' +
       // Info à direita
       '<div class="ep-card-info">' +
         '<div class="ep-card-num-name">'+(i+1)+'. '+ep.name+'</div>' +
         '<div class="ep-card-meta">' +
           '<span style="color:var(--text3);font-size:11px;">'+audioLabel(a.audio)+'</span>' +
-          (timeLabel ? '<span style="color:'+(isWatched?'var(--blue)':timeLabelColor)+';font-size:11px;"> · '+timeLabel+'</span>' : '') +
         '</div>' +
       '</div>' +
     '</div>';
