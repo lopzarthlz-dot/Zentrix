@@ -259,7 +259,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .eps-list{display:flex;flex-direction:column;}
 .ep-card{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
 .ep-card:active{background:var(--bg2);}
-.ep-card-thumb{width:140px;height:79px;border-radius:6px;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--bg4),var(--bg3));margin-left:-4px;}
+.ep-card-thumb{width:165px;height:93px;border-radius:6px;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--bg4),var(--bg3));margin-left:-4px;}
 .ep-card-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 .ep-card-prog{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.15);}
 .ep-card-prog-fill{height:100%;background:var(--grad2);}
@@ -726,10 +726,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="detail-continue-bar" id="detail-continue-bar" style="display:none;">
     <div style="display:flex;gap:10px;align-items:center;">
       <button class="detail-continue-btn" id="detail-continue-btn" onclick="continueWatching()" style="flex:1;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round">
           <polygon points="5,3 19,12 5,21"/>
         </svg>
-        <span id="detail-continue-label">Continuar Assistindo</span>
+        <span id="detail-continue-label" style="font-size:16px;font-weight:800;">Assistir Ep 1</span>
       </button>
       <button id="detail-queue-btn" onclick="toggleDetailQueue()" style="width:48px;height:48px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,border-color .2s;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
@@ -1311,8 +1311,8 @@ function updateContinueBar(){
     bar.style.display='block';
     btn.dataset.epIdx=nextIdx;
     var lbl=g('detail-continue-label');
-    if(lbl) lbl.textContent=eps[nextIdx].savedTime&&eps[nextIdx].savedTime>5?'Continuar — Ep '+(nextIdx+1):'Assistir Ep '+(nextIdx+1);
-  } else if(eps.length>0){bar.style.display='block';var lbl2=g('detail-continue-label');if(lbl2)lbl2.textContent='Assistir do início';btn.dataset.epIdx=0;}
+    if(lbl) lbl.textContent=eps[nextIdx].savedTime&&eps[nextIdx].savedTime>5?'Continue Assistindo E'+(nextIdx+1):'Assistir E'+(nextIdx+1);
+  } else if(eps.length>0){bar.style.display='block';var lbl2=g('detail-continue-label');if(lbl2)lbl2.textContent='Assistir E1';btn.dataset.epIdx=0;}
   else{bar.style.display='none';}
 }
 var _epMenuIdx = -1;
