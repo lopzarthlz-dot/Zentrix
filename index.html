@@ -883,8 +883,8 @@ var DEFAULT_ANIMES = [
     episodes: [
       { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
       { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
-      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
-      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' }
+      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
+      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -1234,10 +1234,10 @@ function renderDetailEps(){
     } else if(ep.duration&&ep.duration>0){
       if(ep.savedTime&&ep.savedTime>10){
         var rem=Math.ceil((ep.duration-ep.savedTime)/60);
-        timeLabel=rem>0?rem+' min restantes':'Assistido';
+        timeLabel=rem>0?rem+'m restantes':'Assistido';
         timeLabelColor='var(--blue)';
       } else {
-        timeLabel=Math.ceil(ep.duration/60)+'min';
+        timeLabel=Math.ceil(ep.duration/60)+'m';
       }
     }
     return '<div class="ep-card" onclick="playEpFromDetail('+i+')">' +
