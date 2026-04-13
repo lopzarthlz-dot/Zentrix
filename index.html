@@ -937,6 +937,28 @@ var playerItemId=null, playerEpIdx=-1, isSeeking=false, linkModalEpIdx=-1;
 var detailItemId=null;
 var vid=document.getElementById('main-video');
 
+// ===== PICTURE IN PICTURE =====
+if(vid){
+  // Habilita PiP automaticamente quando o usuário sai do app
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'hidden' && vid && !vid.paused && vid.src){
+      if(document.pictureInPictureEnabled && !document.pictureInPictureElement){
+        vid.requestPictureInPicture().catch(function(){});
+      }
+    }
+  });
+  // Sai do PiP quando volta pro app
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible' && document.pictureInPictureElement){
+      document.exitPictureInPicture().catch(function(){});
+    }
+  });
+  // Quando o PiP fechar, pausa o vídeo
+  vid.addEventListener('leavepictureinpicture', function(){
+    // não pausa — usuário pode querer continuar ao voltar
+  });
+}
+
 function g(id){return document.getElementById(id);}
 
 function lsGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
@@ -1585,18 +1607,16 @@ function renderEpList(){
         timeInfo=Math.floor(ep.duration/60)+'min';
       }
     } else if(ep.linkUrl){
-      timeInfo='🔗 Link salvo';
+      timeInfo=ep.duration&&ep.duration>0?Math.floor(ep.duration/60)+'min':'';
     } else if(ep.fileUrl){
-      timeInfo='✅ Arquivo';
+      timeInfo=ep.duration&&ep.duration>0?Math.floor(ep.duration/60)+'min':'';
     } else {
-      timeInfo='📂 Sem vídeo';
+      timeInfo='';
     }
     return '<div class="ep-item'+(i===playerEpIdx?' cur':'')+(hasSrc?' has-file':'')+'" onclick="loadEpisode('+i+')">'+
       '<span class="ep-num">E'+(i+1)+'</span>'+
       '<div class="ep-info"><div class="ep-name">'+ep.name+'</div><div class="ep-sub">'+timeInfo+'</div></div>'+
-      '<button class="ep-file-btn" onclick="event.stopPropagation();pickFileForEp('+i+')">📂</button>'+
-      '<button class="ep-link-btn" onclick="event.stopPropagation();openLinkModalForEp('+i+')">🔗</button>'+
-      '<button class="ep-del-btn" onclick="event.stopPropagation();removeEp('+i+')">✕</button></div>';
+      '</div>';
   }).join('');
 }
 function addEpisode(){var inp=g('ep-name-input');var name=inp?inp.value.trim():'';var a=items.find(function(x){return x.id===playerItemId;});if(!a)return;if(!a.episodes)a.episodes=[];a.episodes.push({name:name||('Episódio '+(a.episodes.length+1)),fileUrl:null,linkUrl:null,savedTime:0,duration:0,watched:false});if(inp)inp.value='';saveData();renderEpList();}
