@@ -99,8 +99,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .cards-scroll{overflow-x:auto;padding:0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .cards-scroll::-webkit-scrollbar{display:none;}
 .cards-row{display:flex;gap:10px;width:max-content;}
-.p-card{width:130px;flex-shrink:0;cursor:pointer;}
-.p-card-img{width:130px;height:182px;border-radius:var(--radius);background:linear-gradient(160deg,var(--bg4) 0%,var(--bg3) 100%);overflow:hidden;position:relative;margin-bottom:8px;border:1px solid var(--border);}
+.p-card{width:145px;flex-shrink:0;cursor:pointer;}
+.p-card-img{width:145px;height:203px;border-radius:var(--radius);background:linear-gradient(160deg,var(--bg4) 0%,var(--bg3) 100%);overflow:hidden;position:relative;margin-bottom:8px;border:1px solid var(--border);}
 .p-card-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:.25;}
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
@@ -277,7 +277,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;}
 .player-overlay.active{display:flex;}
 .player-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(0,0,0,.9);flex-shrink:0;border-bottom:1px solid #1a1a2e;}
-.player-back{background:none;border:none;cursor:pointer;color:#fff;font-size:22px;padding:4px;line-height:1;font-family:var(--font);width:36px;height:36px;display:flex;align-items:center;justify-content:center;}
+.player-back{background:none;border:none;cursor:pointer;color:#fff;font-size:26px;padding:0;line-height:1;font-family:var(--font);}
 .player-title-block{flex:1;min-width:0;}
 .player-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .player-ep-name{font-size:11px;color:#666;margin-top:2px;}
@@ -759,9 +759,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 
 <!-- Toast notification -->
-<div id="toast-msg" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1e1e2e;border:1px solid rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:99px;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .25s;">
-  <span id="toast-icon" style="font-size:16px;">✅</span>
-  <span id="toast-text">Mensagem</span>
+<div id="toast-msg" style="display:none;position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#fff;color:#111;font-size:15px;font-weight:700;padding:14px 24px;border-radius:12px;z-index:9999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.3);pointer-events:none;opacity:0;transition:opacity .25s;min-width:260px;max-width:90vw;">
+  <span id="toast-icon" style="display:flex;align-items:center;flex-shrink:0;"></span>
+  <span id="toast-text" style="flex:1;">Mensagem</span>
 </div>
 <div class="modal-wrap" id="add-modal">
   <div class="modal-overlay" onclick="closeModal('add-modal')"></div>
@@ -808,15 +808,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 <div class="player-overlay" id="player-overlay">
   <div class="player-topbar">
+    <button class="player-back" onclick="closePlayer()">←</button>
     <div class="player-title-block">
       <div class="player-name" id="player-title">Título</div>
       <div class="player-ep-name" id="player-ep-label">Selecione um episódio</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-      <button id="pip-btn-top" onclick="togglePiP()" title="Picture in Picture" style="display:none;background:none;border:none;cursor:pointer;color:#fff;padding:4px;width:36px;height:36px;display:none;align-items:center;justify-content:center;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="11" width="8" height="6" rx="1"/></svg>
-      </button>
-      <button class="player-back" onclick="closePlayer()">✕</button>
     </div>
   </div>
   <div class="player-video-area">
@@ -941,38 +936,6 @@ var expandedId=null, heroItemId=null;
 var playerItemId=null, playerEpIdx=-1, isSeeking=false, linkModalEpIdx=-1;
 var detailItemId=null;
 var vid=document.getElementById('main-video');
-
-// ===== PICTURE IN PICTURE =====
-if(vid){
-  // Mostra o botão apenas se o browser suportar PiP
-  if(document.pictureInPictureEnabled){
-    var pipBtn = document.getElementById('pip-btn-top');
-    if(pipBtn) pipBtn.style.display = 'flex';
-  }
-  // Ativa PiP automaticamente quando sai do app
-  document.addEventListener('visibilitychange', function(){
-    if(document.visibilityState === 'hidden' && vid && !vid.paused && vid.src){
-      if(document.pictureInPictureEnabled && !document.pictureInPictureElement){
-        vid.requestPictureInPicture().catch(function(){});
-      }
-    }
-  });
-  // Sai do PiP quando volta pro app
-  document.addEventListener('visibilitychange', function(){
-    if(document.visibilityState === 'visible' && document.pictureInPictureElement){
-      document.exitPictureInPicture().catch(function(){});
-    }
-  });
-}
-function togglePiP(){
-  if(!vid || !vid.src) return;
-  if(document.pictureInPictureElement){
-    document.exitPictureInPicture().catch(function(){});
-  } else if(document.pictureInPictureEnabled){
-    vid.requestPictureInPicture().catch(function(){});
-  }
-}
-window.togglePiP = togglePiP;
 
 function g(id){return document.getElementById(id);}
 
@@ -1428,13 +1391,15 @@ window.closeEpMenu = closeEpMenu;
 window.epMenuPlay = epMenuPlay;
 window.epMenuToggleWatched = epMenuToggleWatched;
 
+var _toastCheckSVG = '<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#22c55e"/><polyline points="6,12 10,16 18,8" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 function showToast(text, icon){
   var toast = g('toast-msg');
   var toastText = g('toast-text');
   var toastIcon = g('toast-icon');
   if(!toast) return;
   if(toastText) toastText.textContent = text;
-  if(toastIcon) toastIcon.textContent = icon || '✅';
+  if(toastIcon) toastIcon.innerHTML = _toastCheckSVG;
   toast.style.display = 'flex';
   toast.style.opacity = '1';
   clearTimeout(toast._timer);
