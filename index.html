@@ -1063,12 +1063,10 @@ function mkCW(a){
     minsLabel='Assistido';
   } else if(ep&&ep.duration&&ep.duration>0){
     if(ep.savedTime&&ep.savedTime>10){
-      // In progress - show remaining
-      var rem=Math.ceil((ep.duration-ep.savedTime)/60);
+      var rem=Math.floor((ep.duration-ep.savedTime)/60);
       if(rem>0)minsLabel=rem+'m restantes';
     } else {
-      // Not started yet - show total duration
-      var tot=Math.ceil(ep.duration/60);
+      var tot=Math.floor(ep.duration/60);
       if(tot>0)minsLabel=tot+'m';
     }
   }
