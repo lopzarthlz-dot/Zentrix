@@ -1809,7 +1809,7 @@ function showProfileScreen(email){
   renderProfileGrid();
   var ps = g('profile-screen');
   if(ps) ps.style.display='flex';
-  setTimeout(function(){ startFloatAnimation(); }, 100);
+  startFloatAnimation();
   initTapRippleSystem();
 }
 
