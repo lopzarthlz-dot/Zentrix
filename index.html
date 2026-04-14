@@ -235,6 +235,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
 @keyframes ripple{0%{transform:scale(0);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
 @keyframes dotPulse{0%,100%{transform:scale(.6);opacity:.4;}50%{transform:scale(1);opacity:1;}}
+@keyframes spinLoader{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 .profile-circle-wrap{position:relative;overflow:visible;}
 .profile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);pointer-events:none;animation:ripple .6s ease-out forwards;}
 @keyframes rippleWave{0%{transform:scale(0);opacity:.6;}100%{transform:scale(1);opacity:0;}}
@@ -462,19 +463,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <div id="profile-loading-screen" style="display:none;position:fixed;inset:0;z-index:850;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;align-items:center;justify-content:center;background:#08080f;overflow:hidden;">
   <div id="profile-loading-bg" style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(109,40,217,.7) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(14,165,233,.5) 0%,transparent 50%),#08080f;"></div>
   <!-- Círculo do perfil que faz zoom -->
-  <div id="profile-loading-circle" style="position:absolute;width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--purple2),var(--blue2));display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 40px rgba(139,92,246,.5);transform:scale(1);opacity:1;transition:transform .6s cubic-bezier(.4,0,.2,1),opacity .3s ease;">
-    <img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:80px;height:80px;object-fit:contain;"/>
+  <div id="profile-loading-circle" style="position:absolute;width:160px;height:160px;border-radius:50%;background:linear-gradient(135deg,var(--purple2),var(--blue2));display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 50px rgba(139,92,246,.6);">
+    <img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:110px;height:110px;object-fit:contain;"/>
   </div>
   <!-- Conteúdo que aparece depois do zoom -->
-  <div id="profile-loading-content" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;transition:opacity .4s ease;margin-top:20px;">
-    <div style="font-size:28px;font-weight:900;background:linear-gradient(90deg,var(--purple),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;">ZENTRIX</div>
-    <div id="profile-loading-welcome" style="font-size:22px;font-weight:800;color:#fff;text-align:center;"></div>
-    <div style="font-size:14px;color:rgba(255,255,255,.5);text-align:center;">Um segundo, carregando...</div>
-    <div style="display:flex;gap:6px;margin-top:8px;">
-      <div class="loading-dot" style="width:8px;height:8px;border-radius:50%;background:var(--purple);animation:dotPulse 1.2s ease-in-out infinite;"></div>
-      <div class="loading-dot" style="width:8px;height:8px;border-radius:50%;background:var(--blue);animation:dotPulse 1.2s ease-in-out .2s infinite;"></div>
-      <div class="loading-dot" style="width:8px;height:8px;border-radius:50%;background:var(--purple3);animation:dotPulse 1.2s ease-in-out .4s infinite;"></div>
-    </div>
+  <div id="profile-loading-content" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;transition:opacity .4s ease;margin-top:100px;">
+    <div id="profile-loading-welcome" style="font-size:24px;font-weight:800;color:#fff;text-align:center;"></div>
+    <div style="font-size:14px;color:rgba(255,255,255,.55);text-align:center;">Um segundo, aumentando níveis de poder...</div>
+    <div style="margin-top:12px;width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:rgba(255,255,255,.7);animation:spinLoader .8s linear infinite;"></div>
   </div>
 </div>
 
@@ -1361,8 +1357,17 @@ function openEpMenu(idx, btn){
   var ep = a && a.episodes && a.episodes[idx];
   var watchedBtn = g('ep-menu-watched');
   if(watchedBtn){
-    watchedBtn.textContent = 'Assistido';
-    watchedBtn.style.color = '#fff';
+    if(ep && ep.watched){
+      watchedBtn.textContent = 'Assistido';
+      watchedBtn.style.color = 'rgba(255,255,255,.3)';
+      watchedBtn.style.cursor = 'default';
+      watchedBtn.onclick = function(e){ e.stopPropagation(); };
+    } else {
+      watchedBtn.textContent = 'Marcado como Assistido';
+      watchedBtn.style.color = '#fff';
+      watchedBtn.style.cursor = 'pointer';
+      watchedBtn.onclick = function(e){ e.stopPropagation(); epMenuToggleWatched(); };
+    }
   }
   var playBtn = g('ep-menu-play');
   if(playBtn){
@@ -1382,14 +1387,11 @@ function openEpMenu(idx, btn){
   var left = rect.right - popW;
   if(left < appLeft + 8) left = appLeft + 8;
   if(left + popW > appRight - 8) left = appRight - popW - 8;
+  var ph = popover.offsetHeight || 100;
+  var t = rect.top - ph - 8;
+  if(t < 8) t = rect.bottom + 8;
   popover.style.left = left + 'px';
-  popover.style.top = '-999px';
-  setTimeout(function(){
-    var ph = popover.offsetHeight;
-    var t = rect.top - ph - 8;
-    if(t < 8) t = rect.bottom + 8;
-    popover.style.top = t + 'px';
-  }, 0);
+  popover.style.top = t + 'px';
 }
 function closeEpMenu(){
   var menu = g('ep-menu');
@@ -2202,9 +2204,6 @@ function selectProfile(idx){
   var profile = profiles[idx] || {};
   var profileName = profile.name || 'Perfil';
 
-  // Pega posição do círculo clicado pra animar a partir dele
-  var slots = document.querySelectorAll('#profiles-grid .profile-slot');
-  var clickedSlot = slots[idx];
   var loadingCircle = g('profile-loading-circle');
   var loadingScreen = g('profile-loading-screen');
   var loadingContent = g('profile-loading-content');
@@ -2212,46 +2211,42 @@ function selectProfile(idx){
 
   if(loadingWelcome) loadingWelcome.textContent = 'Boas-vindas, ' + profileName;
 
-  // Mostra tela de loading
   if(loadingScreen){
     loadingScreen.style.display = 'flex';
     loadingContent.style.opacity = '0';
   }
 
-  // Posiciona o círculo onde estava o perfil clicado
-  if(loadingCircle && clickedSlot){
-    var rect = clickedSlot.getBoundingClientRect();
-    var screenRect = loadingScreen.getBoundingClientRect();
+  // Posiciona o círculo no centro-alto da tela
+  if(loadingCircle){
     loadingCircle.style.transition = 'none';
-    loadingCircle.style.transform = 'scale(1)';
-    loadingCircle.style.opacity = '1';
-    loadingCircle.style.left = (rect.left - screenRect.left + rect.width/2 - 60) + 'px';
-    loadingCircle.style.top = (rect.top - screenRect.top + rect.height/2 - 60) + 'px';
+    loadingCircle.style.left = 'calc(50% - 80px)';
+    loadingCircle.style.top = 'calc(35% - 80px)';
+    loadingCircle.style.transform = 'scale(0.7)';
+    loadingCircle.style.opacity = '0';
   }
 
   stopFloatAnimation();
   var ps = g('profile-screen');
   if(ps) ps.style.display = 'none';
 
-  // Anima zoom do círculo
+  // Anima entrada do círculo
   setTimeout(function(){
     if(loadingCircle){
-      loadingCircle.style.transition = 'transform .7s cubic-bezier(.4,0,.2,1), opacity .3s ease, left .7s cubic-bezier(.4,0,.2,1), top .7s cubic-bezier(.4,0,.2,1)';
-      loadingCircle.style.left = 'calc(50% - 60px)';
-      loadingCircle.style.top = 'calc(50% - 120px)';
-      loadingCircle.style.transform = 'scale(1.15)';
+      loadingCircle.style.transition = 'transform .5s cubic-bezier(.4,0,.2,1), opacity .4s ease';
+      loadingCircle.style.transform = 'scale(1)';
+      loadingCircle.style.opacity = '1';
     }
-    // Mostra conteúdo após zoom
+    // Mostra conteúdo abaixo do círculo
     setTimeout(function(){
       if(loadingContent) loadingContent.style.opacity = '1';
-      // Entra no app após loading
+      // Entra no app
       setTimeout(function(){
         if(loadingScreen) loadingScreen.style.display = 'none';
         _currentProfileIdx = idx;
         saveActiveProfile(_currentEmail, idx);
         enterAppWithProfile(_currentEmail, idx);
-      }, 1200);
-    }, 500);
+      }, 1400);
+    }, 400);
   }, 50);
 }
 window.selectProfile = selectProfile;
