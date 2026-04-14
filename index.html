@@ -517,25 +517,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
 
     <!-- Campos -->
-    <div style="background:#0a0a0f;flex:1;">
-      <div style="padding:0 24px;border-bottom:1px solid #1e1e2a;">
-        <div id="wrap-edit-name" style="position:relative;padding-top:20px;border-bottom:1px solid #2a2a3a;margin-bottom:4px;transition:border-color .2s;">
-          <label for="edit-profile-name" id="label-edit-name" style="position:absolute;top:20px;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome do Perfil</label>
-          <input id="edit-profile-name" type="text" maxlength="75" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" oninput="updateEditSaveBtn();updateAvatarName();" onfocus="focusField('wrap-edit-name','label-edit-name')" onblur="blurField('wrap-edit-name','label-edit-name',this.value)"/>
-        </div>
-        <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:24px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+    <div style="padding:32px 24px 100px;display:flex;flex-direction:column;gap:0;background:#0a0a0f;">
+      <div id="wrap-edit-name" style="position:relative;padding-top:20px;border-bottom:1px solid #2a2a3a;margin-bottom:4px;transition:border-color .2s;">
+        <label for="edit-profile-name" id="label-edit-name" style="position:absolute;top:20px;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome do Perfil</label>
+        <input id="edit-profile-name" type="text" maxlength="75" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" oninput="updateEditSaveBtn();updateAvatarName();" onfocus="focusField('wrap-edit-name','label-edit-name')" onblur="blurField('wrap-edit-name','label-edit-name',this.value)"/>
       </div>
-      <div style="padding:0 24px;border-bottom:1px solid #1e1e2a;">
-        <div id="wrap-edit-username" style="position:relative;padding-top:20px;border-bottom:1px solid #2a2a3a;margin-bottom:4px;display:flex;align-items:flex-end;gap:8px;transition:border-color .2s;">
-          <div style="flex:1;position:relative;">
-            <label for="edit-profile-username" id="label-edit-username" style="position:absolute;top:0;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome de Usuário</label>
-            <input id="edit-profile-username" type="text" placeholder=" " style="width:100%;background:transparent;border:none;color:#555;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" readonly/>
-          </div>
+      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:24px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+
+      <div id="wrap-edit-username" style="position:relative;padding-top:20px;border-bottom:1px solid #2a2a3a;margin-bottom:4px;display:flex;align-items:flex-end;gap:8px;transition:border-color .2s;">
+        <div style="flex:1;position:relative;">
+          <label for="edit-profile-username" id="label-edit-username" style="position:absolute;top:0;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome de Usuário</label>
+          <input id="edit-profile-username" type="text" maxlength="100" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" onfocus="focusField('wrap-edit-username','label-edit-username')" onblur="blurField('wrap-edit-username','label-edit-username',this.value)"/>
         </div>
-        <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:16px;line-height:1.5;">Crie um Nome de Usuário para se preparar para experiências futuras que vão compartilhar o seu amor por anime! Escolha um que você ama, você não poderá alterar depois!</div>
       </div>
-      <div style="font-size:12px;color:#f87171;padding:0 24px;margin-top:12px;min-height:18px;" id="edit-profile-error"></div>
-      <div style="height:100px;"></div>
+      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:20px;line-height:1.5;">Crie um Nome de Usuário para se preparar para experiências futuras que vão compartilhar o seu amor por anime! Escolha um que você ama, você não poderá alterar depois!</div>
+
+      <div style="font-size:12px;color:#f87171;min-height:18px;" id="edit-profile-error"></div>
     </div>
   </div>
 
@@ -1929,20 +1926,18 @@ function openCreateProfile(){
 }
 
 function focusField(wrapId, labelId){
-  floatLabel(labelId, true);
+  floatLabel(labelId, true, true);
   var wrap = g(wrapId);
   if(wrap) wrap.style.borderBottomColor = 'var(--purple)';
-  // Aleatorizar fica roxo quando campo de usuário está em foco
   if(wrapId === 'wrap-profile-username'){
     var btn = g('btn-randomize');
     if(btn) btn.style.color = 'var(--purple3)';
   }
 }
 function blurField(wrapId, labelId, val){
-  floatLabel(labelId, val && val.length > 0);
+  floatLabel(labelId, val && val.length > 0, false);
   var wrap = g(wrapId);
   if(wrap) wrap.style.borderBottomColor = '#2a2a3a';
-  // Aleatorizar volta ao cinza quando sai do campo
   if(wrapId === 'wrap-profile-username'){
     var btn = g('btn-randomize');
     if(btn) btn.style.color = '#555';
@@ -1961,13 +1956,13 @@ function updateCreateAvatarName(){
 }
 window.updateCreateAvatarName = updateCreateAvatarName;
 
-function floatLabel(labelId, up){
+function floatLabel(labelId, up, focused){
   var lbl = g(labelId);
   if(!lbl) return;
   if(up){
     lbl.style.top = '-4px';
     lbl.style.fontSize = '12px';
-    lbl.style.color = 'var(--purple3)';
+    lbl.style.color = focused ? 'var(--purple3)' : '#666';
   } else {
     lbl.style.top = '20px';
     lbl.style.fontSize = '16px';
@@ -2067,11 +2062,23 @@ function openEditProfile(idx){
   var profiles = getProfiles(_currentEmail);
   var p = profiles[idx] || {};
   var ni = g('edit-profile-name'); if(ni) ni.value = p.name || '';
-  var ui = g('edit-profile-username'); if(ui) ui.value = p.username || '';
+  var ui = g('edit-profile-username');
+  if(ui){
+    ui.value = p.username || '';
+    // Editável apenas se ainda não tem username
+    if(p.username){
+      ui.readOnly = true;
+      ui.style.color = '#555';
+    } else {
+      ui.readOnly = false;
+      ui.style.color = '#fff';
+      ui.onfocus = function(){ focusField('wrap-edit-username','label-edit-username'); };
+      ui.onblur = function(){ blurField('wrap-edit-username','label-edit-username',this.value); };
+    }
+  }
   var err = g('edit-profile-error'); if(err) err.textContent='';
-  // Inicializa floating labels
-  floatLabel('label-edit-name', (p.name||'').length > 0);
-  floatLabel('label-edit-username', (p.username||'').length > 0);
+  floatLabel('label-edit-name', (p.name||'').length > 0, false);
+  floatLabel('label-edit-username', (p.username||'').length > 0, false);
   updateEditSaveBtn();
   updateAvatarName();
   var es = g('edit-profile-screen');
@@ -2102,18 +2109,23 @@ window.updateEditSaveBtn = updateEditSaveBtn;
 
 function submitEditProfile(){
   var name = (g('edit-profile-name')||{}).value||'';
+  var username = (g('edit-profile-username')||{}).value||'';
   var err = g('edit-profile-error');
   name = name.trim();
+  username = username.trim();
   if(!name){ if(err) err.textContent='Nome do perfil é obrigatório.'; return; }
   var profiles = getProfiles(_currentEmail);
   if(_editingProfileIdx === null || !profiles[_editingProfileIdx]) return;
   profiles[_editingProfileIdx].name = name;
+  // Salva username só se ainda não tinha um
+  if(!profiles[_editingProfileIdx].username && username){
+    profiles[_editingProfileIdx].username = username;
+  }
   saveProfiles(_currentEmail, profiles);
   closeEditProfile();
   renderManageGrid();
   renderProfileGrid();
 }
-window.submitEditProfile = submitEditProfile;
 
 function addProfileBtnFeedback(id, action){
   var btn = g(id);
