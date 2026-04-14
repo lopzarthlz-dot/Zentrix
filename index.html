@@ -522,7 +522,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <label for="edit-profile-name" id="label-edit-name" style="position:absolute;top:20px;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome do Perfil</label>
         <input id="edit-profile-name" type="text" maxlength="75" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" oninput="updateEditSaveBtn();updateAvatarName();" onfocus="focusField('wrap-edit-name','label-edit-name')" onblur="blurField('wrap-edit-name','label-edit-name',this.value)"/>
       </div>
-      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:24px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:24px;line-height:1.5;">Isso é visualizado dentro da sua casa e pode ser alterado a qualquer momento.</div>
 
       <div id="wrap-edit-username" style="position:relative;padding-top:20px;border-bottom:1px solid #2a2a3a;margin-bottom:4px;display:flex;align-items:flex-end;gap:8px;transition:border-color .2s;">
         <div style="flex:1;position:relative;">
@@ -574,7 +574,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <label for="profile-name-input" id="label-profile-name" style="position:absolute;top:20px;left:0;font-size:16px;color:#666;pointer-events:none;transition:all .2s ease;font-family:var(--font);">Nome do Perfil</label>
         <input id="profile-name-input" type="text" maxlength="75" placeholder=" " style="width:100%;background:transparent;border:none;color:#fff;font-size:16px;font-family:var(--font);outline:none;padding:18px 0 8px;" onfocus="focusField('wrap-profile-name','label-profile-name')" onblur="blurField('wrap-profile-name','label-profile-name',this.value)"/>
       </div>
-      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:24px;line-height:1.5;">Isso é visualizado dentro da sua conta e pode ser alterado a qualquer momento.</div>
+      <div style="font-size:12px;color:#555;margin-top:6px;margin-bottom:24px;line-height:1.5;">Isso é visualizado dentro da sua casa e pode ser alterado a qualquer momento.</div>
 
       <!-- Nome de Usuário com floating label -->
       <div id="wrap-profile-username" style="position:relative;padding-top:20px;border-bottom:1px solid #2a2a3a;margin-bottom:4px;display:flex;align-items:flex-end;gap:8px;transition:border-color .2s;">
@@ -1909,14 +1909,14 @@ function openCreateProfile(){
     ni.value='';
     ni.addEventListener('input', updateProfileSaveBtn);
     ni.addEventListener('input', updateCreateAvatarName);
-    ni.addEventListener('focus', function(){ floatLabel('label-profile-name', true); });
-    ni.addEventListener('blur', function(){ floatLabel('label-profile-name', this.value.length > 0); });
+    ni.addEventListener('focus', function(){ floatLabel('label-profile-name', true, true); });
+    ni.addEventListener('blur', function(){ floatLabel('label-profile-name', this.value.length > 0, false); });
   }
   var ui = g('profile-username-input');
   if(ui){
     ui.value='';
-    ui.addEventListener('focus', function(){ floatLabel('label-profile-username', true); });
-    ui.addEventListener('blur', function(){ floatLabel('label-profile-username', this.value.length > 0); });
+    ui.addEventListener('focus', function(){ floatLabel('label-profile-username', true, true); });
+    ui.addEventListener('blur', function(){ floatLabel('label-profile-username', this.value.length > 0, false); });
   }
   var err = g('profile-create-error'); if(err) err.textContent='';
   floatLabel('label-profile-name', false);
@@ -1969,6 +1969,7 @@ function floatLabel(labelId, up, focused){
     lbl.style.color = '#666';
   }
 }
+window.floatLabel = floatLabel;
 window.floatLabel = floatLabel;
 window.openCreateProfile = openCreateProfile;
 
@@ -2277,7 +2278,7 @@ function randomizeUsername(){
   if(inp){
     inp.value = adj[Math.floor(Math.random()*adj.length)] + noun[Math.floor(Math.random()*noun.length)] + num;
     inp.focus();
-    floatLabel('label-profile-username', true);
+    floatLabel('label-profile-username', true, true);
     focusField('wrap-profile-username', 'label-profile-username');
   }
 }
