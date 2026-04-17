@@ -290,11 +290,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .loading-overlay.show{display:flex;}
 .spinner{width:40px;height:40px;border:3px solid #1a1a2e;border-top:3px solid var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.player-no-file{display:none;flex-direction:column;align-items:center;justify-content:center;height:200px;background:#0a0a12;gap:10px;}
+.player-no-file{display:none;flex-direction:column;align-items:center;justify-content:center;height:200px;background:#000;gap:10px;}
 .player-no-file.show{display:flex;}
 .player-no-file p{font-size:12px;color:#555;text-align:center;line-height:1.6;}
 .pick-file-btn{padding:9px 22px;border-radius:99px;background:var(--grad2);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
-.player-controls{background:#0c0c18;padding:14px 16px 12px;flex-shrink:0;border-top:1px solid #1a1a2e;}
+.player-controls{background:#000;padding:14px 16px 12px;flex-shrink:0;border-top:1px solid #1a1a2e;}
 .ctrl-progress-wrap{margin-bottom:12px;}
 .ctrl-progress-track{width:100%;height:4px;background:#222;border-radius:99px;position:relative;cursor:pointer;}
 .ctrl-progress-fill{height:100%;background:var(--grad2);border-radius:99px;pointer-events:none;transition:width .1s linear;}
@@ -843,28 +843,28 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
     <!-- Overlay de controles sobre o vídeo -->
     <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transition:opacity .25s;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);">
-      <!-- Topo: fullscreen + próximo ep -->
+      <!-- Topo: próximo ep + fullscreen -->
       <div style="display:flex;justify-content:flex-end;align-items:center;padding:10px 12px;gap:12px;pointer-events:all;" onclick="event.stopPropagation()">
-        <button onclick="event.stopPropagation();toggleFullscreen()" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-        </button>
-        <button onclick="event.stopPropagation();skipNextEp()" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
+        <button onclick="event.stopPropagation();if(_ctrlVisible){skipNextEp();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
+        </button>
+        <button onclick="event.stopPropagation();if(_ctrlVisible){toggleFullscreen();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
       <!-- Centro: -10s / Play·Pause / +10s -->
       <div style="display:flex;align-items:center;justify-content:center;gap:36px;pointer-events:all;" onclick="event.stopPropagation()">
-        <button onclick="event.stopPropagation();skipBack()" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <button onclick="event.stopPropagation();if(_ctrlVisible){skipBack();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 0 38 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="38,9 38,18 29,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
           </svg>
         </button>
-        <button id="play-pause-btn-overlay" onclick="event.stopPropagation();togglePlay()" style="background:rgba(0,0,0,.45);border:none;cursor:pointer;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <button id="play-pause-btn-overlay" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
           <svg id="play-icon-overlay" width="26" height="26" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
-        <button onclick="event.stopPropagation();skipForward()" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <button onclick="event.stopPropagation();if(_ctrlVisible){skipForward();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 1 12 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="12,9 12,18 21,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -888,9 +888,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   </div>
   <!-- Info abaixo do vídeo -->
   <div style="background:#000;padding:14px 16px 12px;flex-shrink:0;">
-    <div id="player-anime-name" style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-    <div id="player-ep-info" style="font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-    <div id="player-ep-lang" style="font-size:12px;color:var(--text3);"></div>
+    <div id="player-anime-name" style="font-size:13px;color:var(--blue);font-weight:700;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+    <div id="player-ep-info" style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+    <div id="player-ep-lang" style="font-size:13px;color:var(--text3);"></div>
   </div>
   <div class="player-controls" style="background:#000;border-top:none;">
     <div class="ctrl-row">
@@ -900,10 +900,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   </div>
   <div class="ep-section">
     <div class="ep-sec-title">Episódios</div>
-    <div class="ep-add-row">
-      <input id="ep-name-input" placeholder="Nome do episódio"/>
-      <button class="ep-add-btn" onclick="addEpisode()">+ Ep</button>
-    </div>
     <div class="ep-list" id="ep-list"></div>
   </div>
   <input type="file" id="file-input-hidden" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*" style="display:none;"/>
