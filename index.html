@@ -842,19 +842,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       </div>
     </div>
     <!-- Overlay de controles sobre o vídeo -->
-    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transition:opacity .25s;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);">
+    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);">
       <!-- Topo: próximo ep + fullscreen -->
-      <div style="display:flex;justify-content:flex-end;align-items:center;padding:10px 12px;gap:12px;pointer-events:all;" onclick="event.stopPropagation()">
-        <button ontouchend="event.preventDefault();event.stopPropagation();if(_ctrlVisible){skipNextEp();}else{showPlayerControls();}" onclick="event.stopPropagation();if(_ctrlVisible){skipNextEp();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
+      <div style="display:flex;justify-content:flex-end;align-items:center;padding:10px 12px;gap:12px;" onclick="event.stopPropagation()">
+        <button ontouchend="event.preventDefault();event.stopPropagation();skipNextEp();" onclick="event.stopPropagation();skipNextEp();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
         </button>
-        <button ontouchend="event.preventDefault();event.stopPropagation();if(_ctrlVisible){toggleFullscreen();}else{showPlayerControls();}" onclick="event.stopPropagation();if(_ctrlVisible){toggleFullscreen();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
+        <button ontouchend="event.preventDefault();event.stopPropagation();toggleFullscreen();" onclick="event.stopPropagation();toggleFullscreen();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
       <!-- Centro: -10s / Play·Pause / +10s -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:36px;pointer-events:all;" onclick="event.stopPropagation()">
-        <button ontouchend="event.preventDefault();event.stopPropagation();if(_ctrlVisible){skipBack();}else{showPlayerControls();}" onclick="event.stopPropagation();if(_ctrlVisible){skipBack();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:36px;" onclick="event.stopPropagation()">
+        <button ontouchend="event.preventDefault();event.stopPropagation();skipBack();" onclick="event.stopPropagation();skipBack();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="56" height="56" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 0 38 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="38,9 38,18 29,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -864,7 +864,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <button id="play-pause-btn-overlay" ontouchend="event.preventDefault();event.stopPropagation();togglePlay();showPlayerControls();" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
           <svg id="play-icon-overlay" width="42" height="42" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
-        <button ontouchend="event.preventDefault();event.stopPropagation();if(_ctrlVisible){skipForward();}else{showPlayerControls();}" onclick="event.stopPropagation();if(_ctrlVisible){skipForward();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <button ontouchend="event.preventDefault();event.stopPropagation();skipForward();" onclick="event.stopPropagation();skipForward();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="56" height="56" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 1 12 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="12,9 12,18 21,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -873,7 +873,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </button>
       </div>
       <!-- Baixo: barra de progresso colada na borda inferior -->
-      <div style="padding:0;pointer-events:all;" onclick="event.stopPropagation()">
+      <div style="padding:0;" onclick="event.stopPropagation()">
         <div style="padding:0 12px 6px;display:flex;justify-content:space-between;">
           <span id="time-cur" style="font-size:10px;color:rgba(255,255,255,.85);font-family:monospace;">0:00</span>
           <span id="time-tot" style="font-size:10px;color:rgba(255,255,255,.85);font-family:monospace;">0:00</span>
@@ -1022,12 +1022,10 @@ function showPlayerControls(){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
-  overlay.style.opacity = '1';
-  overlay.style.pointerEvents = 'all';
+  overlay.style.display = 'flex';
   _ctrlVisible = true;
   _ctrlTimeout = setTimeout(function(){
-    overlay.style.opacity = '0';
-    overlay.style.pointerEvents = 'none';
+    overlay.style.display = 'none';
     _ctrlVisible = false;
   }, 3000);
 }
@@ -1035,8 +1033,7 @@ function hidePlayerControls(){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
-  overlay.style.opacity = '0';
-  overlay.style.pointerEvents = 'none';
+  overlay.style.display = 'none';
   _ctrlVisible = false;
 }
 function togglePlayerControls(){
