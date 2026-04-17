@@ -77,7 +77,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .bottom-nav{position:sticky;bottom:0;background:rgba(8,8,15,.97);border-top:1px solid var(--border);display:flex;z-index:200;padding:6px 0 12px;flex-shrink:0;backdrop-filter:blur(12px);}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px 0;}
 .nav-icon{font-size:19px;line-height:1;color:var(--text3);}
-.nav-label{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.3px;text-transform:uppercase;}
+.nav-label{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.3px;}
 .nav-btn.active .nav-label{color:var(--blue);}
 .nav-btn.active .nav-icon{filter:drop-shadow(0 0 8px var(--blue));color:var(--blue);}
 .hero{position:relative;width:100%;aspect-ratio:16/9;flex-shrink:0;overflow:hidden;background:var(--bg2);}
@@ -852,8 +852,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
-      <!-- Centro: -10s / Play·Pause / +10s -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:36px;" onclick="event.stopPropagation()">
+      <!-- Centro subido: -10s / Play·Pause / +10s -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:36px;margin-bottom:40px;" onclick="event.stopPropagation()">
         <button ontouchend="event.preventDefault();event.stopPropagation();skipBack();" onclick="event.stopPropagation();skipBack();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="56" height="56" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 0 38 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
@@ -861,8 +861,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
           </svg>
         </button>
-        <button id="play-pause-btn-overlay" ontouchend="event.preventDefault();event.stopPropagation();togglePlay();showPlayerControls();" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <svg id="play-icon-overlay" width="42" height="42" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+        <button id="play-pause-btn-overlay" ontouchend="event.preventDefault();event.stopPropagation();togglePlay();showPlayerControls();" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg id="play-icon-overlay" width="50" height="50" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
         <button ontouchend="event.preventDefault();event.stopPropagation();skipForward();" onclick="event.stopPropagation();skipForward();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="56" height="56" viewBox="0 0 50 50" fill="none">
@@ -1063,9 +1063,23 @@ window.hidePlayerControls = hidePlayerControls;
     var dx = Math.abs((e.changedTouches[0].clientX) - _touchStartX);
     var dy = Math.abs((e.changedTouches[0].clientY) - _touchStartY);
     var dt = Date.now() - _touchStartTime;
-    // Só toggle se foi um tap (sem arrastar muito, e rápido)
     if(dx < 12 && dy < 12 && dt < 350){
       e.preventDefault();
+      // Checar se o toque foi na área do botão play/pause (centro do vídeo)
+      if(!_ctrlVisible){
+        var playBtn = g('play-pause-btn-overlay');
+        if(playBtn){
+          var pr = playBtn.getBoundingClientRect();
+          var tx = e.changedTouches[0].clientX;
+          var ty = e.changedTouches[0].clientY;
+          // Expandir área de toque em 20px pra cada lado
+          if(tx >= pr.left - 20 && tx <= pr.right + 20 && ty >= pr.top - 20 && ty <= pr.bottom + 20){
+            togglePlay();
+            showPlayerControls();
+            return;
+          }
+        }
+      }
       togglePlayerControls();
     }
   }, {passive: false});
