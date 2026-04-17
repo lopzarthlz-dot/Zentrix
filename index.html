@@ -309,7 +309,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .ctrl-vol-track{flex:1;height:3px;background:#222;border-radius:99px;position:relative;cursor:pointer;}
 .ctrl-vol-fill{height:100%;background:var(--purple3);border-radius:99px;pointer-events:none;}
 .ctrl-vol-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0;}
-.ep-section{flex:1;overflow-y:auto;background:var(--bg);}
+.ep-section{flex:1;overflow-y:auto;background:#000;}
 .ep-section::-webkit-scrollbar{width:2px;}
 .ep-section::-webkit-scrollbar-thumb{background:var(--purple2);}
 .ep-sec-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:14px 16px 8px;}
@@ -845,10 +845,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transition:opacity .25s;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);">
       <!-- Topo: próximo ep + fullscreen -->
       <div style="display:flex;justify-content:flex-end;align-items:center;padding:10px 12px;gap:12px;pointer-events:all;" onclick="event.stopPropagation()">
-        <button onclick="event.stopPropagation();if(_ctrlVisible){skipNextEp();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
+        <button onclick="event.stopPropagation();if(_ctrlVisible){skipNextEp();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
         </button>
-        <button onclick="event.stopPropagation();if(_ctrlVisible){toggleFullscreen();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
+        <button onclick="event.stopPropagation();if(_ctrlVisible){toggleFullscreen();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
@@ -861,8 +861,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
           </svg>
         </button>
-        <button id="play-pause-btn-overlay" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <svg id="play-icon-overlay" width="26" height="26" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+        <button id="play-pause-btn-overlay" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg id="play-icon-overlay" width="36" height="36" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
         <button onclick="event.stopPropagation();if(_ctrlVisible){skipForward();}else{showPlayerControls();}" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
@@ -1051,17 +1051,16 @@ window.hidePlayerControls = hidePlayerControls;
 (function(){
   var area = g('player-video-area');
   if(!area) return;
-  var _touchStartX = 0, _touchStartY = 0, _touchStartTime = 0;
+  var _touchStartX = 0, _touchStartY = 0, _touchStartTime = 0, _touchOnButton = false;
   area.addEventListener('touchstart', function(e){
-    // Ignorar se o toque foi em um botão dentro do overlay
-    if(e.target.closest && e.target.closest('button')) return;
-    if(e.target.closest && e.target.closest('input')) return;
+    _touchOnButton = !!(e.target.closest && (e.target.closest('button') || e.target.closest('input')));
+    if(_touchOnButton) return;
     _touchStartX = e.touches[0].clientX;
     _touchStartY = e.touches[0].clientY;
     _touchStartTime = Date.now();
   }, {passive: true});
   area.addEventListener('touchend', function(e){
-    // Ignorar se o toque foi em um botão dentro do overlay
+    if(_touchOnButton) return;
     if(e.target.closest && e.target.closest('button')) return;
     if(e.target.closest && e.target.closest('input')) return;
     var dx = Math.abs((e.changedTouches[0].clientX) - _touchStartX);
