@@ -1442,7 +1442,7 @@ function renderDetailEps(){
         '</div>' +
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px;align-self:stretch;padding:4px 0;position:relative;">' +
-        '<button id="ep-dots-btn-'+i+'" onclick="event.stopPropagation();openEpMenu('+i+',this)" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
+        '<button id="ep-dots-btn-'+i+'" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation();openEpMenu('+i+',this)" onclick="event.stopPropagation();openEpMenu('+i+',this)" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
       '</div>' +
     '</div>';
   }).join('');
