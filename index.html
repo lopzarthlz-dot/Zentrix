@@ -830,7 +830,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="player-ep-name" id="player-ep-label">Selecione um episódio</div>
     </div>
   </div>
-  <div class="player-video-area" id="player-video-area" onclick="togglePlayerControls()">
+  <div class="player-video-area" id="player-video-area">
     <video id="main-video" playsinline webkit-playsinline preload="auto"></video>
     <div class="loading-overlay" id="loading-overlay"><div class="spinner"></div><div style="font-size:12px;color:#555;">Carregando...</div></div>
     <div class="player-no-file show" id="no-file-msg">
@@ -887,12 +887,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
   <!-- Info abaixo do vídeo -->
-  <div style="background:#000;padding:12px 16px 8px;flex-shrink:0;">
-    <div id="player-anime-name" style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-    <div id="player-ep-info" style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+  <div style="background:#000;padding:14px 16px 12px;flex-shrink:0;">
+    <div id="player-anime-name" style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+    <div id="player-ep-info" style="font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
     <div id="player-ep-lang" style="font-size:12px;color:var(--text3);"></div>
   </div>
-  <div class="player-controls" style="background:#000;border-top:1px solid #111;">
+  <div class="player-controls" style="background:#000;border-top:none;">
     <div class="ctrl-row">
       <button class="ctrl-btn" id="play-pause-btn" onclick="togglePlay()" style="display:none;">▶</button>
       <button class="ctrl-btn" onclick="toggleFullscreen()" style="margin-left:auto;display:none;">⛶</button>
@@ -1022,26 +1022,68 @@ window.pcPress=pcPress;window.pcRelease=pcRelease;window.pcCancel=pcCancel;windo
 
 var _ctrlTimeout = null;
 var _ctrlVisible = false;
-function togglePlayerControls(){
+function showPlayerControls(){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
-  if(_ctrlVisible){
+  overlay.style.opacity = '1';
+  overlay.style.pointerEvents = 'all';
+  _ctrlVisible = true;
+  _ctrlTimeout = setTimeout(function(){
     overlay.style.opacity = '0';
     overlay.style.pointerEvents = 'none';
     _ctrlVisible = false;
-  } else {
-    overlay.style.opacity = '1';
-    overlay.style.pointerEvents = 'all';
-    _ctrlVisible = true;
-    _ctrlTimeout = setTimeout(function(){
-      overlay.style.opacity = '0';
-      overlay.style.pointerEvents = 'none';
-      _ctrlVisible = false;
-    }, 3000);
-  }
+  }, 3000);
+}
+function hidePlayerControls(){
+  var overlay = g('player-ctrl-overlay');
+  if(!overlay) return;
+  clearTimeout(_ctrlTimeout);
+  overlay.style.opacity = '0';
+  overlay.style.pointerEvents = 'none';
+  _ctrlVisible = false;
+}
+function togglePlayerControls(){
+  if(_ctrlVisible) hidePlayerControls();
+  else showPlayerControls();
 }
 window.togglePlayerControls = togglePlayerControls;
+window.showPlayerControls = showPlayerControls;
+window.hidePlayerControls = hidePlayerControls;
+
+// Touch instantâneo na área do vídeo (sem delay de 300ms do iOS)
+(function(){
+  var area = g('player-video-area');
+  if(!area) return;
+  var _touchStartX = 0, _touchStartY = 0, _touchStartTime = 0;
+  area.addEventListener('touchstart', function(e){
+    // Ignorar se o toque foi em um botão dentro do overlay
+    if(e.target.closest && e.target.closest('button')) return;
+    if(e.target.closest && e.target.closest('input')) return;
+    _touchStartX = e.touches[0].clientX;
+    _touchStartY = e.touches[0].clientY;
+    _touchStartTime = Date.now();
+  }, {passive: true});
+  area.addEventListener('touchend', function(e){
+    // Ignorar se o toque foi em um botão dentro do overlay
+    if(e.target.closest && e.target.closest('button')) return;
+    if(e.target.closest && e.target.closest('input')) return;
+    var dx = Math.abs((e.changedTouches[0].clientX) - _touchStartX);
+    var dy = Math.abs((e.changedTouches[0].clientY) - _touchStartY);
+    var dt = Date.now() - _touchStartTime;
+    // Só toggle se foi um tap (sem arrastar muito, e rápido)
+    if(dx < 12 && dy < 12 && dt < 350){
+      e.preventDefault();
+      togglePlayerControls();
+    }
+  }, {passive: false});
+  // Fallback click para desktop
+  area.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('button')) return;
+    if(e.target.closest && e.target.closest('input')) return;
+    togglePlayerControls();
+  });
+})();
 
 function skipNextEp(){
   if(playerItemId === null) return;
