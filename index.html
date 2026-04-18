@@ -76,7 +76,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .top-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;padding:2px;}
 .bottom-nav{position:sticky;bottom:0;background:rgba(8,8,15,.97);border-top:1px solid var(--border);display:flex;z-index:200;padding:6px 0 12px;flex-shrink:0;backdrop-filter:blur(12px);}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px 0;}
-.nav-icon{font-size:19px;line-height:1;color:var(--text3);}
+.nav-icon{font-size:19px;line-height:1;color:var(--text3);width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
 .nav-label{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.3px;}
 .nav-btn.active .nav-label{color:var(--blue);}
 .nav-btn.active .nav-icon{filter:drop-shadow(0 0 8px var(--blue));color:var(--blue);}
@@ -234,7 +234,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
-@keyframes ripple{0%{transform:scale(0);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
+@keyframes skipAnim{0%{opacity:1;transform:translateX(0) scale(1);}60%{opacity:1;transform:translateX(var(--sk-x)) scale(1.15);}100%{opacity:0;transform:translateX(var(--sk-x)) scale(1);}}
+.skip-flash{position:absolute;top:50%;transform:translateY(-50%);font-size:18px;font-weight:900;color:#fff;pointer-events:none;text-shadow:0 0 12px rgba(0,0,0,.8);animation:skipAnim .7s ease-out forwards;white-space:nowrap;}
 @keyframes dotPulse{0%,100%{transform:scale(.6);opacity:.4;}50%{transform:scale(1);opacity:1;}}
 @keyframes spinLoader{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 .profile-circle-wrap{position:relative;overflow:visible;}
@@ -624,24 +625,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       </div>
     </div>
     <div class="section" id="sec-all" style="display:none;margin-top:16px;">
-      <div class="section-header"><div class="section-title">Em alta</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
+      <div class="section-header"><div class="section-title">Em alta</div></div>
       <div class="cards-scroll"><div class="cards-row" id="all-row"></div></div>
     </div>
     <div class="section" id="sec-cw" style="display:none;">
-      <div class="section-header"><div class="section-title">Continue Assistindo</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
+      <div class="section-header"><div class="section-title">Continue Assistindo</div></div>
       <div class="cards-scroll"><div class="cards-row" id="cw-row"></div></div>
     </div>
     <div class="section" id="sec-new" style="display:none;">
-      <div class="section-header"><div class="section-title">Novos lançamentos no Zentrix</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
+      <div class="section-header"><div class="section-title">Novos lançamentos no Zentrix</div></div>
       <div class="cards-scroll"><div class="cards-row" id="new-row"></div></div>
     </div>
     <div class="section" id="sec-favs" style="display:none;">
-      <div class="section-header"><div class="section-title">Favoritos ⭐</div><button class="section-more" onclick="goTo('lista')">Ver tudo</button></div>
+      <div class="section-header"><div class="section-title">Favoritos ⭐</div></div>
       <div class="cards-scroll"><div class="cards-row" id="favs-row"></div></div>
     </div>
 
     <div class="section" id="sec-saved-h" style="display:none;">
-      <div class="section-header"><div class="section-title">Salvos 💾</div><button class="section-more" onclick="goTo('salvos')">Ver tudo</button></div>
+      <div class="section-header"><div class="section-title">Salvos 💾</div></div>
       <div class="cards-scroll"><div class="cards-row" id="saved-h-row"></div></div>
     </div>
     <div class="empty-state" id="home-empty">
@@ -845,11 +846,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);">
       <!-- Topo: próximo ep + fullscreen -->
       <div style="display:flex;justify-content:flex-end;align-items:center;padding:10px 12px;gap:12px;" onclick="event.stopPropagation()">
-        <button ontouchend="event.preventDefault();event.stopPropagation();skipNextEp();" onclick="event.stopPropagation();skipNextEp();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
+        <button ontouchend="event.preventDefault();event.stopPropagation();skipNextEp();" onclick="event.stopPropagation();skipNextEp();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
         </button>
-        <button ontouchend="event.preventDefault();event.stopPropagation();toggleFullscreen();" onclick="event.stopPropagation();toggleFullscreen();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:44px;height:44px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        <button ontouchend="event.preventDefault();event.stopPropagation();toggleFullscreen();" onclick="event.stopPropagation();toggleFullscreen();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
       <!-- Centro subido: -10s / Play·Pause / +10s -->
@@ -1018,12 +1019,16 @@ window.pcPress=pcPress;window.pcRelease=pcRelease;window.pcCancel=pcCancel;windo
 
 var _ctrlTimeout = null;
 var _ctrlVisible = false;
+var _playBtnRect = null;
 function showPlayerControls(){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
   overlay.style.display = 'flex';
   _ctrlVisible = true;
+  // Salvar posição do botão play/pause enquanto visível
+  var pb = g('play-pause-btn-overlay');
+  if(pb) _playBtnRect = pb.getBoundingClientRect();
   _ctrlTimeout = setTimeout(function(){
     overlay.style.display = 'none';
     _ctrlVisible = false;
@@ -1065,19 +1070,15 @@ window.hidePlayerControls = hidePlayerControls;
     var dt = Date.now() - _touchStartTime;
     if(dx < 12 && dy < 12 && dt < 350){
       e.preventDefault();
-      // Checar se o toque foi na área do botão play/pause (centro do vídeo)
-      if(!_ctrlVisible){
-        var playBtn = g('play-pause-btn-overlay');
-        if(playBtn){
-          var pr = playBtn.getBoundingClientRect();
-          var tx = e.changedTouches[0].clientX;
-          var ty = e.changedTouches[0].clientY;
-          // Expandir área de toque em 20px pra cada lado
-          if(tx >= pr.left - 20 && tx <= pr.right + 20 && ty >= pr.top - 20 && ty <= pr.bottom + 20){
-            togglePlay();
-            showPlayerControls();
-            return;
-          }
+      if(!_ctrlVisible && _playBtnRect){
+        var tx = e.changedTouches[0].clientX;
+        var ty = e.changedTouches[0].clientY;
+        var pad = 28;
+        if(tx >= _playBtnRect.left - pad && tx <= _playBtnRect.right + pad &&
+           ty >= _playBtnRect.top - pad && ty <= _playBtnRect.bottom + pad){
+          togglePlay();
+          showPlayerControls();
+          return;
         }
       }
       togglePlayerControls();
@@ -1192,7 +1193,7 @@ function audioLabel(a){return a==='ld'?'Dub | Leg':a==='l'?'Leg':'Dub';}
 function formatProg(p){if(!p)return'';var pts=[];if(p.season)pts.push('T'+p.season);if(p.ep)pts.push('Ep '+p.ep);if(p.time)pts.push(p.time);return pts.join(' · ');}
 function sorted(list){return list.slice().sort(function(a,b){if(a.status===b.status)return a.name.localeCompare(b.name);return a.status==='watching'?-1:1;});}
 function fmtTime(s){if(!s||isNaN(s))return'0:00';var m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
-function fmtMins(s){if(!s||isNaN(s))return'';return Math.round(s/60)+'min';}
+function fmtMins(s){if(!s||isNaN(s))return'';return Math.round(s/60)+'m';}
 function newItem(name,aud){return{id:Date.now().toString(),name:name,status:'watching',cat:'anime-serie',audio:aud||'d',progress:{},fav:false,rating:null,episodes:[],lastEp:-1,cover:''};}
 
 // ===== NAV =====
@@ -1753,6 +1754,14 @@ function openPlayer(itemId,epIdx){
   var pt=g('player-title');if(pt)pt.textContent=a.name;
   var ov=g('player-overlay');if(ov)ov.classList.add('active');
   document.body.style.overflow='hidden';
+  // Salvar posição do play/pause após render
+  setTimeout(function(){
+    var pb = g('play-pause-btn-overlay');
+    if(pb){
+      showPlayerControls();
+      setTimeout(function(){ hidePlayerControls(); _playBtnRect = pb.getBoundingClientRect(); }, 50);
+    }
+  }, 100);
   renderEpList();
   var eps=a.episodes||[];
   var idx=(epIdx>=0&&epIdx<eps.length)?epIdx:0;
@@ -1794,14 +1803,14 @@ function renderEpList(){
     } else if(ep.duration&&ep.duration>0){
       if(ep.savedTime&&ep.savedTime>0){
         var rem=Math.floor((ep.duration-ep.savedTime)/60);
-        timeInfo=rem>0?rem+' min restantes':'Assistido';
+        timeInfo=rem>0?rem+'m restantes':'Assistido';
       } else {
-        timeInfo=Math.floor(ep.duration/60)+'min';
+        timeInfo=Math.floor(ep.duration/60)+'m';
       }
     } else if(ep.linkUrl){
-      timeInfo=ep.duration&&ep.duration>0?Math.floor(ep.duration/60)+'min':'';
+      timeInfo=ep.duration&&ep.duration>0?Math.floor(ep.duration/60)+'m':'';
     } else if(ep.fileUrl){
-      timeInfo=ep.duration&&ep.duration>0?Math.floor(ep.duration/60)+'min':'';
+      timeInfo=ep.duration&&ep.duration>0?Math.floor(ep.duration/60)+'m':'';
     } else {
       timeInfo='';
     }
@@ -1887,8 +1896,20 @@ function seekByClick(e){if(!vid||!vid.duration)return;var track=g('progress-trac
 function onProgressInput(val){if(!vid||!vid.duration)return;isSeeking=true;var pct=val/10;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';}
 function onProgressChange(val){if(!vid||!vid.duration)return;vid.currentTime=(val/10/100)*vid.duration;isSeeking=false;}
 function onVolInput(val){if(!vid)return;vid.volume=val/100;var vf=g('vol-fill');if(vf)vf.style.width=val+'%';var vi=g('vol-icon');if(vi)vi.textContent=val==0?'🔇':val<50?'🔉':'🔊';}
-function skipBack(){if(vid&&vid.src)vid.currentTime=Math.max(0,vid.currentTime-10);}
-function skipForward(){if(vid&&vid.src&&vid.duration)vid.currentTime=Math.min(vid.duration,vid.currentTime+10);}
+function showSkipFlash(direction){
+  var area = g('player-video-area');
+  if(!area) return;
+  var el = document.createElement('div');
+  el.className = 'skip-flash';
+  el.textContent = direction === 'back' ? '-10s' : '+10s';
+  el.style.setProperty('--sk-x', direction === 'back' ? '-24px' : '24px');
+  if(direction === 'back') el.style.left = '18%';
+  else el.style.right = '18%';
+  area.appendChild(el);
+  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 750);
+}
+function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');}}
+function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
 function toggleFullscreen(){if(vid&&vid.webkitEnterFullscreen){vid.webkitEnterFullscreen();return;}var ov=g('player-overlay');if(!document.fullscreenElement&&!document.webkitFullscreenElement){if(ov&&ov.requestFullscreen)ov.requestFullscreen();else if(ov&&ov.webkitRequestFullscreen)ov.webkitRequestFullscreen();}else{if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}}
 window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;window.toggleFullscreen=toggleFullscreen;
 // Save progress helper - called from multiple events
