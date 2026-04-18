@@ -851,8 +851,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <button ontouchend="event.preventDefault();event.stopPropagation();skipNextEp();" onclick="event.stopPropagation();skipNextEp();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
         </button>
-        <button ontouchend="event.preventDefault();event.stopPropagation();" onclick="event.stopPropagation();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;opacity:0.4;">
-          <svg id="fs-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        <button ontouchend="event.preventDefault();event.stopPropagation();toggleFullscreen();" onclick="event.stopPropagation();toggleFullscreen();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
       <!-- Centro subido: -10s / Play·Pause / +10s -->
@@ -1940,6 +1940,8 @@ function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-
 function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
 
 window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;
+function toggleFullscreen(){if(vid&&vid.webkitEnterFullscreen){vid.webkitEnterFullscreen();return;}var ov=g('player-overlay');if(!document.fullscreenElement&&!document.webkitFullscreenElement){if(ov&&ov.requestFullscreen)ov.requestFullscreen();else if(ov&&ov.webkitRequestFullscreen)ov.webkitRequestFullscreen();}else{if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}}
+window.toggleFullscreen=toggleFullscreen;
 // Save progress helper - called from multiple events
 var _lastSavedTime = -1;
 function saveCurrentProgress(){
