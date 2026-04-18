@@ -238,8 +238,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 @keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.7);}30%{opacity:1;transform:translateY(-50%) scale(1.1);}70%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.9) translateX(var(--fly-x));}}
 .skip-num-out{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:white;pointer-events:none;animation:skipNumOut .35s ease-out forwards;font-family:Arial;}
 .skip-num-fly{position:absolute;top:50%;font-size:15px;font-weight:900;color:white;pointer-events:none;animation:skipNumFly .6s ease-out forwards;font-family:Arial;white-space:nowrap;}
-/* Tela cheia falsa */
-.player-overlay.fake-fs{position:fixed;inset:0;z-index:9999;transform:rotate(90deg);transform-origin:center center;width:100vh;height:100vw;top:calc((100vh - 100vw)/2);left:calc((100vw - 100vh)/2);max-width:none;}
+/* Tela cheia falsa removida */
 @keyframes dotPulse{0%,100%{transform:scale(.6);opacity:.4;}50%{transform:scale(1);opacity:1;}}
 @keyframes spinLoader{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 .profile-circle-wrap{position:relative;overflow:visible;}
@@ -722,7 +721,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <button class="nav-btn" data-nav="home" onclick="goTo('home')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span><span class="nav-label">Início</span></button>
     <button class="nav-btn" data-nav="lista" onclick="goTo('lista')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span><span class="nav-label">Minhas Listas</span></button>
     <button class="nav-btn" data-nav="salvos" onclick="goTo('salvos')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Explorar</span></button>
-    <button class="nav-btn" data-nav="perfil" onclick="goTo('perfil')"><span class="nav-icon" style="width:26px;height:26px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--grad2);"><img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:20px;height:20px;object-fit:contain;"/></span><span class="nav-label">Conta</span></button>
+    <button class="nav-btn" data-nav="perfil" onclick="goTo('perfil')"><span class="nav-icon" style="width:22px;height:22px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--grad2);flex-shrink:0;"><img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:16px;height:16px;object-fit:contain;"/></span><span class="nav-label">Conta</span></button>
   </div>
 </div>
 </div>
@@ -852,7 +851,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <button ontouchend="event.preventDefault();event.stopPropagation();skipNextEp();" onclick="event.stopPropagation();skipNextEp();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
         </button>
-        <button ontouchend="event.preventDefault();event.stopPropagation();toggleFakeFS();" onclick="event.stopPropagation();toggleFakeFS();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
+        <button ontouchend="event.preventDefault();event.stopPropagation();" onclick="event.stopPropagation();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;opacity:0.4;">
           <svg id="fs-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
@@ -899,7 +898,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="player-controls" style="background:#000;border-top:none;">
     <div class="ctrl-row">
       <button class="ctrl-btn" id="play-pause-btn" onclick="togglePlay()" style="display:none;">▶</button>
-      <button class="ctrl-btn" onclick="toggleFakeFS()" style="margin-left:auto;display:none;">⛶</button>
+      <button class="ctrl-btn" style="margin-left:auto;display:none;">⛶</button>
     </div>
   </div>
   <div class="ep-section">
@@ -1939,28 +1938,7 @@ function showSkipFlash(direction){
 }
 function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');}}
 function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
-var _isFakeFS = false;
-function toggleFakeFS(){
-  var ov = g('player-overlay');
-  var icon = g('fs-icon');
-  if(!ov) return;
-  _isFakeFS = !_isFakeFS;
-  if(_isFakeFS){
-    ov.classList.add('fake-fs');
-    if(icon) icon.innerHTML = '<polyline points="4,14 10,14 10,20"/><polyline points="20,10 14,10 14,4"/><line x1="10" y1="14" x2="21" y2="3"/><line x1="3" y1="21" x2="14" y2="10"/>';
-    // Trava orientação da tela
-    if(screen.orientation && screen.orientation.lock){
-      screen.orientation.lock('landscape').catch(function(){});
-    }
-  } else {
-    ov.classList.remove('fake-fs');
-    if(icon) icon.innerHTML = '<polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>';
-    if(screen.orientation && screen.orientation.unlock){
-      screen.orientation.unlock();
-    }
-  }
-}
-window.toggleFakeFS = toggleFakeFS;
+
 window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;
 // Save progress helper - called from multiple events
 var _lastSavedTime = -1;
