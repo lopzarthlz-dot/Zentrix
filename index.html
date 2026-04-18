@@ -234,8 +234,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
-@keyframes skipAnim{0%{opacity:1;transform:translateX(0) scale(1);}60%{opacity:1;transform:translateX(var(--sk-x)) scale(1.15);}100%{opacity:0;transform:translateX(var(--sk-x)) scale(1);}}
-.skip-flash{position:absolute;top:50%;transform:translateY(-50%);font-size:18px;font-weight:900;color:#fff;pointer-events:none;text-shadow:0 0 12px rgba(0,0,0,.8);animation:skipAnim .7s ease-out forwards;white-space:nowrap;}
+@keyframes skipNumOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}}
+@keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.7);}30%{opacity:1;transform:translateY(-50%) scale(1.1);}70%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.9) translateX(var(--fly-x));}}
+.skip-num-out{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:white;pointer-events:none;animation:skipNumOut .35s ease-out forwards;font-family:Arial;}
+.skip-num-fly{position:absolute;top:50%;font-size:15px;font-weight:900;color:white;pointer-events:none;animation:skipNumFly .6s ease-out forwards;font-family:Arial;white-space:nowrap;}
+/* Tela cheia falsa */
+.player-overlay.fake-fs{position:fixed;inset:0;z-index:9999;transform:rotate(90deg);transform-origin:center center;width:100vh;height:100vw;top:calc((100vh - 100vw)/2);left:calc((100vw - 100vh)/2);max-width:none;}
 @keyframes dotPulse{0%,100%{transform:scale(.6);opacity:.4;}50%{transform:scale(1);opacity:1;}}
 @keyframes spinLoader{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 .profile-circle-wrap{position:relative;overflow:visible;}
@@ -715,11 +719,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
   <div class="bottom-nav">
-    <button class="nav-btn active" data-nav="home" onclick="goTo('home')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span><span class="nav-label">Início</span></button>
+    <button class="nav-btn" data-nav="home" onclick="goTo('home')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span><span class="nav-label">Início</span></button>
     <button class="nav-btn" data-nav="lista" onclick="goTo('lista')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span><span class="nav-label">Minhas Listas</span></button>
     <button class="nav-btn" data-nav="salvos" onclick="goTo('salvos')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Explorar</span></button>
-
-    <button class="nav-btn" data-nav="perfil" onclick="goTo('perfil')"><span class="nav-icon">👤</span><span class="nav-label">Conta</span></button>
+    <button class="nav-btn" data-nav="perfil" onclick="goTo('perfil')"><span class="nav-icon" style="width:26px;height:26px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--grad2);"><img src="https://archive.org/download/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9/copy_0FD825BE-B648-4ABF-854B-83AA4B74D4D9.png" style="width:20px;height:20px;object-fit:contain;"/></span><span class="nav-label">Conta</span></button>
   </div>
 </div>
 </div>
@@ -849,14 +852,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <button ontouchend="event.preventDefault();event.stopPropagation();skipNextEp();" onclick="event.stopPropagation();skipNextEp();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5,5 15,12 5,19"/><rect x="17" y="5" width="2.5" height="14" rx="1" fill="white"/></svg>
         </button>
-        <button ontouchend="event.preventDefault();event.stopPropagation();toggleFullscreen();" onclick="event.stopPropagation();toggleFullscreen();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        <button ontouchend="event.preventDefault();event.stopPropagation();toggleFakeFS();" onclick="event.stopPropagation();toggleFakeFS();" style="background:none;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:52px;height:52px;">
+          <svg id="fs-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
       <!-- Centro subido: -10s / Play·Pause / +10s -->
       <div style="display:flex;align-items:center;justify-content:center;gap:36px;margin-bottom:40px;" onclick="event.stopPropagation()">
         <button ontouchend="event.preventDefault();event.stopPropagation();skipBack();" onclick="event.stopPropagation();skipBack();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-          <svg width="56" height="56" viewBox="0 0 50 50" fill="none">
+          <svg width="48" height="48" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 0 38 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="38,9 38,18 29,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
@@ -866,7 +869,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <svg id="play-icon-overlay" width="50" height="50" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
         <button ontouchend="event.preventDefault();event.stopPropagation();skipForward();" onclick="event.stopPropagation();skipForward();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-          <svg width="56" height="56" viewBox="0 0 50 50" fill="none">
+          <svg width="48" height="48" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 1 12 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="12,9 12,18 21,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
@@ -896,7 +899,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="player-controls" style="background:#000;border-top:none;">
     <div class="ctrl-row">
       <button class="ctrl-btn" id="play-pause-btn" onclick="togglePlay()" style="display:none;">▶</button>
-      <button class="ctrl-btn" onclick="toggleFullscreen()" style="margin-left:auto;display:none;">⛶</button>
+      <button class="ctrl-btn" onclick="toggleFakeFS()" style="margin-left:auto;display:none;">⛶</button>
     </div>
   </div>
   <div class="ep-section">
@@ -1899,19 +1902,66 @@ function onVolInput(val){if(!vid)return;vid.volume=val/100;var vf=g('vol-fill');
 function showSkipFlash(direction){
   var area = g('player-video-area');
   if(!area) return;
-  var el = document.createElement('div');
-  el.className = 'skip-flash';
-  el.textContent = direction === 'back' ? '-10s' : '+10s';
-  el.style.setProperty('--sk-x', direction === 'back' ? '-24px' : '24px');
-  if(direction === 'back') el.style.left = '18%';
-  else el.style.right = '18%';
-  area.appendChild(el);
-  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 750);
+  // Achar o botão correto pra pegar posição
+  var btns = area.querySelectorAll('button');
+  var targetBtn = null;
+  btns.forEach(function(b){
+    var svg = b.querySelector('svg');
+    if(!svg) return;
+    var poly = svg.querySelector('polyline');
+    if(!poly) return;
+    var pts = poly.getAttribute('points')||'';
+    if(direction === 'back' && pts.indexOf('38,9') !== -1) targetBtn = b;
+    if(direction === 'forward' && pts.indexOf('12,9') !== -1) targetBtn = b;
+  });
+
+  // "10" some do centro do círculo
+  var numOut = document.createElement('div');
+  numOut.className = 'skip-num-out';
+  numOut.textContent = '10';
+  if(targetBtn) targetBtn.style.position = 'relative';
+  var container = targetBtn || area;
+  container.appendChild(numOut);
+  setTimeout(function(){ if(numOut.parentNode) numOut.parentNode.removeChild(numOut); }, 400);
+
+  // número voa pro lado com sinal
+  var numFly = document.createElement('div');
+  numFly.className = 'skip-num-fly';
+  numFly.textContent = direction === 'back' ? '-10' : '+10';
+  numFly.style.setProperty('--fly-x', direction === 'back' ? '-20px' : '20px');
+  if(direction === 'back'){
+    numFly.style.left = '8%';
+  } else {
+    numFly.style.right = '8%';
+  }
+  area.appendChild(numFly);
+  setTimeout(function(){ if(numFly.parentNode) numFly.parentNode.removeChild(numFly); }, 650);
 }
 function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');}}
 function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
-function toggleFullscreen(){if(vid&&vid.webkitEnterFullscreen){vid.webkitEnterFullscreen();return;}var ov=g('player-overlay');if(!document.fullscreenElement&&!document.webkitFullscreenElement){if(ov&&ov.requestFullscreen)ov.requestFullscreen();else if(ov&&ov.webkitRequestFullscreen)ov.webkitRequestFullscreen();}else{if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}}
-window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;window.toggleFullscreen=toggleFullscreen;
+var _isFakeFS = false;
+function toggleFakeFS(){
+  var ov = g('player-overlay');
+  var icon = g('fs-icon');
+  if(!ov) return;
+  _isFakeFS = !_isFakeFS;
+  if(_isFakeFS){
+    ov.classList.add('fake-fs');
+    if(icon) icon.innerHTML = '<polyline points="4,14 10,14 10,20"/><polyline points="20,10 14,10 14,4"/><line x1="10" y1="14" x2="21" y2="3"/><line x1="3" y1="21" x2="14" y2="10"/>';
+    // Trava orientação da tela
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock('landscape').catch(function(){});
+    }
+  } else {
+    ov.classList.remove('fake-fs');
+    if(icon) icon.innerHTML = '<polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>';
+    if(screen.orientation && screen.orientation.unlock){
+      screen.orientation.unlock();
+    }
+  }
+}
+window.toggleFakeFS = toggleFakeFS;
+window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;
 // Save progress helper - called from multiple events
 var _lastSavedTime = -1;
 function saveCurrentProgress(){
@@ -2912,6 +2962,7 @@ function stopFloatAnimation(){
 }
 
 renderAll();
+goTo('home');
 if(!checkSession()){
   var loginScr = g('login-screen');
   if(loginScr) loginScr.style.display = 'flex';
