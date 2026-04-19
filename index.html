@@ -2250,13 +2250,11 @@ function showSkipFlash(direction){
   var numFly = document.createElement('div');
   numFly.className = 'skip-num-fly';
   numFly.textContent = direction === 'back' ? '-10' : '+10';
-  numFly.style.top = centerY + 'px'; // mesma altura do centro do círculo
+  numFly.style.top = centerY + 'px';
   if(direction === 'back'){
-    // grudado na borda direita do botão (lado interno)
-    numFly.style.left = (btnRect.right - areaRect.left + 4) + 'px';
+    numFly.style.left = (btnRect.left - areaRect.left - 30) + 'px';
   } else {
-    // grudado na borda esquerda do botão (lado interno)
-    numFly.style.left = (btnRect.left - areaRect.left - 34) + 'px';
+    numFly.style.left = (btnRect.right - areaRect.left + 4) + 'px';
   }
   area.appendChild(numFly);
   setTimeout(function(){ if(numFly.parentNode) numFly.parentNode.removeChild(numFly); }, 700);
