@@ -282,7 +282,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .ep-card-num-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ep-card-meta{display:flex;align-items:center;gap:4px;margin-top:5px;}
 .detail-continue-bar{position:sticky;bottom:0;padding:16px 16px 20px;background:linear-gradient(to top,#000 85%,transparent);z-index:10;}
-.detail-continue-btn{width:100%;padding:16px;border-radius:var(--radius);background:var(--grad2);border:none;color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 24px rgba(56,189,248,.3);letter-spacing:.3px;}
+.detail-continue-btn{width:100%;padding:16px;border-radius:var(--radius);background:var(--grad2);border:none;color:#000;font-size:16px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 24px rgba(56,189,248,.3);letter-spacing:.3px;}
 .detail-add-ep{display:flex;gap:8px;padding:14px 0;border-bottom:1px solid var(--border);}
 .detail-add-ep input{flex:1;padding:9px 12px;border-radius:var(--radius2);border:1px solid var(--border2);background:var(--bg3);font-size:13px;color:var(--text);font-family:var(--font);}
 .detail-add-ep input:focus{outline:none;border-color:var(--purple);}
@@ -770,8 +770,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="detail-continue-bar" id="detail-continue-bar" style="display:none;">
     <div style="display:flex;gap:10px;align-items:center;">
       <button class="detail-continue-btn" id="detail-continue-btn" onclick="continueWatching()" style="flex:1;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
-        <span id="detail-continue-label" style="font-size:16px;font-weight:800;color:#fff;">Começar A Assistir E1</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="5,3 19,12 5,21"/></svg>
+        <span id="detail-continue-label" style="font-size:16px;font-weight:800;color:#000;">Começar A Assistir E1</span>
       </button>
       <button id="detail-queue-btn" ontouchend="event.preventDefault();toggleDetailQueue();" onclick="toggleDetailQueue()" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,border-color .2s;">
         <svg id="detail-queue-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
