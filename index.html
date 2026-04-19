@@ -1186,11 +1186,11 @@ window.hidePlayerControls = hidePlayerControls;
 
       if(relX < leftZone){
         // Zona esquerda → volta 10s
-        skipBack();
+        skipBack(tx);
         showPlayerControls();
       } else if(relX > rightZone){
         // Zona direita → avança 10s
-        skipForward();
+        skipForward(tx);
         showPlayerControls();
       } else {
         // Centro → toggle play/pause
@@ -2218,7 +2218,7 @@ function seekByClick(e){if(!vid||!vid.duration)return;var track=g('progress-trac
 function onProgressInput(val){if(!vid||!vid.duration)return;isSeeking=true;var pct=val/10;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';}
 function onProgressChange(val){if(!vid||!vid.duration)return;vid.currentTime=(val/10/100)*vid.duration;isSeeking=false;}
 function onVolInput(val){if(!vid)return;vid.volume=val/100;var vf=g('vol-fill');if(vf)vf.style.width=val+'%';var vi=g('vol-icon');if(vi)vi.textContent=val==0?'🔇':val<50?'🔉':'🔊';}
-function showSkipFlash(direction){
+function showSkipFlash(direction, touchX){
   var svgEl = g(direction === 'back' ? 'skip-back-svg' : 'skip-fwd-svg');
   var numEl = g(direction === 'back' ? 'skip-back-num' : 'skip-fwd-num');
 
@@ -2240,27 +2240,42 @@ function showSkipFlash(direction){
   // Número voa grudado na borda lateral do círculo, na altura certa
   var area = g('player-video-area');
   var btnEl = g(direction === 'back' ? 'skip-back-btn' : 'skip-fwd-btn');
-  if(!area || !btnEl) return;
+  if(!area) return;
   var areaRect = area.getBoundingClientRect();
-  var btnRect = btnEl.getBoundingClientRect();
+  var btnRect = btnEl ? btnEl.getBoundingClientRect() : null;
 
-  // Centro vertical do botão relativo à área
-  var centerY = btnRect.top + btnRect.height / 2 - areaRect.top;
+  var centerY;
+  var numLeft;
+
+  if(btnRect && btnRect.width > 0){
+    // Botão visível — usa posição real do botão
+    centerY = btnRect.top + btnRect.height / 2 - areaRect.top;
+    if(direction === 'back'){
+      numLeft = btnRect.left - areaRect.left - 30;
+    } else {
+      numLeft = btnRect.right - areaRect.left + 4;
+    }
+  } else {
+    // Botão oculto (double tap) — usa posição do toque
+    centerY = areaRect.height * 0.42;
+    var tapX = (touchX !== undefined ? touchX : (direction === 'back' ? areaRect.left + areaRect.width * 0.22 : areaRect.left + areaRect.width * 0.78)) - areaRect.left;
+    if(direction === 'back'){
+      numLeft = tapX + 28;
+    } else {
+      numLeft = tapX - 58;
+    }
+  }
 
   var numFly = document.createElement('div');
   numFly.className = 'skip-num-fly';
   numFly.textContent = direction === 'back' ? '-10' : '+10';
   numFly.style.top = centerY + 'px';
-  if(direction === 'back'){
-    numFly.style.left = (btnRect.left - areaRect.left - 30) + 'px';
-  } else {
-    numFly.style.left = (btnRect.right - areaRect.left + 4) + 'px';
-  }
+  numFly.style.left = numLeft + 'px';
   area.appendChild(numFly);
   setTimeout(function(){ if(numFly.parentNode) numFly.parentNode.removeChild(numFly); }, 700);
 }
-function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');}}
-function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
+function skipBack(touchX){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back',touchX);}}
+function skipForward(touchX){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward',touchX);}}
 
 window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;
 function toggleFullscreen(){if(vid&&vid.webkitEnterFullscreen){vid.webkitEnterFullscreen();return;}var ov=g('player-overlay');if(!document.fullscreenElement&&!document.webkitFullscreenElement){if(ov&&ov.requestFullscreen)ov.requestFullscreen();else if(ov&&ov.webkitRequestFullscreen)ov.webkitRequestFullscreen();}else{if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}}
