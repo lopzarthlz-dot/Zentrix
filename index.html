@@ -289,8 +289,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .detail-add-ep input{flex:1;padding:9px 12px;border-radius:var(--radius2);border:1px solid var(--border2);background:var(--bg3);font-size:13px;color:var(--text);font-family:var(--font);}
 .detail-add-ep input:focus{outline:none;border-color:var(--purple);}
 .detail-add-ep-btn{padding:9px 14px;border-radius:var(--radius2);background:var(--grad2);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
-.player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;}
+.player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;transition:transform .35s cubic-bezier(.4,0,.2,1);transform:translateY(0);}
 .player-overlay.active{display:flex;}
+.player-overlay.sliding-down{transform:translateY(100%);}
 .player-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(0,0,0,.9);flex-shrink:0;border-bottom:1px solid #1a1a2e;}
 .player-back{background:none;border:none;cursor:pointer;color:#fff;font-size:26px;padding:0;line-height:1;font-family:var(--font);}
 .player-title-block{flex:1;min-width:0;}
@@ -896,11 +897,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 12px;gap:8;" onclick="event.stopPropagation()">
         <!-- Esquerda: voltar + título -->
         <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-          <button ontouchend="event.preventDefault();event.stopPropagation();goBackFromPlayer();" onclick="event.stopPropagation();goBackFromPlayer();" style="background:none;border:none;cursor:pointer;color:#fff;font-size:26px;padding:0;line-height:1;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">←</button>
-          <div style="min-width:0;flex:1;">
-            <div id="player-title" style="font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px rgba(0,0,0,.8);">Título</div>
-            <div id="player-ep-label" style="font-size:11px;color:rgba(255,255,255,.6);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Selecione um episódio</div>
-          </div>
+          <button ontouchend="event.preventDefault();event.stopPropagation();goBackFromPlayer();" onclick="event.stopPropagation();goBackFromPlayer();" style="background:none;border:none;cursor:pointer;color:#fff;padding:0;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
         </div>
         <!-- Direita: próximo ep + fullscreen -->
         <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
@@ -2026,15 +2025,28 @@ function closePlayer(){
 window.openPlayer=openPlayer;window.closePlayer=closePlayer;
 function goBackFromPlayer(){
   var origin = _playerOrigin;
-  closePlayer();
-  if(origin === 'detail' && detailItemId){
-    // Volta pra tela de detalhe
+  var ov = g('player-overlay');
+  if(ov){
+    ov.classList.add('sliding-down');
     setTimeout(function(){
-      var ds = g('detail-screen');
-      if(ds) ds.classList.add('active');
-    }, 50);
+      ov.classList.remove('sliding-down');
+      closePlayer();
+      if(origin === 'detail' && detailItemId){
+        setTimeout(function(){
+          var ds = g('detail-screen');
+          if(ds) ds.classList.add('active');
+        }, 50);
+      }
+    }, 340);
+  } else {
+    closePlayer();
+    if(origin === 'detail' && detailItemId){
+      setTimeout(function(){
+        var ds = g('detail-screen');
+        if(ds) ds.classList.add('active');
+      }, 50);
+    }
   }
-  // Se origin === 'home', closePlayer já mostra a home
 }
 window.goBackFromPlayer = goBackFromPlayer;
 function renderEpList(){
