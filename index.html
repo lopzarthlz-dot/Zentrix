@@ -2237,22 +2237,26 @@ function showSkipFlash(direction){
     setTimeout(function(){ numEl.style.opacity = '1'; }, 520);
   }
 
-  // Número voa bem pertinho do círculo
+  // Número voa grudado na borda lateral do círculo, na altura certa
   var area = g('player-video-area');
-  if(!area) return;
+  var btnEl = g(direction === 'back' ? 'skip-back-btn' : 'skip-fwd-btn');
+  if(!area || !btnEl) return;
   var areaRect = area.getBoundingClientRect();
-  var centerY = areaRect.height * 0.5;
-  var btnX = direction === 'back' ? areaRect.width * 0.22 : areaRect.width * 0.78;
+  var btnRect = btnEl.getBoundingClientRect();
+
+  // Centro vertical do botão relativo à área
+  var centerY = btnRect.top + btnRect.height / 2 - areaRect.top;
 
   var numFly = document.createElement('div');
   numFly.className = 'skip-num-fly';
   numFly.textContent = direction === 'back' ? '-10' : '+10';
-  numFly.style.top = centerY + 'px';
-  // 28px é a metade do SVG (48/2), coloca o número logo do lado
+  numFly.style.top = centerY + 'px'; // mesma altura do centro do círculo
   if(direction === 'back'){
-    numFly.style.left = (btnX - 28 - 32) + 'px'; // logo à esquerda do círculo
+    // grudado na borda direita do botão (lado interno)
+    numFly.style.left = (btnRect.right - areaRect.left + 4) + 'px';
   } else {
-    numFly.style.left = (btnX + 28) + 'px'; // logo à direita do círculo
+    // grudado na borda esquerda do botão (lado interno)
+    numFly.style.left = (btnRect.left - areaRect.left - 34) + 'px';
   }
   area.appendChild(numFly);
   setTimeout(function(){ if(numFly.parentNode) numFly.parentNode.removeChild(numFly); }, 700);
