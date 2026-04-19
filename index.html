@@ -105,7 +105,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:.25;}
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
-.p-card-menu-btn{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:14px;font-weight:700;letter-spacing:1px;line-height:1;z-index:2;backdrop-filter:blur(4px);}
+.p-card-menu-btn{position:absolute;bottom:6px;right:6px;background:none;border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:14px;font-weight:700;letter-spacing:1px;line-height:1;z-index:2;}
 .card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;}
 .card-ctx-overlay{position:fixed;inset:0;z-index:9799;}
 .card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;}
@@ -281,7 +281,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .ep-card-info{flex:1;min-width:0;padding-top:2px;}
 .ep-card-num-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ep-card-meta{display:flex;align-items:center;gap:4px;margin-top:5px;}
-.detail-continue-bar{position:sticky;bottom:0;padding:12px 16px;background:linear-gradient(to top,var(--bg) 80%,transparent);z-index:10;}
+.detail-continue-bar{position:sticky;bottom:0;padding:12px 16px;background:linear-gradient(to top,#000 80%,transparent);z-index:10;}
 .detail-continue-btn{width:100%;padding:16px;border-radius:var(--radius);background:var(--grad2);border:none;color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 24px rgba(56,189,248,.3);letter-spacing:.3px;}
 .detail-add-ep{display:flex;gap:8px;padding:14px 0;border-bottom:1px solid var(--border);}
 .detail-add-ep input{flex:1;padding:9px 12px;border-radius:var(--radius2);border:1px solid var(--border2);background:var(--bg3);font-size:13px;color:var(--text);font-family:var(--font);}
@@ -645,8 +645,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div class="hero-title" id="hero-title">Bem-vindo!</div>
         <div class="hero-sub" id="hero-sub">Adicione títulos para começar</div>
         <div class="hero-btns">
-          <button class="hero-btn primary" id="hero-play-btn" onclick="heroPlay()">▶ Assistir</button>
-          <button class="hero-btn secondary" onclick="goTo('lista')">+ Minha Lista</button>
+          <button class="hero-btn primary" id="hero-play-btn" onclick="heroPlay()" style="flex:1;padding:14px 16px;font-size:15px;font-weight:800;justify-content:center;">▶ Continuar</button>
+          <button class="hero-btn secondary" onclick="heroBookmark()" style="width:50px;height:50px;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="hero-bookmark-btn">
+            <svg id="hero-bookmark-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -801,10 +803,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <!-- Card Context Menu -->
 <div class="card-ctx-overlay" id="card-ctx-overlay" style="display:none;" onclick="closeCardMenu()"></div>
 <div class="card-ctx-menu" id="card-ctx-menu" style="display:none;">
-  <button class="card-ctx-item" id="ctx-assistir" onclick="closeCardMenu();ctxAssistir()">▶ Assistir</button>
-  <button class="card-ctx-item" id="ctx-zentrilista" onclick="closeCardMenu();ctxZentrilista()">+ Adicionar à Zentrilista</button>
-  <button class="card-ctx-item" id="ctx-fav" onclick="closeCardMenu();ctxFav()">⭐ Favoritar</button>
-  <button class="card-ctx-item" id="ctx-assistido" onclick="closeCardMenu();ctxAssistido()">✓ Marcar como Assistido</button>
+  <button class="card-ctx-item" id="ctx-assistir" onclick="closeCardMenu();ctxAssistir()">Começar a Assistir</button>
+  <button class="card-ctx-item" id="ctx-zentrilista" onclick="closeCardMenu();ctxZentrilista()">Adicionar à Zentrilista</button>
+  <button class="card-ctx-item" id="ctx-fav" onclick="closeCardMenu();ctxFav()">Favoritar</button>
+  <button class="card-ctx-item" id="ctx-assistido" onclick="closeCardMenu();ctxAssistido()">Marcar como Assistido</button>
 </div>
 
 <!-- Toast notification -->
@@ -894,8 +896,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
           </svg>
         </button>
-        <button id="play-pause-btn-overlay" ontouchend="event.preventDefault();event.stopPropagation();togglePlay();showPlayerControls();" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <svg id="play-icon-overlay" width="50" height="50" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+        <button id="play-pause-btn-overlay" ontouchend="event.preventDefault();event.stopPropagation();togglePlay();showPlayerControls();" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg id="play-icon-overlay" width="54" height="54" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
         <button ontouchend="event.preventDefault();event.stopPropagation();skipForward();" onclick="event.stopPropagation();skipForward();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="48" height="48" viewBox="0 0 50 50" fill="none">
@@ -932,8 +934,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
   <div class="ep-section">
-    <div class="ep-sec-title">Episódios</div>
-    <div class="ep-list" id="ep-list"></div>
     <div id="next-ep-section" style="display:none;">
       <div class="next-ep-section">
         <div class="next-ep-title">Próximo Episódio</div>
@@ -1408,6 +1408,7 @@ function renderHome(){
   if(watching.length>0){heroItemId=watching[0].id;g('hero-badge').textContent='▶ Continue assistindo';g('hero-title').textContent=watching[0].name;g('hero-sub').textContent='Anime · '+audioLabel(watching[0].audio);g('hero-play-btn').textContent='▶ Continuar';}
   else if(items.length>0){heroItemId=items[0].id;g('hero-badge').textContent='📋 Sua lista';g('hero-title').textContent=items[0].name;g('hero-sub').textContent='Anime';g('hero-play-btn').textContent='▶ Assistir';}
   else{heroItemId=null;}
+  updateHeroBookmark();
   function showSec(id,rowId,data,fn){var sec=g(id),row=g(rowId);if(!sec||!row)return;if(data.length){sec.style.display='block';row.innerHTML=data.slice(0,10).map(fn).join('');}else sec.style.display='none';}
 
   // EM ALTA: sort by trending first, then views, then engagement
@@ -1447,6 +1448,33 @@ function renderHome(){
   var ss=g('sec-saved-h'),sr=g('saved-h-row');
   if(ss&&sr){if(savedItems.length){ss.style.display='block';sr.innerHTML=savedItems.slice(0,8).map(mkSavedPC).join('');}else ss.style.display='none';}
 }
+function heroBookmark(){
+  if(!heroItemId) return;
+  var a = items.find(function(x){ return x.id === heroItemId; });
+  if(!a) return;
+  // Toggle salvo
+  var idx = -1;
+  for(var i=0;i<savedItems.length;i++){ if(savedItems[i].name.toLowerCase()===a.name.toLowerCase()){idx=i;break;} }
+  if(idx >= 0){
+    savedItems.splice(idx, 1);
+    saveSaved();
+    showToast('Removido da Zentrilista!', '★');
+  } else {
+    savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
+    saveSaved();
+    showToast('Adicionado à Zentrilista!', '⭐');
+  }
+  updateHeroBookmark();
+}
+function updateHeroBookmark(){
+  if(!heroItemId) return;
+  var a = items.find(function(x){ return x.id === heroItemId; });
+  var icon = g('hero-bookmark-icon');
+  if(!icon || !a) return;
+  var isSaved = savedItems.some(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
+  icon.setAttribute('fill', isSaved ? 'currentColor' : 'none');
+}
+window.heroBookmark = heroBookmark;
 function heroPlay(){if(!heroItemId){openModal('add-modal');return;}openDetail(heroItemId);}
 window.heroPlay=heroPlay;
 function renderLista(){
@@ -2067,31 +2095,18 @@ function onVolInput(val){if(!vid)return;vid.volume=val/100;var vf=g('vol-fill');
 function showSkipFlash(direction){
   var area = g('player-video-area');
   if(!area) return;
-
-  // Achar o botão do lado correto
-  var btnBack = null, btnFwd = null;
-  area.querySelectorAll('button').forEach(function(b){
-    var svg = b.querySelector('svg');
-    if(!svg) return;
-    var poly = svg.querySelector('polyline');
-    if(!poly) return;
-    var pts = poly.getAttribute('points')||'';
-    if(pts.indexOf('38,9') !== -1) btnBack = b;
-    if(pts.indexOf('12,9') !== -1) btnFwd = b;
-  });
-
-  var targetBtn = direction === 'back' ? btnBack : btnFwd;
-  if(!targetBtn) return;
-
   var areaRect = area.getBoundingClientRect();
-  var btnRect = targetBtn.getBoundingClientRect();
 
-  // "10" some de dentro do SVG (centro do botão)
+  // Posição fixa baseada na área do vídeo (não depende do overlay)
+  var centerY = areaRect.height * 0.5;
+  var btnX = direction === 'back' ? areaRect.width * 0.22 : areaRect.width * 0.78;
+
+  // "10" some do centro do círculo SVG
   var numOut = document.createElement('div');
   numOut.className = 'skip-num-out';
   numOut.textContent = '10';
-  numOut.style.left = (btnRect.left - areaRect.left + btnRect.width/2) + 'px';
-  numOut.style.top = (btnRect.top - areaRect.top + btnRect.height/2) + 'px';
+  numOut.style.left = btnX + 'px';
+  numOut.style.top = centerY + 'px';
   area.appendChild(numOut);
   setTimeout(function(){ if(numOut.parentNode) numOut.parentNode.removeChild(numOut); }, 400);
 
@@ -2099,14 +2114,11 @@ function showSkipFlash(direction){
   var numFly = document.createElement('div');
   numFly.className = 'skip-num-fly';
   numFly.textContent = direction === 'back' ? '-10' : '+10';
-  var flyTop = (btnRect.top - areaRect.top + btnRect.height/2);
-  numFly.style.top = flyTop + 'px';
+  numFly.style.top = centerY + 'px';
   if(direction === 'back'){
-    // aparece à esquerda do botão, perto
-    numFly.style.left = (btnRect.left - areaRect.left - 36) + 'px';
+    numFly.style.left = (btnX - 40) + 'px';
   } else {
-    // aparece à direita do botão, perto
-    numFly.style.left = (btnRect.right - areaRect.left + 8) + 'px';
+    numFly.style.left = (btnX + 28) + 'px';
   }
   area.appendChild(numFly);
   setTimeout(function(){ if(numFly.parentNode) numFly.parentNode.removeChild(numFly); }, 700);
@@ -2202,10 +2214,10 @@ function openCardMenu(itemId, btn){
 
   // Atualizar labels dinâmicos
   var favBtn = g('ctx-fav');
-  if(favBtn) favBtn.textContent = (a.fav ? '★ Desfavoritar' : '⭐ Favoritar');
+  if(favBtn) favBtn.textContent = (a.fav ? 'Desfavoritar' : 'Favoritar');
   var assistidoBtn = g('ctx-assistido');
   var allWatched = a.episodes && a.episodes.length > 0 && a.episodes.every(function(ep){ return ep.watched; });
-  if(assistidoBtn) assistidoBtn.textContent = allWatched ? '↩ Marcar como Não Assistido' : '✓ Marcar como Assistido';
+  if(assistidoBtn) assistidoBtn.textContent = allWatched ? 'Marcar como Não Assistido' : 'Marcar como Assistido';
 
   // Posicionar o menu perto do botão
   var rect = btn.getBoundingClientRect();
@@ -2243,16 +2255,16 @@ function ctxZentrilista(){
   if(!savedItems.find(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); })){
     savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
     saveSaved();
-    showToast('✓','Adicionado à Zentrilista!','#4ade80');
+    showToast('Adicionado à Zentrilista!', '✓');
   } else {
-    showToast('ℹ️','Já está na Zentrilista!','#38bdf8');
+    showToast('Já está na Zentrilista!', 'ℹ️');
   }
 }
 function ctxFav(){
   if(!_ctxItemId) return;
   toggleFav(_ctxItemId);
   var a = items.find(function(x){ return x.id === _ctxItemId; });
-  if(a) showToast(a.fav?'⭐':'★', a.fav?'Adicionado aos favoritos!':'Removido dos favoritos!', a.fav?'#fbbf24':'#9998bb');
+  if(a) showToast(a.fav?'Adicionado aos favoritos!':'Removido dos favoritos!', a.fav?'⭐':'★');
 }
 function ctxAssistido(){
   if(!_ctxItemId) return;
@@ -2261,7 +2273,7 @@ function ctxAssistido(){
   var allWatched = a.episodes.every(function(ep){ return ep.watched; });
   a.episodes.forEach(function(ep){ ep.watched = !allWatched; if(!allWatched){ ep.savedTime = ep.duration || 0; } else { ep.savedTime = 0; } });
   saveData(); renderAll();
-  showToast('✓', allWatched?'Marcado como não assistido!':'Marcado como assistido!', '#4ade80');
+  showToast(allWatched?'Marcado como não assistido!':'Marcado como assistido!', '✓');
 }
 window.openCardMenu=openCardMenu;window.closeCardMenu=closeCardMenu;
 window.ctxAssistir=ctxAssistir;window.ctxZentrilista=ctxZentrilista;window.ctxFav=ctxFav;window.ctxAssistido=ctxAssistido;
