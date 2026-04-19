@@ -351,8 +351,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .next-ep-thumb img{width:100%;height:100%;object-fit:cover;}
 .next-ep-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);}
 .next-ep-info{flex:1;min-width:0;}
-.next-ep-num{font-size:11px;color:var(--text3);margin-bottom:3px;}
-.next-ep-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.next-ep-num{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.next-ep-name{font-size:12px;color:var(--text3);margin-bottom:3px;}
 .next-ep-dur{font-size:11px;color:var(--text3);margin-top:3px;}
 .all-eps-btn{width:100%;padding:14px 16px;background:none;border:none;border-top:1px solid rgba(255,255,255,.08);color:var(--blue);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);text-align:center;margin-top:10px;display:block;}
 .link-modal-wrap{position:fixed;inset:0;z-index:1100;display:none;flex-direction:column;justify-content:flex-end;max-width:480px;margin:0 auto;}
@@ -907,7 +907,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </button>
       </div>
       <!-- Centro subido: -10s / Play·Pause / +10s -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:40px;" onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:40px;" onclick="event.stopPropagation()">
         <button ontouchend="event.preventDefault();event.stopPropagation();skipBack();" onclick="event.stopPropagation();skipBack();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
           <svg width="48" height="48" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 0 38 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
@@ -958,12 +958,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div class="next-ep-title">Próximo Episódio</div>
         <div class="next-ep-card" id="next-ep-card" onclick="nextEpFromPlayer()">
           <div class="next-ep-thumb" id="next-ep-thumb">
-            <div class="next-ep-play" style="z-index:2;"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <div class="next-ep-play" style="z-index:2;">
+              <div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
+              </div>
+            </div>
+            <div id="next-ep-dur-badge" style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;z-index:2;display:none;"></div>
           </div>
           <div class="next-ep-info">
             <div class="next-ep-num" id="next-ep-num"></div>
             <div class="next-ep-name" id="next-ep-name"></div>
-            <div class="next-ep-dur" id="next-ep-dur"></div>
+            <div class="next-ep-dur" id="next-ep-dur" style="display:none;"></div>
           </div>
         </div>
       </div>
@@ -1192,16 +1197,8 @@ window.hidePlayerControls = hidePlayerControls;
     _lastTapX = tx;
     _lastTapY = ty;
 
-    // Checar se foi na posição do play/pause com controles ocultos
-    if(!_ctrlVisible && _playBtnRect){
-      var pad = 10;
-      if(tx >= _playBtnRect.left - pad && tx <= _playBtnRect.right + pad &&
-         ty >= _playBtnRect.top - pad && ty <= _playBtnRect.bottom + pad){
-        togglePlay();
-        showPlayerControls();
-        return;
-      }
-    }
+    // Single tap: sempre só mostra/oculta controles
+    // Play/pause só via botão visível ou double tap no centro
     togglePlayerControls();
   }, {passive: false});
 
@@ -2051,10 +2048,12 @@ function renderNextEp(){
   var nextEp=a.episodes[nextIdx];
   if(sec)sec.style.display='block';
   var numEl=g('next-ep-num');var nameEl=g('next-ep-name');var durEl=g('next-ep-dur');var thumbEl=g('next-ep-thumb');var card=g('next-ep-card');
-  if(numEl)numEl.textContent='E'+(nextIdx+1);
-  if(nameEl)nameEl.textContent=nextEp.name;
+  if(numEl)numEl.textContent=(nextIdx+1)+'. '+nextEp.name;
+  if(nameEl)nameEl.textContent=audioLabel(a.audio);
   var dur=nextEp.duration>0?Math.floor(nextEp.duration/60)+'m':'';
   if(durEl)durEl.textContent=dur;
+  var durBadge=g('next-ep-dur-badge');
+  if(durBadge){if(dur){durBadge.textContent=dur;durBadge.style.display='block';}else{durBadge.style.display='none';}}
   if(thumbEl){
     var oldImg=thumbEl.querySelector('img');if(oldImg)oldImg.remove();
     if(nextEp.coverUrl){
