@@ -105,7 +105,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:.25;}
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
-.p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;margin-top:1px;}
+.p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;}
 .card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;}
 .card-ctx-overlay{position:fixed;inset:0;z-index:9799;}
 .card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;}
@@ -775,7 +775,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         ontouchend="this.style.transform='scale(1)';this.style.opacity='1';if(!this._cancelled){continueWatching();}"
         ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
         onclick="continueWatching()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
         <span id="detail-continue-label" style="font-size:15px;font-weight:800;color:#000;">Começar A Assistir E1</span>
       </button>
       <button id="detail-queue-btn" ontouchend="event.preventDefault();toggleDetailQueue();" onclick="toggleDetailQueue()" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,border-color .2s;">
@@ -1321,11 +1321,9 @@ function mkPC(a,fn){
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
-    '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">'+
-      '<div style="flex:1;min-width:0;">'+
-        '<div class="p-card-name">'+a.name+'</div>'+
-        '<div class="p-card-sub">'+audioLabel(a.audio)+'</div>'+
-      '</div>'+
+    '<div class="p-card-name">'+a.name+'</div>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">'+
+      '<div class="p-card-sub">'+audioLabel(a.audio)+'</div>'+
       '<button class="p-card-menu-btn" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
     '</div>'+
   '</div>';
