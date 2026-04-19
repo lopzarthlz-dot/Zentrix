@@ -652,7 +652,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
             ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
             onclick="heroPlay()">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
-            <span id="hero-play-label" style="font-size:15px;font-weight:800;color:#000;">Continuar</span>
+            <span id="hero-play-label" style="font-size:16px;font-weight:800;color:#000;">Continuar</span>
           </button>
           <button id="hero-bookmark-btn" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s,opacity .15s,background .2s,border-color .2s;"
             ontouchstart="this.style.transform='scale(0.9)';this.style.opacity='0.8';this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
@@ -789,7 +789,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
         onclick="continueWatching()">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
-        <span id="detail-continue-label" style="font-size:15px;font-weight:800;color:#000;">Começar A Assistir E1</span>
+        <span id="detail-continue-label" style="font-size:16px;font-weight:800;color:#000;">Começar A Assistir E1</span>
       </button>
       <button id="detail-queue-btn" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s,opacity .15s,background .2s,border-color .2s;"
         ontouchstart="this.style.transform='scale(0.9)';this.style.opacity='0.8';this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
@@ -1351,9 +1351,9 @@ function mkPC(a,fn){
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">'+
+    '<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:4px;">'+
       '<div class="p-card-sub">'+audioLabel(a.audio)+'</div>'+
-      '<button class="p-card-menu-btn" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
+      '<button class="p-card-menu-btn" ontouchstart="event.stopPropagation();" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
     '</div>'+
   '</div>';
 }
@@ -1442,9 +1442,32 @@ function renderHome(){
   var favs=items.filter(function(x){return x.fav;});
   var has=items.length>0||savedItems.length>0;
   var empty=g('home-empty');if(empty)empty.style.display=has?'none':'flex';
-  if(watching.length>0){heroItemId=watching[0].id;g('hero-badge').textContent='▶ Continue assistindo';g('hero-title').textContent=watching[0].name;g('hero-sub').textContent='Anime · '+audioLabel(watching[0].audio);var lbl=g('hero-play-label');if(lbl)lbl.textContent='Continuar';}
-  else if(items.length>0){heroItemId=items[0].id;g('hero-badge').textContent='📋 Sua lista';g('hero-title').textContent=items[0].name;g('hero-sub').textContent='Anime';var lbl2=g('hero-play-label');if(lbl2)lbl2.textContent='Assistir';}
-  else{heroItemId=null;}
+  if(watching.length>0){
+    var hw = watching[0];
+    heroItemId = hw.id;
+    g('hero-badge').textContent='▶ Continue assistindo';
+    g('hero-title').textContent=hw.name;
+    g('hero-sub').textContent='Anime · '+audioLabel(hw.audio);
+    var lbl=g('hero-play-label');
+    if(lbl){
+      var eps=hw.episodes||[];
+      var allWatched=eps.length>0&&eps.every(function(ep){return ep.watched;});
+      var hasProgress=eps.some(function(ep){return ep.savedTime&&ep.savedTime>0&&!ep.watched;});
+      var nextIdx=-1;
+      for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}
+      if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
+      if(allWatched) lbl.textContent='Começar A Assistir';
+      else if(hasProgress) lbl.textContent='Continue Assistindo E'+(nextIdx+1);
+      else lbl.textContent='Começar A Assistir E'+(nextIdx>=0?nextIdx+1:1);
+    }
+  } else if(items.length>0){
+    heroItemId=items[0].id;
+    g('hero-badge').textContent='📋 Sua lista';
+    g('hero-title').textContent=items[0].name;
+    g('hero-sub').textContent='Anime';
+    var lbl2=g('hero-play-label');
+    if(lbl2) lbl2.textContent='Começar A Assistir E1';
+  } else{heroItemId=null;}
   updateHeroBookmark();
   function showSec(id,rowId,data,fn){var sec=g(id),row=g(rowId);if(!sec||!row)return;if(data.length){sec.style.display='block';row.innerHTML=data.slice(0,10).map(fn).join('');}else sec.style.display='none';}
 
@@ -1489,17 +1512,16 @@ function heroBookmark(){
   if(!heroItemId) return;
   var a = items.find(function(x){ return x.id === heroItemId; });
   if(!a) return;
-  // Toggle salvo
   var idx = -1;
   for(var i=0;i<savedItems.length;i++){ if(savedItems[i].name.toLowerCase()===a.name.toLowerCase()){idx=i;break;} }
   if(idx >= 0){
     savedItems.splice(idx, 1);
     saveSaved();
-    showToast('Removido da Zentrilista!', '★');
+    showToast('Removido da Fila!', '★');
   } else {
     savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
     saveSaved();
-    showToast('Adicionado à Zentrilista!', '⭐');
+    showToast('Adicionado à Fila!', '✓');
   }
   updateHeroBookmark();
 }
@@ -1507,9 +1529,15 @@ function updateHeroBookmark(){
   if(!heroItemId) return;
   var a = items.find(function(x){ return x.id === heroItemId; });
   var icon = g('hero-bookmark-icon');
+  var btn = g('hero-bookmark-btn');
   if(!icon || !a) return;
   var isSaved = savedItems.some(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
-  icon.setAttribute('fill', isSaved ? 'currentColor' : 'none');
+  icon.setAttribute('fill', isSaved ? 'var(--purple)' : 'none');
+  icon.setAttribute('stroke', isSaved ? 'var(--purple)' : 'rgba(255,255,255,.8)');
+  if(btn){
+    btn.style.background = isSaved ? 'rgba(139,92,246,.25)' : 'rgba(255,255,255,.08)';
+    btn.style.borderColor = isSaved ? 'rgba(139,92,246,.6)' : 'rgba(255,255,255,.2)';
+  }
 }
 window.heroBookmark = heroBookmark;
 function heroPlay(){if(!heroItemId){openModal('add-modal');return;}openDetail(heroItemId);}
@@ -1664,10 +1692,10 @@ function updateContinueBar(){
   var lbl = g('detail-continue-label');
 
   if(allWatched){
-    // Estado 3: todos assistidos — "Começar A Assistir"
+    // Estado 3: todos assistidos — igual a nunca assistido
     bar.style.display='block';
     btn.dataset.epIdx=0;
-    if(lbl) lbl.textContent='Começar A Assistir';
+    if(lbl) lbl.textContent='Começar A Assistir E1';
     return;
   }
 
