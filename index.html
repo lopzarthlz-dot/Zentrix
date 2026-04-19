@@ -1108,15 +1108,23 @@ window.pcPress=pcPress;window.pcRelease=pcRelease;window.pcCancel=pcCancel;windo
 var _ctrlTimeout = null;
 var _ctrlVisible = false;
 var _playBtnRect = null;
+var _skipBackRect = null;
+var _skipFwdRect = null;
+function _saveCtrlRects(){
+  var pb = g('play-pause-btn-overlay');
+  if(pb) _playBtnRect = pb.getBoundingClientRect();
+  var sb = g('skip-back-btn');
+  if(sb) _skipBackRect = sb.getBoundingClientRect();
+  var sf = g('skip-fwd-btn');
+  if(sf) _skipFwdRect = sf.getBoundingClientRect();
+}
 function showPlayerControls(){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
   overlay.style.display = 'flex';
   _ctrlVisible = true;
-  // Salvar posição do botão play/pause enquanto visível
-  var pb = g('play-pause-btn-overlay');
-  if(pb) _playBtnRect = pb.getBoundingClientRect();
+  _saveCtrlRects();
   _ctrlTimeout = setTimeout(function(){
     overlay.style.display = 'none';
     _ctrlVisible = false;
@@ -1126,9 +1134,7 @@ function hidePlayerControls(){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
-  // Salva posição do botão play/pause antes de ocultar
-  var pb = g('play-pause-btn-overlay');
-  if(pb) _playBtnRect = pb.getBoundingClientRect();
+  _saveCtrlRects();
   overlay.style.display = 'none';
   _ctrlVisible = false;
 }
@@ -2242,9 +2248,10 @@ function showSkipFlash(direction, touchX){
   var btnEl = g(direction === 'back' ? 'skip-back-btn' : 'skip-fwd-btn');
   if(!area || !btnEl) return;
   var areaRect = area.getBoundingClientRect();
-  var btnRect = btnEl.getBoundingClientRect();
+  // Usa rect ao vivo se visível, senão usa o salvo
+  var btnRect = _ctrlVisible ? btnEl.getBoundingClientRect() : (direction === 'back' ? _skipBackRect : _skipFwdRect);
+  if(!btnRect || !btnRect.width) return;
 
-  // Centro vertical do botão relativo à área
   var centerY = btnRect.top + btnRect.height / 2 - areaRect.top;
 
   var numFly = document.createElement('div');
