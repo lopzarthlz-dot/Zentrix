@@ -682,10 +682,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="cards-scroll"><div class="cards-row" id="favs-row"></div></div>
     </div>
 
-    <div class="section" id="sec-saved-h" style="display:none;">
-      <div class="section-header"><div class="section-title">Salvos 💾</div></div>
-      <div class="cards-scroll"><div class="cards-row" id="saved-h-row"></div></div>
-    </div>
     <div class="empty-state" id="home-empty">
       <div class="empty-icon">🎌</div>
       <div class="empty-title">Bem-vindo ao Zentrix!</div>
@@ -1504,9 +1500,6 @@ function renderHome(){
   showSec('sec-new','new-row',novos,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
 
   showSec('sec-favs','favs-row',favs,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
-
-  var ss=g('sec-saved-h'),sr=g('saved-h-row');
-  if(ss&&sr){if(savedItems.length){ss.style.display='block';sr.innerHTML=savedItems.slice(0,8).map(mkSavedPC).join('');}else ss.style.display='none';}
 }
 function heroBookmark(){
   if(!heroItemId) return;
@@ -1528,15 +1521,20 @@ function heroBookmark(){
 function updateHeroBookmark(){
   if(!heroItemId) return;
   var a = items.find(function(x){ return x.id === heroItemId; });
-  var icon = g('hero-bookmark-icon');
   var btn = g('hero-bookmark-btn');
-  if(!icon || !a) return;
+  if(!btn || !a) return;
   var isSaved = savedItems.some(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
-  icon.setAttribute('fill', isSaved ? 'var(--purple)' : 'none');
-  icon.setAttribute('stroke', isSaved ? 'var(--purple)' : 'rgba(255,255,255,.8)');
-  if(btn){
-    btn.style.background = isSaved ? 'rgba(139,92,246,.25)' : 'rgba(255,255,255,.08)';
-    btn.style.borderColor = isSaved ? 'rgba(139,92,246,.6)' : 'rgba(255,255,255,.2)';
+  if(isSaved){
+    btn.style.background = 'transparent';
+    btn.style.borderColor = 'var(--purple)';
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--purple)" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>' +
+      '<polyline points="9,12 11,14 15,10" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' +
+    '</svg>';
+  } else {
+    btn.style.background = 'rgba(255,255,255,.08)';
+    btn.style.borderColor = 'rgba(255,255,255,.2)';
+    btn.innerHTML = '<svg id="hero-bookmark-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
   }
 }
 window.heroBookmark = heroBookmark;
