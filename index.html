@@ -1983,13 +1983,10 @@ function openPlayer(itemId,epIdx){
   var pt=g('player-title');if(pt)pt.textContent=a.name;
   var ov=g('player-overlay');if(ov)ov.classList.add('active');
   document.body.style.overflow='hidden';
-  // Salvar posição do play/pause após render
+  // Salvar posição de todos os botões após render
   setTimeout(function(){
-    var pb = g('play-pause-btn-overlay');
-    if(pb){
-      showPlayerControls();
-      setTimeout(function(){ hidePlayerControls(); _playBtnRect = pb.getBoundingClientRect(); }, 50);
-    }
+    showPlayerControls();
+    setTimeout(function(){ _saveCtrlRects(); hidePlayerControls(); }, 50);
   }, 100);
   renderEpList();
   var eps=a.episodes||[];
