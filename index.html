@@ -778,7 +778,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
         <span id="detail-continue-label" style="font-size:15px;font-weight:800;color:#000;">Começar A Assistir E1</span>
       </button>
-      <button id="detail-queue-btn" ontouchend="event.preventDefault();toggleDetailQueue();" onclick="toggleDetailQueue()" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,border-color .2s;">
+      <button id="detail-queue-btn" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s,opacity .15s,background .2s,border-color .2s;"
+        ontouchstart="this.style.transform='scale(0.9)';this.style.opacity='0.8';this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
+        ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>20||Math.abs(event.touches[0].clientY-this._sy)>20){this._c=true;this.style.transform='scale(1)';this.style.opacity='1';}"
+        ontouchend="event.preventDefault();this.style.transform='scale(1)';this.style.opacity='1';if(!this._c){toggleDetailQueue();}"
+        ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
+        onclick="toggleDetailQueue()">
         <svg id="detail-queue-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
       </button>
     </div>
@@ -1039,6 +1044,11 @@ var vid=document.getElementById('main-video');
 // ===== P-CARD PRESS EFFECT =====
 var _pcStartX, _pcStartY, _pcMoved, _pcTouched;
 function pcPress(el, e){
+  // Não animar se o toque começou num botão filho (ex: ...)
+  if(e.target && e.target.closest && e.target.closest('button') && e.target.closest('button') !== el){
+    _pcMoved = true; // cancela ação do card
+    return;
+  }
   _pcStartX = e.touches[0].clientX;
   _pcStartY = e.touches[0].clientY;
   _pcMoved = false;
