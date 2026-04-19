@@ -2026,26 +2026,44 @@ window.openPlayer=openPlayer;window.closePlayer=closePlayer;
 function goBackFromPlayer(){
   var origin = _playerOrigin;
   var ov = g('player-overlay');
+
+  // Salva progresso antes de qualquer coisa
+  if(playerItemId && playerEpIdx >= 0 && vid && vid.currentTime > 0){
+    var a = items.find(function(x){ return x.id === playerItemId; });
+    if(a && a.episodes && a.episodes[playerEpIdx]){
+      a.episodes[playerEpIdx].savedTime = vid.currentTime;
+      if(vid.duration) a.episodes[playerEpIdx].duration = vid.duration;
+      saveData();
+    }
+  }
+
+  // Se veio do detail: mostra a detail POR BAIXO antes de animar
+  if(origin === 'detail' && detailItemId){
+    var ds = g('detail-screen');
+    if(ds){
+      renderDetailEps(); updateContinueBar();
+      ds.classList.add('active');
+    }
+  } else {
+    renderHome();
+  }
+
   if(ov){
     ov.classList.add('sliding-down');
     setTimeout(function(){
+      // Para o vídeo e limpa sem renderAll (evita o pisque)
+      if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); }
+      hideLoading(); setPlayIcon(false); updateProgress(0,0);
+      playerItemId = null; playerEpIdx = -1;
       ov.classList.remove('sliding-down');
-      closePlayer();
-      if(origin === 'detail' && detailItemId){
-        setTimeout(function(){
-          var ds = g('detail-screen');
-          if(ds) ds.classList.add('active');
-        }, 50);
-      }
+      ov.classList.remove('active');
+      document.body.style.overflow = '';
     }, 340);
   } else {
-    closePlayer();
-    if(origin === 'detail' && detailItemId){
-      setTimeout(function(){
-        var ds = g('detail-screen');
-        if(ds) ds.classList.add('active');
-      }, 50);
-    }
+    if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); }
+    hideLoading(); setPlayIcon(false); updateProgress(0,0);
+    playerItemId = null; playerEpIdx = -1;
+    document.body.style.overflow = '';
   }
 }
 window.goBackFromPlayer = goBackFromPlayer;
