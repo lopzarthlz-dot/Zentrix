@@ -105,7 +105,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:.25;}
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
-.p-card-menu-btn{position:absolute;bottom:6px;right:6px;background:none;border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:14px;font-weight:700;letter-spacing:1px;line-height:1;z-index:2;}
+.p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;margin-top:1px;}
 .card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;}
 .card-ctx-overlay{position:fixed;inset:0;z-index:9799;}
 .card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;}
@@ -252,7 +252,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 @keyframes rippleWave{0%{transform:scale(0);opacity:.6;}100%{transform:scale(1);opacity:0;}}
 .tap-ripple{position:absolute;border-radius:50%;pointer-events:none;border:2px solid rgba(139,92,246,.6);animation:rippleWave 2s ease-out forwards;}
 .float-1{} .float-2{}
-.detail-screen{position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;}
+.detail-screen{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;}
 .detail-screen.active{display:flex;}
 .detail-screen::-webkit-scrollbar{width:2px;}
 .detail-screen::-webkit-scrollbar-thumb{background:var(--purple2);}
@@ -281,7 +281,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .ep-card-info{flex:1;min-width:0;padding-top:2px;}
 .ep-card-num-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ep-card-meta{display:flex;align-items:center;gap:4px;margin-top:5px;}
-.detail-continue-bar{position:sticky;bottom:0;padding:12px 16px;background:linear-gradient(to top,#000 80%,transparent);z-index:10;}
+.detail-continue-bar{position:sticky;bottom:0;padding:16px 16px 20px;background:linear-gradient(to top,#000 85%,transparent);z-index:10;}
 .detail-continue-btn{width:100%;padding:16px;border-radius:var(--radius);background:var(--grad2);border:none;color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 24px rgba(56,189,248,.3);letter-spacing:.3px;}
 .detail-add-ep{display:flex;gap:8px;padding:14px 0;border-bottom:1px solid var(--border);}
 .detail-add-ep input{flex:1;padding:9px 12px;border-radius:var(--radius2);border:1px solid var(--border2);background:var(--bg3);font-size:13px;color:var(--text);font-family:var(--font);}
@@ -939,7 +939,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div class="next-ep-title">Próximo Episódio</div>
         <div class="next-ep-card" id="next-ep-card" onclick="nextEpFromPlayer()">
           <div class="next-ep-thumb" id="next-ep-thumb">
-            <div class="next-ep-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <div class="next-ep-play" style="z-index:2;"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>
           </div>
           <div class="next-ep-info">
             <div class="next-ep-num" id="next-ep-num"></div>
@@ -1315,10 +1315,15 @@ function mkPC(a,fn){
     '<div class="p-card-img">'+
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
-    '<button class="p-card-menu-btn" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
     '<div class="p-card-glow"></div></div>'+
-    '<div class="p-card-name">'+a.name+'</div>'+
-    '<div class="p-card-sub">'+audioLabel(a.audio)+'</div></div>';
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="p-card-name">'+a.name+'</div>'+
+        '<div class="p-card-sub">'+audioLabel(a.audio)+'</div>'+
+      '</div>'+
+      '<button class="p-card-menu-btn" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
+    '</div>'+
+  '</div>';
 }
 function mkSavedPC(s){
   return '<div class="p-card" onclick="startFromSaved(\''+s.id+'\')">'+
@@ -1993,10 +1998,12 @@ function renderNextEp(){
   var dur=nextEp.duration>0?Math.floor(nextEp.duration/60)+'m':'';
   if(durEl)durEl.textContent=dur;
   if(thumbEl){
-    // Remove img antiga se tiver
     var oldImg=thumbEl.querySelector('img');if(oldImg)oldImg.remove();
     if(nextEp.coverUrl){
-      var img=document.createElement('img');img.src=nextEp.coverUrl;img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';thumbEl.insertBefore(img,thumbEl.firstChild);
+      var img=document.createElement('img');
+      img.src=nextEp.coverUrl;
+      img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;border-radius:5px;';
+      thumbEl.insertBefore(img,thumbEl.firstChild);
     }
   }
   if(card)card.onclick=function(){loadEpisode(nextIdx);};
@@ -2085,8 +2092,8 @@ function loadEpisode(idx){
     vid.onerror=function(){vid.onerror=null;hideLoading();if(!ep.linkUrl)showNoFile();};
   }else{showNoFile();if(epl)epl.textContent='E'+(idx+1)+' — '+ep.name+' (sem arquivo)';}
   renderEpList();
+  renderNextEp();
 }
-window.loadEpisode=loadEpisode;
 function togglePlay(){if(!vid||!vid.src)return;if(vid.paused){vid.play().then(function(){setPlayIcon(true);}).catch(function(){});}else{vid.pause();setPlayIcon(false);}}
 function seekByClick(e){if(!vid||!vid.duration)return;var track=g('progress-track');if(!track)return;var rect=track.getBoundingClientRect();var pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));vid.currentTime=pct*vid.duration;}
 function onProgressInput(val){if(!vid||!vid.duration)return;isSeeking=true;var pct=val/10;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';}
