@@ -242,6 +242,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
 @keyframes skipNumOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}}
 @keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.7);}30%{opacity:1;transform:translateY(-50%) scale(1.1);}70%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.8);}}
+@keyframes skipCircleBack{0%{transform:rotate(0deg);}40%{transform:rotate(-38deg);}70%{transform:rotate(-28deg);}85%{transform:rotate(-32deg);}100%{transform:rotate(0deg);}}
+@keyframes skipCircleFwd{0%{transform:rotate(0deg);}40%{transform:rotate(38deg);}70%{transform:rotate(28deg);}85%{transform:rotate(32deg);}100%{transform:rotate(0deg);}}
 .skip-num-out{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:white;pointer-events:none;animation:skipNumOut .35s ease-out forwards;font-family:Arial;}
 .skip-num-fly{position:absolute;top:50%;font-size:16px;font-weight:900;color:white;pointer-events:none;animation:skipNumFly .65s ease-out forwards;font-family:Arial;white-space:nowrap;}
 /* Tela cheia falsa removida */
@@ -908,8 +910,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       </div>
       <!-- Centro subido: -10s / Play·Pause / +10s -->
       <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:40px;" onclick="event.stopPropagation()">
-        <button ontouchend="event.preventDefault();event.stopPropagation();skipBack();" onclick="event.stopPropagation();skipBack();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-          <svg width="48" height="48" viewBox="0 0 50 50" fill="none">
+        <button id="skip-back-btn" ontouchend="event.preventDefault();event.stopPropagation();skipBack();" onclick="event.stopPropagation();skipBack();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <svg id="skip-back-svg" width="48" height="48" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 0 38 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="38,9 38,18 29,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
@@ -918,8 +920,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <button id="play-pause-btn-overlay" ontouchend="event.preventDefault();event.stopPropagation();togglePlay();showPlayerControls();" onclick="event.stopPropagation();togglePlay();showPlayerControls();" style="background:none;border:none;cursor:pointer;width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
           <svg id="play-icon-overlay" width="54" height="54" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
-        <button ontouchend="event.preventDefault();event.stopPropagation();skipForward();" onclick="event.stopPropagation();skipForward();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-          <svg width="48" height="48" viewBox="0 0 50 50" fill="none">
+        <button id="skip-fwd-btn" ontouchend="event.preventDefault();event.stopPropagation();skipForward();" onclick="event.stopPropagation();skipForward();" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <svg id="skip-fwd-svg" width="48" height="48" viewBox="0 0 50 50" fill="none">
             <path d="M25 10 A15 15 0 1 1 12 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
             <polyline points="12,9 12,18 21,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
             <text x="25" y="29" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Arial">10</text>
@@ -958,12 +960,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div class="next-ep-title">Próximo Episódio</div>
         <div class="next-ep-card" id="next-ep-card" onclick="nextEpFromPlayer()">
           <div class="next-ep-thumb" id="next-ep-thumb">
-            <div class="next-ep-play" style="z-index:2;">
-              <div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
+            <div class="next-ep-play" id="next-ep-play-icon" style="z-index:2;">
+              <div id="next-ep-circle" style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;">
+                <svg id="next-ep-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
               </div>
             </div>
             <div id="next-ep-dur-badge" style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;z-index:2;display:none;"></div>
+            <div id="next-ep-prog-bar" style="display:none;position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.15);z-index:3;">
+              <div id="next-ep-prog-fill" style="height:100%;background:var(--grad2);border-radius:0;width:0%;"></div>
+            </div>
           </div>
           <div class="next-ep-info">
             <div class="next-ep-num" id="next-ep-num"></div>
@@ -1121,6 +1126,9 @@ function hidePlayerControls(){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
+  // Salva posição do botão play/pause antes de ocultar
+  var pb = g('play-pause-btn-overlay');
+  if(pb) _playBtnRect = pb.getBoundingClientRect();
   overlay.style.display = 'none';
   _ctrlVisible = false;
 }
@@ -1197,8 +1205,18 @@ window.hidePlayerControls = hidePlayerControls;
     _lastTapX = tx;
     _lastTapY = ty;
 
-    // Single tap: sempre só mostra/oculta controles
-    // Play/pause só via botão visível ou double tap no centro
+    // Se os controles estão ocultos, verifica se tocou exatamente em cima do botão play/pause
+    if(!_ctrlVisible && _playBtnRect){
+      var pad = 4; // margem mínima — só conta se foi certinho
+      if(tx >= _playBtnRect.left - pad && tx <= _playBtnRect.right + pad &&
+         ty >= _playBtnRect.top - pad && ty <= _playBtnRect.bottom + pad){
+        togglePlay();
+        showPlayerControls();
+        return;
+      }
+    }
+
+    // Qualquer outro toque → só mostra/oculta controles
     togglePlayerControls();
   }, {passive: false});
 
@@ -2050,10 +2068,54 @@ function renderNextEp(){
   var numEl=g('next-ep-num');var nameEl=g('next-ep-name');var durEl=g('next-ep-dur');var thumbEl=g('next-ep-thumb');var card=g('next-ep-card');
   if(numEl)numEl.textContent=(nextIdx+1)+'. '+nextEp.name;
   if(nameEl)nameEl.textContent=audioLabel(a.audio);
+
+  var isWatched = nextEp.watched || false;
+  var hasProg = !isWatched && nextEp.savedTime && nextEp.savedTime > 0 && nextEp.duration > 0;
+
+  // Ícone: ↺ se assistido, ▶ se não
+  var iconSvg = g('next-ep-icon-svg');
+  if(iconSvg){
+    if(isWatched){
+      iconSvg.setAttribute('viewBox','0 0 24 24');
+      iconSvg.innerHTML = '<path d="M12 5 A7 7 0 1 0 17.5 7.5" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/><polyline points="17.5,3 17.5,7.5 13,7.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+    } else {
+      iconSvg.setAttribute('viewBox','0 0 24 24');
+      iconSvg.innerHTML = '<polygon points="6,4 20,12 6,20" fill="white"/>';
+    }
+  }
+
+  // Badge de duração/status
+  var durBadge = g('next-ep-dur-badge');
+  if(durBadge){
+    if(isWatched){
+      durBadge.textContent = 'Assistido';
+      durBadge.style.display = 'block';
+    } else if(hasProg){
+      var rem = Math.floor((nextEp.duration - nextEp.savedTime) / 60);
+      durBadge.textContent = rem > 0 ? rem+'m restantes' : 'Assistido';
+      durBadge.style.display = 'block';
+    } else {
+      var dur = nextEp.duration > 0 ? Math.floor(nextEp.duration/60)+'m' : '';
+      if(dur){ durBadge.textContent = dur; durBadge.style.display = 'block'; }
+      else { durBadge.style.display = 'none'; }
+    }
+  }
+
+  // Barra de progresso
+  var progBar = g('next-ep-prog-bar');
+  var progFill = g('next-ep-prog-fill');
+  if(progBar && progFill){
+    if(hasProg){
+      var pct = Math.min(100, (nextEp.savedTime / nextEp.duration) * 100);
+      progFill.style.width = pct + '%';
+      progBar.style.display = 'block';
+    } else {
+      progBar.style.display = 'none';
+    }
+  }
+
   var dur=nextEp.duration>0?Math.floor(nextEp.duration/60)+'m':'';
   if(durEl)durEl.textContent=dur;
-  var durBadge=g('next-ep-dur-badge');
-  if(durBadge){if(dur){durBadge.textContent=dur;durBadge.style.display='block';}else{durBadge.style.display='none';}}
   if(thumbEl){
     var oldImg=thumbEl.querySelector('img');if(oldImg)oldImg.remove();
     if(nextEp.coverUrl){
@@ -2157,32 +2219,32 @@ function onProgressInput(val){if(!vid||!vid.duration)return;isSeeking=true;var p
 function onProgressChange(val){if(!vid||!vid.duration)return;vid.currentTime=(val/10/100)*vid.duration;isSeeking=false;}
 function onVolInput(val){if(!vid)return;vid.volume=val/100;var vf=g('vol-fill');if(vf)vf.style.width=val+'%';var vi=g('vol-icon');if(vi)vi.textContent=val==0?'🔇':val<50?'🔉':'🔊';}
 function showSkipFlash(direction){
+  var svgEl = g(direction === 'back' ? 'skip-back-svg' : 'skip-fwd-svg');
+  if(svgEl){
+    // Remove animação anterior se ainda tiver
+    svgEl.style.animation = 'none';
+    svgEl.offsetHeight; // reflow
+    var animName = direction === 'back' ? 'skipCircleBack' : 'skipCircleFwd';
+    svgEl.style.animation = animName + ' 0.5s ease-out forwards';
+    svgEl.style.transformOrigin = 'center center';
+    setTimeout(function(){ svgEl.style.animation = ''; }, 520);
+  }
+
+  // Número voa pro lado
   var area = g('player-video-area');
   if(!area) return;
   var areaRect = area.getBoundingClientRect();
-
-  // Posição fixa baseada na área do vídeo (não depende do overlay)
   var centerY = areaRect.height * 0.5;
   var btnX = direction === 'back' ? areaRect.width * 0.22 : areaRect.width * 0.78;
 
-  // "10" some do centro do círculo SVG
-  var numOut = document.createElement('div');
-  numOut.className = 'skip-num-out';
-  numOut.textContent = '10';
-  numOut.style.left = btnX + 'px';
-  numOut.style.top = centerY + 'px';
-  area.appendChild(numOut);
-  setTimeout(function(){ if(numOut.parentNode) numOut.parentNode.removeChild(numOut); }, 400);
-
-  // número voa pra fora do círculo, perto dele
   var numFly = document.createElement('div');
   numFly.className = 'skip-num-fly';
   numFly.textContent = direction === 'back' ? '-10' : '+10';
   numFly.style.top = centerY + 'px';
   if(direction === 'back'){
-    numFly.style.left = (btnX - 40) + 'px';
+    numFly.style.left = (btnX - 44) + 'px';
   } else {
-    numFly.style.left = (btnX + 28) + 'px';
+    numFly.style.left = (btnX + 26) + 'px';
   }
   area.appendChild(numFly);
   setTimeout(function(){ if(numFly.parentNode) numFly.parentNode.removeChild(numFly); }, 700);
