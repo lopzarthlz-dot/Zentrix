@@ -2627,39 +2627,29 @@ function openCardMenu(itemId, btn){
 
   menu.ontouchend = function(e){
     if(_rafZoom) cancelAnimationFrame(_rafZoom);
+    // Sempre volta ao tamanho normal
+    menu.style.transform = 'scale(1)';
+    clearHighlight();
+
     var t = e.changedTouches[0];
     var menuRect = menu.getBoundingClientRect();
     var insideMenu = t.clientX >= menuRect.left && t.clientX <= menuRect.right &&
                      t.clientY >= menuRect.top  && t.clientY <= menuRect.bottom;
     var el = document.elementFromPoint(t.clientX, t.clientY);
     var item = el && el.closest && el.closest('.card-ctx-item');
-    clearHighlight();
-    menu.style.transform = 'scale(1)';
 
     if(insideMenu && item && menu.contains(item)){
-      var id = item.id;
-      closeCardMenu();
-      if(id === 'ctx-assistir') ctxAssistir();
-      else if(id === 'ctx-zentrilista') ctxZentrilista();
-      else if(id === 'ctx-assistido') ctxAssistido();
-      else if(id === 'ctx-continuar') ctxContinuar();
-    } else if(!insideMenu){
+      // Toca em opção → apenas fecha
       closeCardMenu();
     }
+    // Solta fora → não fecha, só volta ao tamanho normal (já feito acima)
     e.preventDefault();
   };
 
-  // Click fallback para desktop
+  // Click fallback para desktop — apenas fecha
   var items_btns = menu.querySelectorAll('.card-ctx-item');
   items_btns.forEach(function(item){
-    item.onclick = function(){
-      var id = item.id;
-      closeCardMenu();
-      if(id === 'ctx-assistir') ctxAssistir();
-      else if(id === 'ctx-zentrilista') ctxZentrilista();
-      else if(id === 'ctx-assistido') ctxAssistido();
-      else if(id === 'ctx-continuar') ctxContinuar();
-    };
+    item.onclick = function(){ closeCardMenu(); };
   });
 
   overlay.onclick = function(){ closeCardMenu(); };
