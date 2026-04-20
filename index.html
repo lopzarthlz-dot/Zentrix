@@ -1722,7 +1722,7 @@ function renderDetailEps(){
         '</div>' +
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px;align-self:stretch;padding:4px 0;position:relative;">' +
-        '<button id="ep-dots-btn-'+i+'" ontouchstart="event.stopPropagation()" ontouchend="event.preventDefault();event.stopPropagation();openEpMenu('+i+',this)" onclick="event.stopPropagation();" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
+        '<button id="ep-dots-btn-'+i+'" ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.ep-card\'));" ontouchend="event.preventDefault();event.stopPropagation();openEpMenu('+i+',this)" onclick="event.stopPropagation();" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -2815,7 +2815,7 @@ function openCardMenu(itemId, btn){
       })();
     } else { menu.style.transform = 'scale(1)'; }
     if(insideMenu && item && menu.contains(item)){
-      setTimeout(function(){ _cardShrinkClose && _cardShrinkClose(function(){ closeCardMenu(); }); }, 60);
+      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; setTimeout(function(){ fn(function(){ _closeCardMenuImmediate(); }); },60); }
     }
     e.preventDefault();
   };
@@ -2823,7 +2823,9 @@ function openCardMenu(itemId, btn){
   // Click fallback — shrink close
   var items_btns = menu.querySelectorAll('.card-ctx-item');
   items_btns.forEach(function(item){
-    item.onclick = function(){ _cardShrinkClose && _cardShrinkClose(function(){ closeCardMenu(); }); };
+    item.onclick = function(){
+      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
+    };
   });
 
   overlay.onclick = null;
@@ -2834,6 +2836,7 @@ function openCardMenu(itemId, btn){
   // Shrink+fade on scroll
   var _cardScrollY0 = window.scrollY || window.pageYOffset || 0;
   var _cardScrollHandler = function(){
+    if(_cardMenuClosing) return;
     var dy = Math.abs((window.scrollY || window.pageYOffset || 0) - _cardScrollY0);
     var progress = Math.min(1, dy/80);
     var scale = 1 - progress * 0.35;
@@ -2844,7 +2847,9 @@ function openCardMenu(itemId, btn){
     menu.style.opacity = opacity.toFixed(3);
     if(progress >= 1){
       document.removeEventListener('scroll', _cardScrollHandler, true);
-      closeCardMenu();
+      // Already visually gone, just close immediately
+      _cardShrinkClose = null;
+      _closeCardMenuImmediate();
     }
   };
   document.addEventListener('scroll', _cardScrollHandler, true);
@@ -2856,32 +2861,25 @@ function openCardMenu(itemId, btn){
     if(!menuRect) return;
     var inside = t.clientX >= menuRect.left && t.clientX <= menuRect.right &&
                  t.clientY >= menuRect.top  && t.clientY <= menuRect.bottom;
-    if(!inside){ document.removeEventListener('touchstart', _cardOutsideHandler, true); _cardShrinkClose && _cardShrinkClose(function(){ closeCardMenu(); }); }
+    if(!inside){
+      document.removeEventListener('touchstart', _cardOutsideHandler, true);
+      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
+    }
   };
   setTimeout(function(){ document.addEventListener('touchstart', _cardOutsideHandler, true); }, 50);
 }
+function _closeCardMenuImmediate(){
+  var menu = g('card-ctx-menu');
+  var menuCW = g('card-ctx-menu-cw');
+  var overlay = g('card-ctx-overlay');
+  if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.style.pointerEvents=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
+  if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.style.pointerEvents=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
+  if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
+  _ctxItemId=null; _cardShrinkClose=null;
+}
 function closeCardMenu(){
-  if(_cardShrinkClose){
-    var fn = _cardShrinkClose;
-    _cardShrinkClose = null;
-    fn(function(){
-      var menu = g('card-ctx-menu');
-      var menuCW = g('card-ctx-menu-cw');
-      var overlay = g('card-ctx-overlay');
-      if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.style.pointerEvents=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
-      if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.style.pointerEvents=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
-      if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
-      _ctxItemId = null;
-    });
-  } else {
-    var menu = g('card-ctx-menu');
-    var menuCW = g('card-ctx-menu-cw');
-    var overlay = g('card-ctx-overlay');
-    if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
-    if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
-    if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
-    _ctxItemId = null;
-  }
+  if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
+  else _closeCardMenuImmediate();
 }
 function ctxAssistir(){
   if(!_ctxItemId) return;
