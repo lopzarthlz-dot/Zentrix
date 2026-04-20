@@ -1426,6 +1426,7 @@ function mkCW(a){
             : '<div class="cw-thumb-emoji">⚔️</div>')
       ) +
       '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.92) 0%,rgba(8,8,15,.3) 55%,transparent 100%);pointer-events:none;"></div>' +
+      '<button onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this)" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this)" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:1;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:2;backdrop-filter:blur(4px);">···</button>' +
       '<div class="cw-play-ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="8,6 26,16 8,26" fill="white"/></svg></div>' +
       (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
       '<div class="cw-info">' +
