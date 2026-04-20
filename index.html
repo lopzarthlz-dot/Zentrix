@@ -1771,6 +1771,33 @@ function updateContinueBar(){
 var _epMenuIdx = -1;
 var _epMenuBtn = null;
 var _epMenuClosing = false;
+var _epShrinkClose = null; // set per-open, references current popover
+
+// Immediate close without animation (called after animation completes)
+function _closeEpMenuImmediate(){
+  var menu=g('ep-menu'),popover=g('ep-menu-popover');
+  if(menu){menu.style.display='none';menu.style.pointerEvents='';}
+  if(popover){
+    popover.style.transform='scale(1)'; popover.style.opacity='1'; popover.style.transition='';
+    popover.style.pointerEvents='';
+    popover.ontouchstart=null; popover.ontouchmove=null; popover.ontouchend=null; popover.onclick=null;
+    popover.querySelectorAll('button').forEach(function(b){ b.style.background='none'; b.disabled=false; b.style.color='#fff'; b.style.cursor='pointer'; });
+  }
+  if(_epMenuBtn){_epMenuBtn.style.opacity='1';_epMenuBtn=null;}
+  _epMenuIdx=-1;
+  _epShrinkClose=null;
+  setTimeout(function(){_epMenuClosing=false;},60);
+}
+
+// Public close — always animates if possible
+function closeEpMenu(){
+  if(_epMenuClosing) return;
+  if(_epShrinkClose){
+    _epShrinkClose(function(){ _closeEpMenuImmediate(); });
+  } else {
+    _closeEpMenuImmediate();
+  }
+}
 function openEpMenu(idx, btn){
   if(_epMenuClosing) return;
   var menu = g('ep-menu');
@@ -1828,14 +1855,22 @@ function openEpMenu(idx, btn){
   else { top=Math.max(margin,(window.innerHeight-popH)/2); popover.style.transformOrigin='center right'; _toOrigin='center right'; }
   popover.style.left=left+'px'; popover.style.top=top+'px';
 
-  // Shrink-to-origin close animation helper
-  function animateShrinkClose(cb){
+  // Store shrink close globally so closeEpMenu can always use it
+  _epShrinkClose = function(cb){
+    if(_epMenuClosing) return; // already animating
+    _epMenuClosing = true;
+    // Block further touch interactions immediately
+    popover.style.pointerEvents = 'none';
     popover.style.transition = 'transform 0.22s cubic-bezier(.4,0,.6,1), opacity 0.22s ease';
     popover.style.transformOrigin = _toOrigin;
     popover.style.transform = 'scale(0)';
     popover.style.opacity = '0';
-    setTimeout(function(){ popover.style.transition=''; if(cb) cb(); }, 230);
-  }
+    setTimeout(function(){
+      popover.style.transition = '';
+      _epMenuClosing = false;
+      if(cb) cb();
+    }, 230);
+  };
 
   var _epHl=null, _epRaf=null;
   function clrHl(){ if(_epHl){ _epHl.style.background='none'; _epHl=null; } }
@@ -1843,6 +1878,7 @@ function openEpMenu(idx, btn){
   // Progressive fade+shrink on scroll
   var _epScrollY0 = window.scrollY || window.pageYOffset || 0;
   var _epScrollHandler = function(){
+    if(_epMenuClosing) return;
     var dy = Math.abs((window.scrollY || window.pageYOffset || 0) - _epScrollY0);
     var progress = Math.min(1, dy/80);
     var scale = 1 - progress * 0.35;
@@ -1853,7 +1889,7 @@ function openEpMenu(idx, btn){
     popover.style.opacity = opacity.toFixed(3);
     if(progress >= 1){
       document.removeEventListener('scroll', _epScrollHandler, true);
-      closeEpMenu();
+      _epShrinkClose(function(){ _closeEpMenuImmediate(); });
     }
   };
   document.addEventListener('scroll', _epScrollHandler, true);
@@ -1862,7 +1898,7 @@ function openEpMenu(idx, btn){
     var r=popover.getBoundingClientRect(),t=e.touches?e.touches[0]:e;
     if(!(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom)){
       document.removeEventListener('touchstart',_epOut,true);
-      animateShrinkClose(function(){ closeEpMenu(); });
+      _epShrinkClose(function(){ _closeEpMenuImmediate(); });
     }
   };
   setTimeout(function(){ document.addEventListener('touchstart',_epOut,true); },80);
@@ -1903,33 +1939,18 @@ function openEpMenu(idx, btn){
     else popover.style.transform='scale(1)';
     if(ins&&item&&popover.contains(item)&&!item.disabled){
       var si=_epMenuIdx,ip=item.id==='ep-menu-play',iw=item.id==='ep-menu-watched';
-      if(ip||iw){ setTimeout(function(){ animateShrinkClose(function(){ closeEpMenu(); if(ip) epMenuPlay(si); else if(iw) epMenuToggleWatched(si); }); },60); }
+      if(ip||iw){ _epShrinkClose(function(){ _closeEpMenuImmediate(); if(ip) epMenuPlay(si); else if(iw) epMenuToggleWatched(si); }); }
     }
   };
   popover.onclick=function(e){e.stopPropagation();};
-  if(playBtn) playBtn.onclick=function(e){ e.stopPropagation(); var i=_epMenuIdx; animateShrinkClose(function(){ closeEpMenu(); epMenuPlay(i); }); };
+  if(playBtn) playBtn.onclick=function(e){ e.stopPropagation(); var i=_epMenuIdx; _epShrinkClose(function(){ _closeEpMenuImmediate(); epMenuPlay(i); }); };
   if(watchedBtn) watchedBtn.onclick=function(e){
     e.stopPropagation();
     if(watchedBtn.disabled) return;
     var i=_epMenuIdx;
-    animateShrinkClose(function(){ closeEpMenu(); epMenuToggleWatched(i); });
+    _epShrinkClose(function(){ _closeEpMenuImmediate(); epMenuToggleWatched(i); });
   };
 }
-function closeEpMenu(){
-  _epMenuClosing=true;
-  var menu=g('ep-menu'),popover=g('ep-menu-popover');
-  if(menu){menu.style.display='none';menu.style.pointerEvents='';}
-  if(popover){
-    popover.style.transform='scale(1)'; popover.style.opacity='1'; popover.style.transition='';
-    popover.style.pointerEvents='';
-    popover.ontouchstart=null; popover.ontouchmove=null; popover.ontouchend=null; popover.onclick=null;
-    popover.querySelectorAll('button').forEach(function(b){ b.style.background='none'; b.disabled=false; b.style.color='#fff'; b.style.cursor='pointer'; });
-  }
-  if(_epMenuBtn){_epMenuBtn.style.opacity='1';_epMenuBtn=null;}
-  _epMenuIdx=-1;
-  setTimeout(function(){_epMenuClosing=false;},60);
-}
-
 window.closeEpMenu = closeEpMenu;
 function epMenuPlay(idx){
   var playIdx = (idx !== undefined) ? idx : _epMenuIdx;
@@ -2639,6 +2660,7 @@ document.addEventListener('visibilitychange',function(){
 
 // ===== CARD CONTEXT MENU =====
 var _ctxItemId = null;
+var _cardShrinkClose = null; // set per-open
 function openCardMenu(itemId, btn){
   _ctxItemId = itemId;
   var a = items.find(function(x){ return x.id === itemId; });
@@ -2757,16 +2779,20 @@ function openCardMenu(itemId, btn){
     }
   };
 
-  // Save transform origin for shrink animation
+  // Save transform origin for shrink animation — stored globally so closeCardMenu can use it
   var _cardToOrigin = menu.style.transformOrigin || 'bottom right';
+  var _cardMenuClosing = false;
 
-  function cardShrinkClose(cb){
+  _cardShrinkClose = function(cb){
+    if(_cardMenuClosing) return;
+    _cardMenuClosing = true;
+    menu.style.pointerEvents = 'none';
     menu.style.transition = 'transform 0.22s cubic-bezier(.4,0,.6,1), opacity 0.22s ease';
     menu.style.transformOrigin = _cardToOrigin;
     menu.style.transform = 'scale(0)';
     menu.style.opacity = '0';
-    setTimeout(function(){ menu.style.transition=''; if(cb) cb(); }, 230);
-  }
+    setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 230);
+  };
 
   menu.ontouchend = function(e){
     _touchStartedInMenu = false;
@@ -2789,7 +2815,7 @@ function openCardMenu(itemId, btn){
       })();
     } else { menu.style.transform = 'scale(1)'; }
     if(insideMenu && item && menu.contains(item)){
-      setTimeout(function(){ cardShrinkClose(function(){ closeCardMenu(); }); }, 60);
+      setTimeout(function(){ _cardShrinkClose && _cardShrinkClose(function(){ closeCardMenu(); }); }, 60);
     }
     e.preventDefault();
   };
@@ -2797,7 +2823,7 @@ function openCardMenu(itemId, btn){
   // Click fallback — shrink close
   var items_btns = menu.querySelectorAll('.card-ctx-item');
   items_btns.forEach(function(item){
-    item.onclick = function(){ cardShrinkClose(function(){ closeCardMenu(); }); };
+    item.onclick = function(){ _cardShrinkClose && _cardShrinkClose(function(){ closeCardMenu(); }); };
   });
 
   overlay.onclick = null;
@@ -2830,18 +2856,32 @@ function openCardMenu(itemId, btn){
     if(!menuRect) return;
     var inside = t.clientX >= menuRect.left && t.clientX <= menuRect.right &&
                  t.clientY >= menuRect.top  && t.clientY <= menuRect.bottom;
-    if(!inside){ document.removeEventListener('touchstart', _cardOutsideHandler, true); cardShrinkClose(function(){ closeCardMenu(); }); }
+    if(!inside){ document.removeEventListener('touchstart', _cardOutsideHandler, true); _cardShrinkClose && _cardShrinkClose(function(){ closeCardMenu(); }); }
   };
   setTimeout(function(){ document.addEventListener('touchstart', _cardOutsideHandler, true); }, 50);
 }
 function closeCardMenu(){
-  var menu = g('card-ctx-menu');
-  var menuCW = g('card-ctx-menu-cw');
-  var overlay = g('card-ctx-overlay');
-  if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
-  if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
-  if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
-  _ctxItemId = null;
+  if(_cardShrinkClose){
+    var fn = _cardShrinkClose;
+    _cardShrinkClose = null;
+    fn(function(){
+      var menu = g('card-ctx-menu');
+      var menuCW = g('card-ctx-menu-cw');
+      var overlay = g('card-ctx-overlay');
+      if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.style.pointerEvents=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
+      if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.style.pointerEvents=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
+      if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
+      _ctxItemId = null;
+    });
+  } else {
+    var menu = g('card-ctx-menu');
+    var menuCW = g('card-ctx-menu-cw');
+    var overlay = g('card-ctx-overlay');
+    if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
+    if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
+    if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
+    _ctxItemId = null;
+  }
 }
 function ctxAssistir(){
   if(!_ctxItemId) return;
