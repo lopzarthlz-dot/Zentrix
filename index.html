@@ -107,7 +107,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
 .p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;align-self:center;}
 .card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;transform-origin:bottom right;will-change:transform;}
-.card-ctx-overlay{position:fixed;inset:0;z-index:9799;background:transparent;}
+.card-ctx-overlay{position:fixed;inset:0;z-index:9799;background:transparent;pointer-events:none;}
 .card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;transition:background .1s;}
 .card-ctx-item:last-child{border-bottom:none;}
 .card-ctx-item.highlighted{background:rgba(255,255,255,.12);}
@@ -1722,7 +1722,7 @@ function renderDetailEps(){
         '</div>' +
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px;align-self:stretch;padding:4px 0;position:relative;">' +
-        '<button id="ep-dots-btn-'+i+'" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation();openEpMenu('+i+',this)" onclick="event.stopPropagation();openEpMenu('+i+',this)" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
+        '<button id="ep-dots-btn-'+i+'" ontouchstart="event.stopPropagation()" ontouchend="event.preventDefault();event.stopPropagation();openEpMenu('+i+',this)" onclick="event.stopPropagation();" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -1946,9 +1946,8 @@ function openEpMenu(idx, btn){
       var isPlay = item.id === 'ep-menu-play';
       var isWatched = item.id === 'ep-menu-watched';
       setTimeout(function(){
-        closeEpMenu();
-        if(isPlay) epMenuPlay(savedIdx);
-        else if(isWatched) epMenuToggleWatched();
+        if(isPlay){ closeEpMenu(); epMenuPlay(savedIdx); }
+        else if(isWatched){ var idxToUse = savedIdx; closeEpMenu(); epMenuToggleWatched(idxToUse); }
       }, 100);
     }
     // Solta fora → não fecha, só spring-back
@@ -1992,10 +1991,11 @@ function epMenuPlay(idx){
   closeEpMenu();
   playEpFromDetail(playIdx);
 }
-function epMenuToggleWatched(){
+function epMenuToggleWatched(idx){
+  var useIdx = (idx !== undefined) ? idx : _epMenuIdx;
   var a = items.find(function(x){ return x.id === detailItemId; });
-  if(!a || !a.episodes || !a.episodes[_epMenuIdx]) return;
-  var ep = a.episodes[_epMenuIdx];
+  if(!a || !a.episodes || !a.episodes[useIdx]) return;
+  var ep = a.episodes[useIdx];
   ep.watched = !ep.watched;
   if(ep.watched) ep.savedTime = ep.duration || 0;
   saveData();
@@ -2847,21 +2847,25 @@ function openCardMenu(itemId, btn){
     item.onclick = function(){ closeCardMenu(); };
   });
 
-  overlay.ontouchstart = function(e){ 
-    _touchStartedInMenu = false; 
-    overlay._startY = e.touches[0].clientY;
-    overlay._startX = e.touches[0].clientX;
-    overlay._moved = false;
+  overlay.onclick = null;
+  overlay.ontouchstart = null;
+  overlay.ontouchmove = null;
+  overlay.ontouchend = null;
+
+  // Close on scroll or tap outside menu
+  var _cardScrollHandler = function(){ closeCardMenu(); document.removeEventListener('scroll', _cardScrollHandler, true); };
+  document.addEventListener('scroll', _cardScrollHandler, true);
+
+  var _activeMenu = isCW ? g('card-ctx-menu-cw') : g('card-ctx-menu');
+  var _cardOutsideHandler = function(e){
+    var menuRect = _activeMenu ? _activeMenu.getBoundingClientRect() : null;
+    var t = e.touches ? e.touches[0] : e;
+    if(!menuRect) return;
+    var inside = t.clientX >= menuRect.left && t.clientX <= menuRect.right &&
+                 t.clientY >= menuRect.top  && t.clientY <= menuRect.bottom;
+    if(!inside){ closeCardMenu(); document.removeEventListener('touchstart', _cardOutsideHandler, true); }
   };
-  overlay.ontouchmove = function(e){
-    var dy = Math.abs(e.touches[0].clientY - overlay._startY);
-    var dx = Math.abs(e.touches[0].clientX - overlay._startX);
-    if(dy > 8 || dx > 8){ overlay._moved = true; closeCardMenu(); }
-  };
-  overlay.ontouchend = function(){
-    if(!overlay._moved) closeCardMenu();
-  };
-  overlay.onclick = function(){ closeCardMenu(); };
+  setTimeout(function(){ document.addEventListener('touchstart', _cardOutsideHandler, true); }, 50);
 }
 function closeCardMenu(){
   var menu = g('card-ctx-menu');
