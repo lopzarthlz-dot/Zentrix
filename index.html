@@ -106,7 +106,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
 .p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;align-self:center;}
-.card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;transform-origin:top right;transition:transform .15s ease;}
+.card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;transform-origin:bottom right;will-change:transform;}
 .card-ctx-overlay{position:fixed;inset:0;z-index:9799;}
 .card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;transition:background .1s;}
 .card-ctx-item:last-child{border-bottom:none;}
@@ -2540,23 +2540,42 @@ function openCardMenu(itemId, btn){
   if(continuarBtn) continuarBtn.style.display = isCW ? 'block' : 'none';
   if(infosBtn) infosBtn.style.display = isCW ? 'block' : 'none';
 
-  // Posicionar o menu perto do botão
+  // Posicionar o menu perto do botão — nunca tampar o botão, nunca sair da tela
   var rect = btn.getBoundingClientRect();
-  var menuW = 220;
-  var menuH = menu.offsetHeight || 200;
-  var left = rect.left - menuW + rect.width;
-  var top = rect.bottom + 6;
-  if(top + menuH > window.innerHeight - 20) top = rect.top - menuH - 6;
-  if(left < 8) left = 8;
+  menu.style.display = 'block';
+  menu.style.transform = 'scale(1)';
+  var menuW = menu.offsetWidth || 220;
+  var menuH = menu.offsetHeight || 180;
+  var margin = 8;
+
+  // Horizontal: alinha pela direita do botão
+  var left = rect.right - menuW;
+  if(left < margin) left = margin;
+  if(left + menuW > window.innerWidth - margin) left = window.innerWidth - menuW - margin;
+
+  // Vertical: tenta acima do botão primeiro
+  var topAbove = rect.top - menuH - 6;
+  var topBelow = rect.bottom + 6;
+  var top;
+  if(topAbove >= margin){
+    top = topAbove;
+    menu.style.transformOrigin = 'bottom right';
+  } else if(topBelow + menuH <= window.innerHeight - margin){
+    top = topBelow;
+    menu.style.transformOrigin = 'top right';
+  } else {
+    // Não cabe nem acima nem abaixo — centraliza verticalmente
+    top = Math.max(margin, (window.innerHeight - menuH) / 2);
+    menu.style.transformOrigin = 'center right';
+  }
 
   menu.style.left = left + 'px';
   menu.style.top = top + 'px';
-  menu.style.transform = 'scale(1)';
-  menu.style.display = 'block';
   overlay.style.display = 'block';
 
-  // Touch: highlight + zoom dinâmico
+  // Touch: highlight + zoom dinâmico suave
   var _highlighted = null;
+  var _rafZoom = null;
   function clearHighlight(){ if(_highlighted){ _highlighted.classList.remove('highlighted'); _highlighted = null; } }
 
   overlay.ontouchstart = null;
@@ -2564,44 +2583,67 @@ function openCardMenu(itemId, btn){
   overlay.ontouchend = null;
 
   menu.ontouchstart = function(e){
-    var item = e.target.closest('.card-ctx-item');
+    var item = e.target.closest && e.target.closest('.card-ctx-item');
     clearHighlight();
     if(item){ _highlighted = item; item.classList.add('highlighted'); }
   };
 
   menu.ontouchmove = function(e){
+    e.preventDefault();
     var t = e.touches[0];
+    var menuRect = menu.getBoundingClientRect();
+    var insideMenu = t.clientX >= menuRect.left && t.clientX <= menuRect.right &&
+                     t.clientY >= menuRect.top  && t.clientY <= menuRect.bottom;
     var el = document.elementFromPoint(t.clientX, t.clientY);
     var item = el && el.closest && el.closest('.card-ctx-item');
     clearHighlight();
-    if(item && menu.contains(item)){
-      _highlighted = item; item.classList.add('highlighted');
-      menu.style.transform = 'scale(1)';
+
+    var curScale = parseFloat((menu.style.transform||'scale(1)').replace('scale(','')) || 1;
+
+    if(insideMenu){
+      if(item && menu.contains(item)){ _highlighted = item; item.classList.add('highlighted'); }
+      if(_rafZoom) cancelAnimationFrame(_rafZoom);
+      if(curScale < 0.999){
+        (function animIn(){
+          curScale = Math.min(1, curScale + 0.06);
+          menu.style.transform = 'scale('+curScale.toFixed(3)+')';
+          if(curScale < 1) _rafZoom = requestAnimationFrame(animIn);
+        })();
+      } else { menu.style.transform = 'scale(1)'; }
     } else {
-      // Fora do menu — zoom proporcional à distância
-      var menuRect = menu.getBoundingClientRect();
       var dx = Math.max(0, Math.max(menuRect.left - t.clientX, t.clientX - menuRect.right));
-      var dy = Math.max(0, Math.max(menuRect.top - t.clientY, t.clientY - menuRect.bottom));
+      var dy = Math.max(0, Math.max(menuRect.top  - t.clientY, t.clientY - menuRect.bottom));
       var dist = Math.sqrt(dx*dx + dy*dy);
-      var scale = Math.max(0.7, 1 - dist/300);
-      menu.style.transform = 'scale('+scale+')';
+      var targetScale = Math.max(0.72, 1 - dist/260);
+      if(_rafZoom) cancelAnimationFrame(_rafZoom);
+      (function animOut(){
+        curScale = curScale + (targetScale - curScale) * 0.3;
+        menu.style.transform = 'scale('+curScale.toFixed(3)+')';
+        if(Math.abs(curScale - targetScale) > 0.003) _rafZoom = requestAnimationFrame(animOut);
+        else menu.style.transform = 'scale('+targetScale.toFixed(3)+')';
+      })();
     }
   };
 
   menu.ontouchend = function(e){
+    if(_rafZoom) cancelAnimationFrame(_rafZoom);
     var t = e.changedTouches[0];
+    var menuRect = menu.getBoundingClientRect();
+    var insideMenu = t.clientX >= menuRect.left && t.clientX <= menuRect.right &&
+                     t.clientY >= menuRect.top  && t.clientY <= menuRect.bottom;
     var el = document.elementFromPoint(t.clientX, t.clientY);
     var item = el && el.closest && el.closest('.card-ctx-item');
     clearHighlight();
     menu.style.transform = 'scale(1)';
-    if(item && menu.contains(item)){
+
+    if(insideMenu && item && menu.contains(item)){
       var id = item.id;
       closeCardMenu();
       if(id === 'ctx-assistir') ctxAssistir();
       else if(id === 'ctx-zentrilista') ctxZentrilista();
       else if(id === 'ctx-assistido') ctxAssistido();
       else if(id === 'ctx-continuar') ctxContinuar();
-    } else {
+    } else if(!insideMenu){
       closeCardMenu();
     }
     e.preventDefault();
