@@ -1150,49 +1150,6 @@ window.togglePlayerControls = togglePlayerControls;
 window.showPlayerControls = showPlayerControls;
 window.hidePlayerControls = hidePlayerControls;
 
-function showPlayerControlsBrief(activeBtnId){
-  var overlay = g('player-ctrl-overlay');
-  if(!overlay) return;
-  clearTimeout(_ctrlTimeout);
-  overlay.style.display = 'flex';
-  _ctrlVisible = false;
-
-  var allBtns = overlay.querySelectorAll('button');
-
-  // Apaga os outros rapidinho, mantém o ativo branco
-  allBtns.forEach(function(btn){
-    btn.style.transition = '';
-    btn.style.opacity = (btn.id === activeBtnId) ? '1' : '0.2';
-  });
-
-  // Após 300ms some os cinzas com fade
-  setTimeout(function(){
-    allBtns.forEach(function(btn){
-      if(btn.id !== activeBtnId){
-        btn.style.transition = 'opacity 0.2s ease';
-        btn.style.opacity = '0';
-      }
-    });
-  }, 300);
-
-  // Após 600ms some o botão ativo também e restaura tudo
-  _ctrlTimeout = setTimeout(function(){
-    allBtns.forEach(function(btn){
-      btn.style.transition = 'opacity 0.2s ease';
-      btn.style.opacity = '0';
-    });
-    setTimeout(function(){
-      allBtns.forEach(function(btn){
-        btn.style.transition = '';
-        btn.style.opacity = '';
-      });
-      overlay.style.display = 'none';
-      _ctrlVisible = false;
-    }, 200);
-  }, 600);
-}
-window.showPlayerControlsBrief = showPlayerControlsBrief;
-
 // Touch instantâneo na área do vídeo (sem delay de 300ms do iOS)
 (function(){
   var area = g('player-video-area');
@@ -1240,11 +1197,11 @@ window.showPlayerControlsBrief = showPlayerControlsBrief;
       if(relX < leftZone){
         // Zona esquerda → volta 10s
         skipBack();
-        if(_ctrlVisible){ showPlayerControls(); } else { showPlayerControlsBrief('skip-back-btn'); }
+        if(_ctrlVisible) showPlayerControls();
       } else if(relX > rightZone){
         // Zona direita → avança 10s
         skipForward();
-        if(_ctrlVisible){ showPlayerControls(); } else { showPlayerControlsBrief('skip-fwd-btn'); }
+        if(_ctrlVisible) showPlayerControls();
       } else {
         // Centro → toggle play/pause
         togglePlay();
