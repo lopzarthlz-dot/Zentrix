@@ -503,7 +503,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div id="profile-loading-content" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;transition:opacity .4s ease;margin-top:100px;">
     <div id="profile-loading-welcome" style="font-size:24px;font-weight:800;color:#fff;text-align:center;"></div>
     <div style="font-size:14px;color:rgba(255,255,255,.55);text-align:center;">Um segundo, aumentando níveis de poder...</div>
-    <div style="margin-top:12px;width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:rgba(255,255,255,.7);animation:spinLoader .8s linear infinite;"></div>
+    <div style="margin-top:12px;width:32px;height:32px;border-radius:50%;border:3px solid rgba(0,212,255,.15);border-top-color:#00d4ff;animation:spinLoader .8s linear infinite;box-shadow:0 0 10px rgba(0,212,255,.4);"></div>
   </div>
 </div>
 
@@ -2840,8 +2840,9 @@ function openCardMenu(itemId, btn){
 
   // Shrink+fade on scroll
   var _cardScrollY0 = window.scrollY || window.pageYOffset || 0;
+  var _cardScrollDone = false;
   var _cardScrollHandler = function(){
-    if(_cardMenuClosing) return;
+    if(_cardMenuClosing || _cardScrollDone) return;
     var dy = Math.abs((window.scrollY || window.pageYOffset || 0) - _cardScrollY0);
     var progress = Math.min(1, dy/80);
     var scale = 1 - progress * 0.35;
@@ -2851,9 +2852,9 @@ function openCardMenu(itemId, btn){
     menu.style.transform = 'scale('+scale.toFixed(3)+')';
     menu.style.opacity = opacity.toFixed(3);
     if(progress >= 1){
+      _cardScrollDone = true;
       _cardMenuClosing = true;
       document.removeEventListener('scroll', _cardScrollHandler, true);
-      // Already invisible — just hide, no reset needed
       menu.style.display = 'none';
       menu.style.pointerEvents = '';
       menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null;
@@ -2861,7 +2862,6 @@ function openCardMenu(itemId, btn){
       if(ov){ ov.style.display='none'; ov.onclick=null; }
       _ctxItemId = null; _cardShrinkClose = null;
       setTimeout(function(){
-        // Reset styles after hidden so next open starts clean
         menu.style.transform = 'scale(1)';
         menu.style.opacity = '1';
         menu.style.transition = '';
@@ -2873,6 +2873,7 @@ function openCardMenu(itemId, btn){
 
   var _activeMenu = isCW ? g('card-ctx-menu-cw') : g('card-ctx-menu');
   var _cardOutsideHandler = function(e){
+    if(_cardMenuClosing || _cardScrollDone) return;
     var menuRect = _activeMenu ? _activeMenu.getBoundingClientRect() : null;
     var t = e.touches ? e.touches[0] : e;
     if(!menuRect) return;
