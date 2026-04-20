@@ -107,7 +107,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
 .p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;align-self:center;}
 .card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;transform-origin:bottom right;will-change:transform;}
-.card-ctx-overlay{position:fixed;inset:0;z-index:9799;}
+.card-ctx-overlay{position:fixed;inset:0;z-index:9799;background:transparent;}
 .card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;transition:background .1s;}
 .card-ctx-item:last-child{border-bottom:none;}
 .card-ctx-item.highlighted{background:rgba(255,255,255,.12);}
@@ -817,10 +817,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 
 <!-- Episode menu popover -->
-<div id="ep-menu" style="display:none;position:fixed;inset:0;z-index:9000;" onclick="closeEpMenu()">
-  <div id="ep-menu-popover" onclick="event.stopPropagation()" style="position:fixed;background:#1e1e30;border-radius:12px;min-width:210px;box-shadow:0 4px 24px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.08);overflow:hidden;z-index:9001;">
-    <button id="ep-menu-play" onclick="event.stopPropagation();epMenuPlay()" style="width:100%;padding:14px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Continuar Assistindo</button>
-    <button id="ep-menu-watched" onclick="event.stopPropagation();epMenuToggleWatched()" style="width:100%;padding:14px 20px;background:none;border:none;color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Marcado como Assistido</button>
+<div id="ep-menu" style="display:none;position:fixed;inset:0;z-index:9000;">
+  <div id="ep-menu-popover" style="position:fixed;background:#1e1e30;border-radius:12px;min-width:210px;box-shadow:0 4px 24px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.08);overflow:hidden;z-index:9001;will-change:transform;">
+    <button id="ep-menu-play" style="width:100%;padding:14px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);transition:background .1s;">Continuar Assistindo</button>
+    <button id="ep-menu-watched" style="width:100%;padding:14px 20px;background:none;border:none;color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);transition:background .1s;">Marcado como Assistido</button>
   </div>
 </div>
 
@@ -1775,56 +1775,174 @@ function openEpMenu(idx, btn){
   _epMenuBtn = btn;
   var a = items.find(function(x){ return x.id === detailItemId; });
   var ep = a && a.episodes && a.episodes[idx];
+
+  // Update labels
   var watchedBtn = g('ep-menu-watched');
   if(watchedBtn){
     if(ep && ep.watched){
       watchedBtn.textContent = 'Assistido';
       watchedBtn.style.color = 'rgba(255,255,255,.3)';
       watchedBtn.style.cursor = 'default';
-      watchedBtn.onclick = function(e){ e.stopPropagation(); };
     } else {
       watchedBtn.textContent = 'Marcado como Assistido';
       watchedBtn.style.color = '#fff';
       watchedBtn.style.cursor = 'pointer';
-      watchedBtn.onclick = function(e){ e.stopPropagation(); epMenuToggleWatched(); };
     }
   }
   var playBtn = g('ep-menu-play');
-  if(playBtn){
-    playBtn.textContent = ep && ep.savedTime && ep.savedTime > 5 && !ep.watched ? 'Continuar Assistindo' : 'Começar a Assistir';
-  }
-  // Escurece o botão de 3 pontinhos
+  if(playBtn) playBtn.textContent = ep && ep.savedTime && ep.savedTime > 5 && !ep.watched ? 'Continuar Assistindo' : 'Começar a Assistir';
+
   if(btn) btn.style.opacity = '0.35';
+
   var menu = g('ep-menu');
   var popover = g('ep-menu-popover');
   if(!menu || !popover) return;
+
+  // Smart positioning
+  popover.style.transform = 'scale(1)';
   menu.style.display = 'block';
   var rect = btn.getBoundingClientRect();
-  var popW = 210;
-  var appMaxW = 480;
-  var appLeft = Math.max(0, (window.innerWidth - appMaxW) / 2);
-  var appRight = appLeft + Math.min(window.innerWidth, appMaxW);
+  var popW = popover.offsetWidth || 210;
+  var popH = popover.offsetHeight || 100;
+  var margin = 8;
+
   var left = rect.right - popW;
-  if(left < appLeft + 8) left = appLeft + 8;
-  if(left + popW > appRight - 8) left = appRight - popW - 8;
-  var ph = popover.offsetHeight || 100;
-  var t;
-  if(idx === 0){
-    // Primeiro ep: aparece abaixo
-    t = rect.bottom + 8;
+  if(left < margin) left = margin;
+  if(left + popW > window.innerWidth - margin) left = window.innerWidth - popW - margin;
+
+  var topAbove = rect.top - popH - 6;
+  var topBelow = rect.bottom + 6;
+  var top;
+  if(topAbove >= margin){
+    top = topAbove;
+    popover.style.transformOrigin = 'bottom right';
+  } else if(topBelow + popH <= window.innerHeight - margin){
+    top = topBelow;
+    popover.style.transformOrigin = 'top right';
   } else {
-    // Outros eps: aparece acima
-    t = rect.top - ph - 8;
-    if(t < 8) t = rect.bottom + 8;
+    top = Math.max(margin, (window.innerHeight - popH) / 2);
+    popover.style.transformOrigin = 'center right';
   }
   popover.style.left = left + 'px';
-  popover.style.top = t + 'px';
+  popover.style.top = top + 'px';
+
+  // Touch mechanics: highlight, zoom, spring-back, no-close-on-release-outside
+  var _epHighlighted = null;
+  var _epRafZoom = null;
+  var _epTouchInMenu = false;
+
+  function clearEpHighlight(){ if(_epHighlighted){ _epHighlighted.style.background=''; _epHighlighted=null; } }
+
+  // Overlay: close on tap, close+scroll on swipe
+  menu.onclick = null;
+  menu.ontouchstart = function(e){
+    if(e.target === menu){
+      // toque no overlay
+      _epTouchInMenu = false;
+      menu._overlayStartY = e.touches[0].clientY;
+      menu._overlayMoved = false;
+    }
+  };
+  menu.ontouchmove = function(e){
+    if(!_epTouchInMenu){
+      var dy = Math.abs(e.touches[0].clientY - (menu._overlayStartY||0));
+      if(dy > 8){ menu._overlayMoved = true; closeEpMenu(); }
+    }
+  };
+  menu.ontouchend = function(e){
+    if(!_epTouchInMenu && !menu._overlayMoved) closeEpMenu();
+  };
+
+  popover.ontouchstart = function(e){
+    e.stopPropagation();
+    _epTouchInMenu = true;
+    var item = e.target.closest && e.target.closest('button');
+    clearEpHighlight();
+    if(item){ _epHighlighted = item; item.style.background = 'rgba(255,255,255,.12)'; }
+  };
+
+  popover.ontouchmove = function(e){
+    e.stopPropagation();
+    e.preventDefault();
+    var t = e.touches[0];
+    var popRect = popover.getBoundingClientRect();
+    var inside = t.clientX >= popRect.left && t.clientX <= popRect.right &&
+                 t.clientY >= popRect.top  && t.clientY <= popRect.bottom;
+    var el = document.elementFromPoint(t.clientX, t.clientY);
+    var item = el && el.closest && el.closest('button');
+    clearEpHighlight();
+
+    var curScale = parseFloat((popover.style.transform||'scale(1)').replace('scale(','')) || 1;
+
+    if(inside){
+      if(item && popover.contains(item)){ _epHighlighted = item; item.style.background = 'rgba(255,255,255,.12)'; }
+      if(_epRafZoom) cancelAnimationFrame(_epRafZoom);
+      if(curScale < 0.999){
+        (function animIn(){
+          curScale = Math.min(1, curScale + 0.06);
+          popover.style.transform = 'scale('+curScale.toFixed(3)+')';
+          if(curScale < 1) _epRafZoom = requestAnimationFrame(animIn);
+        })();
+      } else { popover.style.transform = 'scale(1)'; }
+    } else {
+      var dx = Math.max(0, Math.max(popRect.left - t.clientX, t.clientX - popRect.right));
+      var dy = Math.max(0, Math.max(popRect.top  - t.clientY, t.clientY - popRect.bottom));
+      var dist = Math.sqrt(dx*dx + dy*dy);
+      var targetScale = Math.max(0.72, 1 - dist/260);
+      if(_epRafZoom) cancelAnimationFrame(_epRafZoom);
+      (function animOut(){
+        curScale = curScale + (targetScale - curScale) * 0.3;
+        popover.style.transform = 'scale('+curScale.toFixed(3)+')';
+        if(Math.abs(curScale - targetScale) > 0.003) _epRafZoom = requestAnimationFrame(animOut);
+        else popover.style.transform = 'scale('+targetScale.toFixed(3)+')';
+      })();
+    }
+  };
+
+  popover.ontouchend = function(e){
+    e.stopPropagation();
+    if(_epRafZoom) cancelAnimationFrame(_epRafZoom);
+    clearEpHighlight();
+
+    var t = e.changedTouches[0];
+    var popRect = popover.getBoundingClientRect();
+    var inside = t.clientX >= popRect.left && t.clientX <= popRect.right &&
+                 t.clientY >= popRect.top  && t.clientY <= popRect.bottom;
+    var el = document.elementFromPoint(t.clientX, t.clientY);
+    var item = el && el.closest && el.closest('button');
+
+    // Spring-back suave
+    var curScale = parseFloat((popover.style.transform||'scale(1)').replace('scale(','')) || 1;
+    if(curScale < 0.999){
+      (function animBack(){
+        curScale = curScale + (1 - curScale) * 0.2;
+        popover.style.transform = 'scale('+curScale.toFixed(3)+')';
+        if(Math.abs(1 - curScale) > 0.003) _epRafZoom = requestAnimationFrame(animBack);
+        else popover.style.transform = 'scale(1)';
+      })();
+    } else { popover.style.transform = 'scale(1)'; }
+
+    if(inside && item && popover.contains(item)){
+      // Toca em opção → fecha
+      setTimeout(function(){ closeEpMenu(); }, 150);
+    }
+    // Solta fora → não fecha, só spring-back
+    _epTouchInMenu = false;
+    e.preventDefault();
+  };
+
+  // Click fallback desktop
+  popover.onclick = function(e){ e.stopPropagation(); };
+  if(playBtn) playBtn.onclick = function(e){ e.stopPropagation(); closeEpMenu(); epMenuPlay(); };
+  if(watchedBtn && ep && !ep.watched) watchedBtn.onclick = function(e){ e.stopPropagation(); closeEpMenu(); epMenuToggleWatched(); };
+  else if(watchedBtn) watchedBtn.onclick = function(e){ e.stopPropagation(); };
 }
 function closeEpMenu(){
   var menu = g('ep-menu');
-  if(menu) menu.style.display = 'none';
-  // Restaura opacidade do botão
-  if(_epMenuBtn) { _epMenuBtn.style.opacity = '1'; _epMenuBtn = null; }
+  var popover = g('ep-menu-popover');
+  if(menu){ menu.style.display = 'none'; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
+  if(popover){ popover.style.transform = 'scale(1)'; popover.ontouchstart = null; popover.ontouchmove = null; popover.ontouchend = null; }
+  if(_epMenuBtn){ _epMenuBtn.style.opacity = '1'; _epMenuBtn = null; }
   _epMenuIdx = -1;
 }
 window.closeEpMenu = closeEpMenu;
@@ -1916,11 +2034,14 @@ window.continueWatching = continueWatching;
 function playEpFromDetail(idx){
   var a=items.find(function(x){return x.id===detailItemId;});
   if(!a)return;
-  // Se ep já foi assistido, reseta pra assistir do início
-  if(a.episodes && a.episodes[idx] && a.episodes[idx].watched){
+  // Reseta sempre — independente de estar assistido ou não
+  if(a.episodes && a.episodes[idx]){
     a.episodes[idx].watched = false;
     a.episodes[idx].savedTime = 0;
     saveData();
+    // Atualiza UI imediatamente
+    renderDetailEps();
+    updateContinueBar();
   }
   closeDetail(true);
   openPlayer(a.id,idx,'detail');
@@ -2684,10 +2805,19 @@ function openCardMenu(itemId, btn){
     item.onclick = function(){ closeCardMenu(); };
   });
 
-  overlay.ontouchstart = function(){ _touchStartedInMenu = false; };
+  overlay.ontouchstart = function(e){ 
+    _touchStartedInMenu = false; 
+    overlay._startY = e.touches[0].clientY;
+    overlay._startX = e.touches[0].clientX;
+    overlay._moved = false;
+  };
   overlay.ontouchmove = function(e){
-    // Scroll fora do menu — fecha o menu e deixa rolar
-    closeCardMenu();
+    var dy = Math.abs(e.touches[0].clientY - overlay._startY);
+    var dx = Math.abs(e.touches[0].clientX - overlay._startX);
+    if(dy > 8 || dx > 8){ overlay._moved = true; closeCardMenu(); }
+  };
+  overlay.ontouchend = function(){
+    if(!overlay._moved) closeCardMenu();
   };
   overlay.onclick = function(){ closeCardMenu(); };
 }
