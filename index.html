@@ -824,15 +824,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   </div>
 </div>
 
-<!-- Card Context Menu -->
+<!-- Card Context Menu - Portrait cards -->
 <div class="card-ctx-overlay" id="card-ctx-overlay" style="display:none;"></div>
 <div class="card-ctx-menu" id="card-ctx-menu" style="display:none;">
-  <button class="card-ctx-item" id="ctx-assistir">Começar a Assistir</button>
+  <button class="card-ctx-item" id="ctx-lista">Adicionar à Lista</button>
   <button class="card-ctx-item" id="ctx-zentrilista">Adicionar à Zentrilista</button>
   <div class="card-ctx-separator"></div>
-  <button class="card-ctx-item" id="ctx-continuar" style="display:none;">Continuar Assistindo</button>
-  <button class="card-ctx-item" id="ctx-infos" style="display:none;">Infos da Série</button>
-  <button class="card-ctx-item" id="ctx-assistido">Marcar como Assistido</button>
+  <button class="card-ctx-item" id="ctx-assistir">Começar a Assistir</button>
+  <button class="card-ctx-item" id="ctx-assistido">Marcado como Assistido</button>
+</div>
+<!-- Card Context Menu - Continue Watching cards -->
+<div class="card-ctx-menu" id="card-ctx-menu-cw" style="display:none;">
+  <button class="card-ctx-item" id="ctx-fila">Adicionar à Fila</button>
+  <button class="card-ctx-item" id="ctx-zentrilista-cw">Adicionar à Zentrilista</button>
+  <div class="card-ctx-separator"></div>
+  <button class="card-ctx-item" id="ctx-continuar">Continuar Assistindo</button>
+  <button class="card-ctx-item" id="ctx-infos">Infos da Série</button>
+  <button class="card-ctx-item" id="ctx-assistido-cw">Marcado como Assistido</button>
 </div>
 
 <!-- Toast notification -->
@@ -2528,17 +2536,26 @@ function openCardMenu(itemId, btn){
   var overlay = g('card-ctx-overlay');
   if(!menu || !overlay) return;
 
-  // Atualizar labels dinâmicos
+  // Atualizar label dinâmico do assistido
   var assistidoBtn = g('ctx-assistido');
   var allWatched = a.episodes && a.episodes.length > 0 && a.episodes.every(function(ep){ return ep.watched; });
-  if(assistidoBtn) assistidoBtn.textContent = allWatched ? 'Marcar como Não Assistido' : 'Marcar como Assistido';
+  if(assistidoBtn) assistidoBtn.textContent = allWatched ? 'Marcar como Não Assistido' : 'Marcado como Assistido';
 
-  // Mostrar "Continuar Assistindo" e "Infos da Série" apenas no CW card
-  var isCW = btn && btn.closest && btn.closest('.cw-card');
+  // Todos os itens sempre visíveis
   var continuarBtn = g('ctx-continuar');
   var infosBtn = g('ctx-infos');
-  if(continuarBtn) continuarBtn.style.display = isCW ? 'block' : 'none';
-  if(infosBtn) infosBtn.style.display = isCW ? 'block' : 'none';
+  if(continuarBtn) continuarBtn.style.display = 'block';
+  if(infosBtn) infosBtn.style.display = 'block';
+
+  // Escolhe o menu correto baseado no tipo de card
+  var isCW = btn && btn.closest && btn.closest('.cw-card');
+  var menu = isCW ? g('card-ctx-menu-cw') : g('card-ctx-menu');
+  var overlay = g('card-ctx-overlay');
+  if(!menu || !overlay) return;
+
+  // Esconde o outro menu se estiver aberto
+  var otherMenu = isCW ? g('card-ctx-menu') : g('card-ctx-menu-cw');
+  if(otherMenu) otherMenu.style.display = 'none';
 
   // Posicionar o menu perto do botão — nunca tampar o botão, nunca sair da tela
   var rect = btn.getBoundingClientRect();
@@ -2582,13 +2599,17 @@ function openCardMenu(itemId, btn){
   overlay.ontouchmove = null;
   overlay.ontouchend = null;
 
+  var _touchStartedInMenu = false;
+
   menu.ontouchstart = function(e){
+    _touchStartedInMenu = true;
     var item = e.target.closest && e.target.closest('.card-ctx-item');
     clearHighlight();
     if(item){ _highlighted = item; item.classList.add('highlighted'); }
   };
 
   menu.ontouchmove = function(e){
+    if(!_touchStartedInMenu) return;
     e.preventDefault();
     var t = e.touches[0];
     var menuRect = menu.getBoundingClientRect();
@@ -2626,9 +2647,8 @@ function openCardMenu(itemId, btn){
   };
 
   menu.ontouchend = function(e){
+    _touchStartedInMenu = false;
     if(_rafZoom) cancelAnimationFrame(_rafZoom);
-    // Sempre volta ao tamanho normal
-    menu.style.transform = 'scale(1)';
     clearHighlight();
 
     var t = e.changedTouches[0];
@@ -2638,11 +2658,23 @@ function openCardMenu(itemId, btn){
     var el = document.elementFromPoint(t.clientX, t.clientY);
     var item = el && el.closest && el.closest('.card-ctx-item');
 
-    if(insideMenu && item && menu.contains(item)){
-      // Toca em opção → apenas fecha
-      closeCardMenu();
+    // Anima suavemente de volta ao tamanho normal
+    var curScale = parseFloat((menu.style.transform||'scale(1)').replace('scale(','')) || 1;
+    if(curScale < 0.999){
+      (function animBack(){
+        curScale = curScale + (1 - curScale) * 0.2;
+        menu.style.transform = 'scale('+curScale.toFixed(3)+')';
+        if(Math.abs(1 - curScale) > 0.003) _rafZoom = requestAnimationFrame(animBack);
+        else menu.style.transform = 'scale(1)';
+      })();
+    } else {
+      menu.style.transform = 'scale(1)';
     }
-    // Solta fora → não fecha, só volta ao tamanho normal (já feito acima)
+
+    if(insideMenu && item && menu.contains(item)){
+      // Toca em opção → apenas fecha após pequeno delay pra animação
+      setTimeout(function(){ closeCardMenu(); }, 150);
+    }
     e.preventDefault();
   };
 
@@ -2652,13 +2684,20 @@ function openCardMenu(itemId, btn){
     item.onclick = function(){ closeCardMenu(); };
   });
 
+  overlay.ontouchstart = function(){ _touchStartedInMenu = false; };
+  overlay.ontouchmove = function(e){
+    // Scroll fora do menu — fecha o menu e deixa rolar
+    closeCardMenu();
+  };
   overlay.onclick = function(){ closeCardMenu(); };
 }
 function closeCardMenu(){
   var menu = g('card-ctx-menu');
+  var menuCW = g('card-ctx-menu-cw');
   var overlay = g('card-ctx-overlay');
   if(menu){ menu.style.display = 'none'; menu.style.transform = 'scale(1)'; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
-  if(overlay){ overlay.style.display = 'none'; overlay.onclick = null; }
+  if(menuCW){ menuCW.style.display = 'none'; menuCW.style.transform = 'scale(1)'; menuCW.ontouchstart = null; menuCW.ontouchmove = null; menuCW.ontouchend = null; }
+  if(overlay){ overlay.style.display = 'none'; overlay.onclick = null; overlay.ontouchstart = null; overlay.ontouchmove = null; }
   _ctxItemId = null;
 }
 function ctxAssistir(){
