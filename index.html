@@ -2851,10 +2851,22 @@ function openCardMenu(itemId, btn){
     menu.style.transform = 'scale('+scale.toFixed(3)+')';
     menu.style.opacity = opacity.toFixed(3);
     if(progress >= 1){
+      _cardMenuClosing = true;
       document.removeEventListener('scroll', _cardScrollHandler, true);
-      // Already visually gone, just close immediately
-      _cardShrinkClose = null;
-      _closeCardMenuImmediate();
+      // Already invisible — just hide, no reset needed
+      menu.style.display = 'none';
+      menu.style.pointerEvents = '';
+      menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null;
+      var ov = g('card-ctx-overlay');
+      if(ov){ ov.style.display='none'; ov.onclick=null; }
+      _ctxItemId = null; _cardShrinkClose = null;
+      setTimeout(function(){
+        // Reset styles after hidden so next open starts clean
+        menu.style.transform = 'scale(1)';
+        menu.style.opacity = '1';
+        menu.style.transition = '';
+        _cardMenuClosing = false;
+      }, 50);
     }
   };
   document.addEventListener('scroll', _cardScrollHandler, true);
