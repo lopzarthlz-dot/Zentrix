@@ -1374,7 +1374,7 @@ function mkPC(a,fn){
     '<div class="p-card-name">'+a.name+'</div>'+
     '<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:4px;">'+
       '<div class="p-card-sub">'+audioLabel(a.audio)+'</div>'+
-      '<button class="p-card-menu-btn" ontouchstart="event.stopPropagation();" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
+      '<button class="p-card-menu-btn" ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.p-card\'));" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
     '</div>'+
   '</div>';
 }
