@@ -113,7 +113,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .card-ctx-item:active{background:rgba(255,255,255,.06);}
 .card-ctx-item.danger{color:#f87171;}
 .p-card-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.p-card-sub{font-size:11px;color:#fff;margin-top:0;}
+.p-card-sub{font-size:11px;color:var(--text3);margin-top:0;align-self:center;}
 .cw-card{width:280px;flex-shrink:0;cursor:pointer;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border2);background:var(--bg3);}
 .cw-thumb{width:100%;height:160px;background:linear-gradient(135deg,var(--bg4) 0%,var(--bg3) 100%);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .cw-thumb-emoji{font-size:52px;opacity:.3;}
@@ -1150,6 +1150,35 @@ window.togglePlayerControls = togglePlayerControls;
 window.showPlayerControls = showPlayerControls;
 window.hidePlayerControls = hidePlayerControls;
 
+// Flash rápido dos controles no double tap quando estão ocultos
+function showDoubleTapFlash(direction){
+  var overlay = g('player-ctrl-overlay');
+  if(!overlay) return;
+
+  // Mostra o overlay
+  overlay.style.display = 'flex';
+
+  // Deixa todos os botões apagados exceto o que foi tocado
+  var allBtns = overlay.querySelectorAll('button');
+  var activeBtnId = direction === 'back' ? 'skip-back-btn' : 'skip-fwd-btn';
+  allBtns.forEach(function(btn){
+    if(btn.id === activeBtnId){
+      btn.style.opacity = '1';
+    } else {
+      btn.style.opacity = '0.2';
+    }
+  });
+
+  // Some tudo depois de 700ms e restaura opacidades
+  clearTimeout(_ctrlTimeout);
+  _ctrlTimeout = setTimeout(function(){
+    allBtns.forEach(function(btn){ btn.style.opacity = ''; });
+    overlay.style.display = 'none';
+    _ctrlVisible = false;
+  }, 700);
+}
+window.showDoubleTapFlash = showDoubleTapFlash;
+
 // Touch instantâneo na área do vídeo (sem delay de 300ms do iOS)
 (function(){
   var area = g('player-video-area');
@@ -1195,15 +1224,14 @@ window.hidePlayerControls = hidePlayerControls;
       var rightZone = areaW * 0.65;
 
       if(relX < leftZone){
-        // Zona esquerda → volta 10s
+        if(!_ctrlVisible) showDoubleTapFlash('back');
         skipBack();
-        showPlayerControls();
+        if(_ctrlVisible) showPlayerControls();
       } else if(relX > rightZone){
-        // Zona direita → avança 10s
+        if(!_ctrlVisible) showDoubleTapFlash('forward');
         skipForward();
-        showPlayerControls();
+        if(_ctrlVisible) showPlayerControls();
       } else {
-        // Centro → toggle play/pause
         togglePlay();
         showPlayerControls();
       }
@@ -1372,7 +1400,7 @@ function mkPC(a,fn){
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
-    '<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:4px;">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">'+
       '<div class="p-card-sub">'+audioLabel(a.audio)+'</div>'+
       '<button class="p-card-menu-btn" ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.p-card\'));" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
     '</div>'+
