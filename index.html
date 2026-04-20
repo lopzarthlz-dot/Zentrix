@@ -1090,6 +1090,10 @@ function pcPress(el, e){
     _pcTouched = false;
     return;
   }
+  // Também não animar se target é um botão de 3 pontinhos (id começa com ep-dots-btn)
+  if(e.target && e.target.id && e.target.id.indexOf('ep-dots-btn') === 0){
+    _pcMoved = true; _pcTouched = false; return;
+  }
   _pcStartX = e.touches[0].clientX;
   _pcStartY = e.touches[0].clientY;
   _pcMoved = false;
@@ -1778,10 +1782,11 @@ function _closeEpMenuImmediate(){
   var menu=g('ep-menu'),popover=g('ep-menu-popover');
   if(menu){menu.style.display='none';menu.style.pointerEvents='';}
   if(popover){
-    popover.style.transform='scale(1)'; popover.style.opacity='1'; popover.style.transition='';
+    popover.style.display='none'; // hide first to prevent flash
     popover.style.pointerEvents='';
     popover.ontouchstart=null; popover.ontouchmove=null; popover.ontouchend=null; popover.onclick=null;
     popover.querySelectorAll('button').forEach(function(b){ b.style.background='none'; b.disabled=false; b.style.color='#fff'; b.style.cursor='pointer'; });
+    requestAnimationFrame(function(){ popover.style.transform='scale(1)'; popover.style.opacity='1'; popover.style.transition=''; popover.style.display=''; });
   }
   if(_epMenuBtn){_epMenuBtn.style.opacity='1';_epMenuBtn=null;}
   _epMenuIdx=-1;
@@ -2872,8 +2877,9 @@ function _closeCardMenuImmediate(){
   var menu = g('card-ctx-menu');
   var menuCW = g('card-ctx-menu-cw');
   var overlay = g('card-ctx-overlay');
-  if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.style.pointerEvents=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
-  if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.style.pointerEvents=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
+  // Set display:none first to prevent flash from transform reset
+  if(menu){ menu.style.display='none'; menu.style.pointerEvents=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; requestAnimationFrame(function(){ menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; }); }
+  if(menuCW){ menuCW.style.display='none'; menuCW.style.pointerEvents=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; requestAnimationFrame(function(){ menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; }); }
   if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
   _ctxItemId=null; _cardShrinkClose=null;
 }
