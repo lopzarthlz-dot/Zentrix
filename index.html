@@ -1685,7 +1685,7 @@ function renderDetailEps(){
       timeLabel='Assistido';
       timeLabelColor='var(--blue)';
     } else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>0){
+      if(ep.savedTime&&ep.savedTime>1){
         var rem=Math.floor((ep.duration-ep.savedTime)/60);
         timeLabel=rem>0?rem+'m restantes':'Assistido';
         timeLabelColor='var(--blue)';
@@ -1745,10 +1745,10 @@ function updateContinueBar(){
     return;
   }
 
-  // Achar próximo ep em progresso
+  // Achar próximo ep em progresso (>1s)
   var nextIdx=-1;
   for(var i=0;i<eps.length;i++){
-    if(eps[i].savedTime&&eps[i].savedTime>5&&!eps[i].watched){nextIdx=i;break;}
+    if(eps[i].savedTime&&eps[i].savedTime>1&&!eps[i].watched){nextIdx=i;break;}
   }
   // Se não achou em progresso, achar primeiro não assistido
   if(nextIdx<0){
@@ -1760,231 +1760,104 @@ function updateContinueBar(){
   bar.style.display='block';
   btn.dataset.epIdx=nextIdx>=0?nextIdx:0;
 
-  if(nextIdx>=0 && eps[nextIdx].savedTime && eps[nextIdx].savedTime>5){
+  if(nextIdx>=0 && eps[nextIdx].savedTime && eps[nextIdx].savedTime>1){
     // Estado 2: em progresso — "Continue Assistindo EX"
     if(lbl) lbl.textContent='Continue Assistindo E'+(nextIdx+1);
   } else {
-    // Estado 1: nunca assistiu — "Começar A Assistir E1"
+    // Estado 1: nunca assistiu — "Começar A Assistir EX"
     if(lbl) lbl.textContent='Começar A Assistir E'+(nextIdx>=0?nextIdx+1:1);
   }
 }
 var _epMenuIdx = -1;
 var _epMenuBtn = null;
+var _epMenuClosing = false;
 function openEpMenu(idx, btn){
-  // Toggle: se já tá aberto pro mesmo ep, fecha
+  if(_epMenuClosing) return;
   var menu = g('ep-menu');
-  if(menu && menu.style.display !== 'none' && _epMenuIdx === idx){
-    closeEpMenu();
-    return;
-  }
-  _epMenuIdx = idx;
-  _epMenuBtn = btn;
+  if(menu && menu.style.display !== 'none' && _epMenuIdx === idx){ closeEpMenu(); return; }
+  if(menu && menu.style.display !== 'none') closeEpMenu();
+  _epMenuIdx = idx; _epMenuBtn = btn;
   var a = items.find(function(x){ return x.id === detailItemId; });
   var ep = a && a.episodes && a.episodes[idx];
-
-  // Update labels
   var watchedBtn = g('ep-menu-watched');
-  if(watchedBtn){
-    if(ep && ep.watched){
-      watchedBtn.textContent = 'Assistido';
-      watchedBtn.style.color = 'rgba(255,255,255,.3)';
-      watchedBtn.style.cursor = 'default';
-    } else {
-      watchedBtn.textContent = 'Marcado como Assistido';
-      watchedBtn.style.color = '#fff';
-      watchedBtn.style.cursor = 'pointer';
-    }
-  }
   var playBtn = g('ep-menu-play');
-  if(playBtn) playBtn.textContent = ep && ep.savedTime && ep.savedTime > 5 && !ep.watched ? 'Continuar Assistindo' : 'Começar a Assistir';
-
+  if(watchedBtn){ watchedBtn.textContent = (ep && ep.watched) ? 'Marcar como Não Assistido' : 'Marcar como Assistido'; watchedBtn.style.color='#fff'; watchedBtn.style.cursor='pointer'; }
+  if(playBtn) playBtn.textContent = (ep && ep.savedTime && ep.savedTime>1 && !ep.watched) ? 'Continuar Assistindo' : 'Começar a Assistir';
   if(btn) btn.style.opacity = '0.35';
-
-  var menu = g('ep-menu');
   var popover = g('ep-menu-popover');
   if(!menu || !popover) return;
-
-  // Smart positioning
+  popover.querySelectorAll('button').forEach(function(b){ b.style.background='none'; });
   popover.style.transform = 'scale(1)';
+  menu.style.pointerEvents = 'none';
+  popover.style.pointerEvents = 'auto';
   menu.style.display = 'block';
   var rect = btn.getBoundingClientRect();
-  var popW = popover.offsetWidth || 210;
-  var popH = popover.offsetHeight || 100;
-  var margin = 8;
-
+  var popW = popover.offsetWidth||220, popH = popover.offsetHeight||100, margin = 8;
   var left = rect.right - popW;
-  if(left < margin) left = margin;
-  if(left + popW > window.innerWidth - margin) left = window.innerWidth - popW - margin;
+  if(left<margin) left=margin;
+  if(left+popW>window.innerWidth-margin) left=window.innerWidth-popW-margin;
+  var topAbove=rect.top-popH-6, topBelow=rect.bottom+6, top;
+  if(topAbove>=margin){ top=topAbove; popover.style.transformOrigin='bottom right'; }
+  else if(topBelow+popH<=window.innerHeight-margin){ top=topBelow; popover.style.transformOrigin='top right'; }
+  else { top=Math.max(margin,(window.innerHeight-popH)/2); popover.style.transformOrigin='center right'; }
+  popover.style.left=left+'px'; popover.style.top=top+'px';
+  var _epHl=null, _epRaf=null, _epFadeRaf=null;
+  function clrHl(){ if(_epHl){ _epHl.style.background='none'; _epHl=null; } }
 
-  var topAbove = rect.top - popH - 6;
-  var topBelow = rect.bottom + 6;
-  var top;
-  if(topAbove >= margin){
-    top = topAbove;
-    popover.style.transformOrigin = 'bottom right';
-  } else if(topBelow + popH <= window.innerHeight - margin){
-    top = topBelow;
-    popover.style.transformOrigin = 'top right';
-  } else {
-    top = Math.max(margin, (window.innerHeight - popH) / 2);
-    popover.style.transformOrigin = 'center right';
-  }
-  popover.style.left = left + 'px';
-  popover.style.top = top + 'px';
-
-  // Reset button backgrounds on every open
-  var allEpBtns = popover.querySelectorAll('button');
-  allEpBtns.forEach(function(b){ b.style.background = 'none'; });
-
-  // Touch mechanics: highlight, zoom, spring-back, no-close-on-release-outside
-  var _epHighlighted = null;
-  var _epRafZoom = null;
-  var _epTouchInMenu = false;
-
-  function clearEpHighlight(){
-    if(_epHighlighted){ _epHighlighted.style.background = 'none'; _epHighlighted = null; }
-  }
-
-  // Overlay: fecha no tap simples, fecha+scroll no swipe, não bloqueia scroll
-  menu.onclick = null;
-  menu.style.pointerEvents = 'none'; // overlay não bloqueia eventos
-  popover.style.pointerEvents = 'auto'; // mas o popover sim
-
-  // Detecta scroll na página para fechar o menu
+  // Progressive fade on scroll
+  var _epScrollY0 = window.scrollY || window.pageYOffset || 0;
+  var _epFading = false;
   var _epScrollHandler = function(){
-    closeEpMenu();
-    document.removeEventListener('scroll', _epScrollHandler, true);
+    var dy = Math.abs((window.scrollY || window.pageYOffset || 0) - _epScrollY0);
+    var opacity = Math.max(0, 1 - dy/80);
+    var translateY = Math.min(dy * 0.3, 18);
+    popover.style.opacity = opacity;
+    popover.style.transition = 'none';
+    popover.style.transform = (popover.style.transform||'').replace(/\s*translateY\([^)]*\)/,'') + ' translateY('+translateY+'px)';
+    if(opacity <= 0){
+      document.removeEventListener('scroll', _epScrollHandler, true);
+      closeEpMenu();
+    }
   };
   document.addEventListener('scroll', _epScrollHandler, true);
 
-  // Toque fora do popover (na página) fecha o menu
-  var _epOutsideHandler = function(e){
-    var popRect = popover.getBoundingClientRect();
-    var t = e.touches ? e.touches[0] : e;
-    var inside = t.clientX >= popRect.left && t.clientX <= popRect.right &&
-                 t.clientY >= popRect.top  && t.clientY <= popRect.bottom;
-    if(!inside){
-      closeEpMenu();
-      document.removeEventListener('touchstart', _epOutsideHandler, true);
-    }
+  var _epOut=function(e){ var r=popover.getBoundingClientRect(),t=e.touches?e.touches[0]:e; if(!(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom)){ document.removeEventListener('touchstart',_epOut,true); closeEpMenu(); } };
+  setTimeout(function(){ document.addEventListener('touchstart',_epOut,true); },80);
+  popover.ontouchstart=function(e){ e.stopPropagation(); var item=e.target.closest&&e.target.closest('button'); clrHl(); if(item){_epHl=item;item.style.background='rgba(255,255,255,.12)';} };
+  popover.ontouchmove=function(e){
+    e.stopPropagation(); e.preventDefault();
+    var t=e.touches[0], r=popover.getBoundingClientRect();
+    var ins=t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom;
+    var el=document.elementFromPoint(t.clientX,t.clientY), item=el&&el.closest&&el.closest('button');
+    clrHl();
+    var cs=parseFloat((popover.style.transform||'scale(1)').replace('scale(','').replace(')',''))||1;
+    if(ins){ if(item&&popover.contains(item)){_epHl=item;item.style.background='rgba(255,255,255,.12)';} if(_epRaf)cancelAnimationFrame(_epRaf); if(cs<0.999){(function ai(){cs=Math.min(1,cs+0.06);popover.style.transform='scale('+cs.toFixed(3)+')';if(cs<1)_epRaf=requestAnimationFrame(ai);})();}else popover.style.transform='scale(1)'; }
+    else{ var dx=Math.max(0,Math.max(r.left-t.clientX,t.clientX-r.right)),dy=Math.max(0,Math.max(r.top-t.clientY,t.clientY-r.bottom)),ts=Math.max(0.72,1-Math.sqrt(dx*dx+dy*dy)/260); if(_epRaf)cancelAnimationFrame(_epRaf); (function ao(){cs=cs+(ts-cs)*0.3;popover.style.transform='scale('+cs.toFixed(3)+')';if(Math.abs(cs-ts)>0.003)_epRaf=requestAnimationFrame(ao);else popover.style.transform='scale('+ts.toFixed(3)+')';})(); }
   };
-  setTimeout(function(){
-    document.addEventListener('touchstart', _epOutsideHandler, true);
-  }, 50);
-
-  popover.ontouchstart = function(e){
-    e.stopPropagation();
-    _epTouchInMenu = true;
-    var item = e.target.closest && e.target.closest('button');
-    clearEpHighlight();
-    if(item){ _epHighlighted = item; item.style.background = 'rgba(255,255,255,.12)'; }
+  popover.ontouchend=function(e){
+    e.stopPropagation(); e.preventDefault();
+    if(_epRaf)cancelAnimationFrame(_epRaf); clrHl();
+    var t=e.changedTouches[0],r=popover.getBoundingClientRect();
+    var ins=t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom;
+    var el=document.elementFromPoint(t.clientX,t.clientY),item=el&&el.closest&&el.closest('button');
+    var cs=parseFloat((popover.style.transform||'scale(1)').replace('scale(','').replace(')',''))||1;
+    if(cs<0.999){(function ab(){cs=cs+(1-cs)*0.2;popover.style.transform='scale('+cs.toFixed(3)+')';if(Math.abs(1-cs)>0.003)_epRaf=requestAnimationFrame(ab);else popover.style.transform='scale(1)';})();}else popover.style.transform='scale(1)';
+    if(ins&&item&&popover.contains(item)){ var si=_epMenuIdx,ip=item.id==='ep-menu-play',iw=item.id==='ep-menu-watched'; setTimeout(function(){ if(ip){closeEpMenu();epMenuPlay(si);}else if(iw){closeEpMenu();epMenuToggleWatched(si);} },80); }
   };
-
-  popover.ontouchmove = function(e){
-    e.stopPropagation();
-    e.preventDefault();
-    var t = e.touches[0];
-    var popRect = popover.getBoundingClientRect();
-    var inside = t.clientX >= popRect.left && t.clientX <= popRect.right &&
-                 t.clientY >= popRect.top  && t.clientY <= popRect.bottom;
-    var el = document.elementFromPoint(t.clientX, t.clientY);
-    var item = el && el.closest && el.closest('button');
-    clearEpHighlight();
-
-    var curScale = parseFloat((popover.style.transform||'scale(1)').replace('scale(','')) || 1;
-
-    if(inside){
-      if(item && popover.contains(item)){ _epHighlighted = item; item.style.background = 'rgba(255,255,255,.12)'; }
-      if(_epRafZoom) cancelAnimationFrame(_epRafZoom);
-      if(curScale < 0.999){
-        (function animIn(){
-          curScale = Math.min(1, curScale + 0.06);
-          popover.style.transform = 'scale('+curScale.toFixed(3)+')';
-          if(curScale < 1) _epRafZoom = requestAnimationFrame(animIn);
-        })();
-      } else { popover.style.transform = 'scale(1)'; }
-    } else {
-      var dx = Math.max(0, Math.max(popRect.left - t.clientX, t.clientX - popRect.right));
-      var dy = Math.max(0, Math.max(popRect.top  - t.clientY, t.clientY - popRect.bottom));
-      var dist = Math.sqrt(dx*dx + dy*dy);
-      var targetScale = Math.max(0.72, 1 - dist/260);
-      if(_epRafZoom) cancelAnimationFrame(_epRafZoom);
-      (function animOut(){
-        curScale = curScale + (targetScale - curScale) * 0.3;
-        popover.style.transform = 'scale('+curScale.toFixed(3)+')';
-        if(Math.abs(curScale - targetScale) > 0.003) _epRafZoom = requestAnimationFrame(animOut);
-        else popover.style.transform = 'scale('+targetScale.toFixed(3)+')';
-      })();
-    }
-  };
-
-  popover.ontouchend = function(e){
-    e.stopPropagation();
-    if(_epRafZoom) cancelAnimationFrame(_epRafZoom);
-    clearEpHighlight();
-
-    var t = e.changedTouches[0];
-    var popRect = popover.getBoundingClientRect();
-    var inside = t.clientX >= popRect.left && t.clientX <= popRect.right &&
-                 t.clientY >= popRect.top  && t.clientY <= popRect.bottom;
-    var el = document.elementFromPoint(t.clientX, t.clientY);
-    var item = el && el.closest && el.closest('button');
-
-    // Spring-back suave
-    var curScale = parseFloat((popover.style.transform||'scale(1)').replace('scale(','')) || 1;
-    if(curScale < 0.999){
-      (function animBack(){
-        curScale = curScale + (1 - curScale) * 0.2;
-        popover.style.transform = 'scale('+curScale.toFixed(3)+')';
-        if(Math.abs(1 - curScale) > 0.003) _epRafZoom = requestAnimationFrame(animBack);
-        else popover.style.transform = 'scale(1)';
-      })();
-    } else { popover.style.transform = 'scale(1)'; }
-
-    if(inside && item && popover.contains(item)){
-      var savedIdx = _epMenuIdx;
-      var isPlay = item.id === 'ep-menu-play';
-      var isWatched = item.id === 'ep-menu-watched';
-      setTimeout(function(){
-        if(isPlay){ closeEpMenu(); epMenuPlay(savedIdx); }
-        else if(isWatched){ var idxToUse = savedIdx; closeEpMenu(); epMenuToggleWatched(idxToUse); }
-      }, 100);
-    }
-    // Solta fora → não fecha, só spring-back
-    _epTouchInMenu = false;
-    e.preventDefault();
-  };
-
-  // Click fallback desktop
-  popover.onclick = function(e){ e.stopPropagation(); };
-  if(playBtn){
-    playBtn.onclick = function(e){
-      e.stopPropagation();
-      var savedIdx = _epMenuIdx;
-      closeEpMenu();
-      epMenuPlay(savedIdx);
-    };
-  }
-  if(watchedBtn && ep && !ep.watched){
-    watchedBtn.onclick = function(e){ e.stopPropagation(); closeEpMenu(); epMenuToggleWatched(); };
-  } else if(watchedBtn){
-    watchedBtn.onclick = function(e){ e.stopPropagation(); };
-  }
+  popover.onclick=function(e){e.stopPropagation();};
+  if(playBtn) playBtn.onclick=function(e){e.stopPropagation();var i=_epMenuIdx;closeEpMenu();epMenuPlay(i);};
+  if(watchedBtn) watchedBtn.onclick=function(e){e.stopPropagation();var i=_epMenuIdx;closeEpMenu();epMenuToggleWatched(i);};
 }
 function closeEpMenu(){
-  var menu = g('ep-menu');
-  var popover = g('ep-menu-popover');
-  if(menu){ menu.style.display = 'none'; menu.style.pointerEvents = ''; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
-  if(popover){
-    popover.style.transform = 'scale(1)';
-    popover.style.pointerEvents = '';
-    popover.ontouchstart = null; popover.ontouchmove = null; popover.ontouchend = null;
-    // Reset all button backgrounds
-    popover.querySelectorAll('button').forEach(function(b){ b.style.background = 'none'; });
-  }
-  if(_epMenuBtn){ _epMenuBtn.style.opacity = '1'; _epMenuBtn = null; }
-  _epMenuIdx = -1;
+  _epMenuClosing=true;
+  var menu=g('ep-menu'),popover=g('ep-menu-popover');
+  if(menu){menu.style.display='none';menu.style.pointerEvents='';}
+  if(popover){popover.style.transform='scale(1)';popover.style.opacity='1';popover.style.transition='';popover.style.pointerEvents='';popover.ontouchstart=null;popover.ontouchmove=null;popover.ontouchend=null;popover.onclick=null;popover.querySelectorAll('button').forEach(function(b){b.style.background='none';});}
+  if(_epMenuBtn){_epMenuBtn.style.opacity='1';_epMenuBtn=null;}
+  _epMenuIdx=-1;
+  setTimeout(function(){_epMenuClosing=false;},60);
 }
+
 window.closeEpMenu = closeEpMenu;
 function epMenuPlay(idx){
   var playIdx = (idx !== undefined) ? idx : _epMenuIdx;
@@ -2076,14 +1949,17 @@ window.continueWatching = continueWatching;
 function playEpFromDetail(idx){
   var a=items.find(function(x){return x.id===detailItemId;});
   if(!a)return;
-  // Reseta sempre — independente de estar assistido ou não
   if(a.episodes && a.episodes[idx]){
-    a.episodes[idx].watched = false;
-    a.episodes[idx].savedTime = 0;
-    saveData();
-    // Atualiza UI imediatamente
-    renderDetailEps();
-    updateContinueBar();
+    var ep = a.episodes[idx];
+    // Só reseta se já foi totalmente assistido (watched = true)
+    // Se em progresso (savedTime > 1), continua de onde parou
+    if(ep.watched){
+      ep.watched = false;
+      ep.savedTime = 0;
+      saveData();
+      renderDetailEps();
+      updateContinueBar();
+    }
   }
   closeDetail(true);
   openPlayer(a.id,idx,'detail');
@@ -2852,8 +2728,23 @@ function openCardMenu(itemId, btn){
   overlay.ontouchmove = null;
   overlay.ontouchend = null;
 
-  // Close on scroll or tap outside menu
-  var _cardScrollHandler = function(){ closeCardMenu(); document.removeEventListener('scroll', _cardScrollHandler, true); };
+  // Progressive fade on scroll
+  var _cardScrollY0 = window.scrollY || window.pageYOffset || 0;
+  var _cardScrollHandler = function(){
+    var dy = Math.abs((window.scrollY || window.pageYOffset || 0) - _cardScrollY0);
+    var opacity = Math.max(0, 1 - dy/80);
+    var translateY = Math.min(dy * 0.3, 18);
+    var activeM = isCW ? g('card-ctx-menu-cw') : g('card-ctx-menu');
+    if(activeM){
+      activeM.style.opacity = opacity;
+      activeM.style.transition = 'none';
+      activeM.style.transform = 'scale(1) translateY('+translateY+'px)';
+    }
+    if(opacity <= 0){
+      document.removeEventListener('scroll', _cardScrollHandler, true);
+      closeCardMenu();
+    }
+  };
   document.addEventListener('scroll', _cardScrollHandler, true);
 
   var _activeMenu = isCW ? g('card-ctx-menu-cw') : g('card-ctx-menu');
@@ -2871,9 +2762,9 @@ function closeCardMenu(){
   var menu = g('card-ctx-menu');
   var menuCW = g('card-ctx-menu-cw');
   var overlay = g('card-ctx-overlay');
-  if(menu){ menu.style.display = 'none'; menu.style.transform = 'scale(1)'; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
-  if(menuCW){ menuCW.style.display = 'none'; menuCW.style.transform = 'scale(1)'; menuCW.ontouchstart = null; menuCW.ontouchmove = null; menuCW.ontouchend = null; }
-  if(overlay){ overlay.style.display = 'none'; overlay.onclick = null; overlay.ontouchstart = null; overlay.ontouchmove = null; }
+  if(menu){ menu.style.display='none'; menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
+  if(menuCW){ menuCW.style.display='none'; menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
+  if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
   _ctxItemId = null;
 }
 function ctxAssistir(){
