@@ -1833,25 +1833,32 @@ function openEpMenu(idx, btn){
 
   function clearEpHighlight(){ if(_epHighlighted){ _epHighlighted.style.background=''; _epHighlighted=null; } }
 
-  // Overlay: close on tap, close+scroll on swipe
+  // Overlay: fecha no tap simples, fecha+scroll no swipe, não bloqueia scroll
   menu.onclick = null;
-  menu.ontouchstart = function(e){
-    if(e.target === menu){
-      // toque no overlay
-      _epTouchInMenu = false;
-      menu._overlayStartY = e.touches[0].clientY;
-      menu._overlayMoved = false;
+  menu.style.pointerEvents = 'none'; // overlay não bloqueia eventos
+  popover.style.pointerEvents = 'auto'; // mas o popover sim
+
+  // Detecta scroll na página para fechar o menu
+  var _epScrollHandler = function(){
+    closeEpMenu();
+    document.removeEventListener('scroll', _epScrollHandler, true);
+  };
+  document.addEventListener('scroll', _epScrollHandler, true);
+
+  // Toque fora do popover (na página) fecha o menu
+  var _epOutsideHandler = function(e){
+    var popRect = popover.getBoundingClientRect();
+    var t = e.touches ? e.touches[0] : e;
+    var inside = t.clientX >= popRect.left && t.clientX <= popRect.right &&
+                 t.clientY >= popRect.top  && t.clientY <= popRect.bottom;
+    if(!inside){
+      closeEpMenu();
+      document.removeEventListener('touchstart', _epOutsideHandler, true);
     }
   };
-  menu.ontouchmove = function(e){
-    if(!_epTouchInMenu){
-      var dy = Math.abs(e.touches[0].clientY - (menu._overlayStartY||0));
-      if(dy > 8){ menu._overlayMoved = true; closeEpMenu(); }
-    }
-  };
-  menu.ontouchend = function(e){
-    if(!_epTouchInMenu && !menu._overlayMoved) closeEpMenu();
-  };
+  setTimeout(function(){
+    document.addEventListener('touchstart', _epOutsideHandler, true);
+  }, 50);
 
   popover.ontouchstart = function(e){
     e.stopPropagation();
@@ -1923,8 +1930,14 @@ function openEpMenu(idx, btn){
     } else { popover.style.transform = 'scale(1)'; }
 
     if(inside && item && popover.contains(item)){
-      // Toca em opção → fecha
-      setTimeout(function(){ closeEpMenu(); }, 150);
+      var savedIdx = _epMenuIdx;
+      var isPlay = item.id === 'ep-menu-play';
+      var isWatched = item.id === 'ep-menu-watched';
+      setTimeout(function(){
+        closeEpMenu();
+        if(isPlay) epMenuPlay(savedIdx);
+        else if(isWatched) epMenuToggleWatched();
+      }, 100);
     }
     // Solta fora → não fecha, só spring-back
     _epTouchInMenu = false;
@@ -1933,22 +1946,33 @@ function openEpMenu(idx, btn){
 
   // Click fallback desktop
   popover.onclick = function(e){ e.stopPropagation(); };
-  if(playBtn) playBtn.onclick = function(e){ e.stopPropagation(); closeEpMenu(); epMenuPlay(); };
-  if(watchedBtn && ep && !ep.watched) watchedBtn.onclick = function(e){ e.stopPropagation(); closeEpMenu(); epMenuToggleWatched(); };
-  else if(watchedBtn) watchedBtn.onclick = function(e){ e.stopPropagation(); };
+  if(playBtn){
+    playBtn.onclick = function(e){
+      e.stopPropagation();
+      var savedIdx = _epMenuIdx;
+      closeEpMenu();
+      epMenuPlay(savedIdx);
+    };
+  }
+  if(watchedBtn && ep && !ep.watched){
+    watchedBtn.onclick = function(e){ e.stopPropagation(); closeEpMenu(); epMenuToggleWatched(); };
+  } else if(watchedBtn){
+    watchedBtn.onclick = function(e){ e.stopPropagation(); };
+  }
 }
 function closeEpMenu(){
   var menu = g('ep-menu');
   var popover = g('ep-menu-popover');
-  if(menu){ menu.style.display = 'none'; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
-  if(popover){ popover.style.transform = 'scale(1)'; popover.ontouchstart = null; popover.ontouchmove = null; popover.ontouchend = null; }
+  if(menu){ menu.style.display = 'none'; menu.style.pointerEvents = ''; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
+  if(popover){ popover.style.transform = 'scale(1)'; popover.style.pointerEvents = ''; popover.ontouchstart = null; popover.ontouchmove = null; popover.ontouchend = null; }
   if(_epMenuBtn){ _epMenuBtn.style.opacity = '1'; _epMenuBtn = null; }
   _epMenuIdx = -1;
 }
 window.closeEpMenu = closeEpMenu;
-function epMenuPlay(){
+function epMenuPlay(idx){
+  var playIdx = (idx !== undefined) ? idx : _epMenuIdx;
   closeEpMenu();
-  playEpFromDetail(_epMenuIdx);
+  playEpFromDetail(playIdx);
 }
 function epMenuToggleWatched(){
   var a = items.find(function(x){ return x.id === detailItemId; });
