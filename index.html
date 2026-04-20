@@ -254,8 +254,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 @keyframes rippleWave{0%{transform:scale(0);opacity:.6;}100%{transform:scale(1);opacity:0;}}
 .tap-ripple{position:absolute;border-radius:50%;pointer-events:none;border:2px solid rgba(139,92,246,.6);animation:rippleWave 2s ease-out forwards;}
 .float-1{} .float-2{}
-.detail-screen{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;}
+.detail-screen{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1);}
 .detail-screen.active{display:flex;}
+.detail-screen.slide-in{transform:translateY(100%);}
 .detail-screen::-webkit-scrollbar{width:2px;}
 .detail-screen::-webkit-scrollbar-thumb{background:var(--purple2);}
 .detail-hero{position:relative;width:100%;height:240px;flex-shrink:0;overflow:hidden;}
@@ -1417,7 +1418,7 @@ function mkCW(a){
       if(tot>0) minsLabel=tot+'m';
     }
   }
-  return '<div class="cw-card" onclick="openPlayer(\''+a.id+'\','+targetIdx+')">' +
+  return '<div class="cw-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){openPlayer(\''+a.id+'\','+targetIdx+')})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){openPlayer(\''+a.id+'\','+targetIdx+')})">' +
     '<div class="cw-thumb">' +
       (ep&&ep.coverUrl
         ? '<img src="'+ep.coverUrl+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>'
@@ -1426,7 +1427,7 @@ function mkCW(a){
             : '<div class="cw-thumb-emoji">⚔️</div>')
       ) +
       '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.92) 0%,rgba(8,8,15,.3) 55%,transparent 100%);pointer-events:none;"></div>' +
-      '<button onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this)" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this)" style="position:absolute;top:6px;right:6px;background:none;border:none;color:#fff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:1;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:2;">···</button>' +
+      '<button ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.cw-card\'));" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this)" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this)" style="position:absolute;top:6px;right:6px;background:none;border:none;color:#fff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:1;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:2;">···</button>' +
       '<div class="cw-play-ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="8,6 26,16 8,26" fill="white"/></svg></div>' +
       (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
       '<div class="cw-info">' +
@@ -2216,33 +2217,66 @@ function goToDetailFromPlayer(){
     }
   }
 
-  // Prepara a detail por baixo antes de animar
+  // Prepara a detail
   detailItemId = itemId;
   renderDetailEps();
   updateContinueBar();
+
   var ds = g('detail-screen');
-  if(ds) ds.classList.add('active');
 
-  // Anima slide down
-  if(ov){
-    ov.classList.add('sliding-down');
-    setTimeout(function(){
-      // Fecha player sem piscar
-      if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); }
-      hideLoading(); setPlayIcon(false); updateProgress(0,0);
-      playerItemId = null; playerEpIdx = -1;
-      ov.classList.remove('sliding-down');
-      ov.classList.remove('active');
-      document.body.style.overflow = '';
-
-      // Scroll automático até o ep atual
+  if(origin === 'detail'){
+    // Veio da detail — mostra direto por baixo e faz slide down do player
+    if(ds){ ds.classList.add('active'); ds.scrollTop = 0; }
+    if(ov){
+      ov.classList.add('sliding-down');
       setTimeout(function(){
-        var epCards = document.querySelectorAll('#detail-eps-list .ep-card');
-        if(epCards && epCards[epIdx]){
-          epCards[epIdx].scrollIntoView({behavior:'smooth', block:'center'});
-        }
-      }, 100);
-    }, 340);
+        if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); }
+        hideLoading(); setPlayIcon(false); updateProgress(0,0);
+        playerItemId = null; playerEpIdx = -1;
+        ov.classList.remove('sliding-down');
+        ov.classList.remove('active');
+        document.body.style.overflow = '';
+        // Scroll até o ep
+        setTimeout(function(){
+          var epCards = document.querySelectorAll('#detail-eps-list .ep-card');
+          if(epCards && epCards[epIdx]) epCards[epIdx].scrollIntoView({behavior:'smooth', block:'center'});
+        }, 100);
+      }, 340);
+    }
+  } else {
+    // Veio da home — slide down do player, depois home aparece, depois detail sobe
+    if(ov){
+      ov.classList.add('sliding-down');
+      setTimeout(function(){
+        // Fecha player
+        if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); }
+        hideLoading(); setPlayIcon(false); updateProgress(0,0);
+        playerItemId = null; playerEpIdx = -1;
+        ov.classList.remove('sliding-down');
+        ov.classList.remove('active');
+        document.body.style.overflow = '';
+        renderHome();
+
+        // Pequeno delay pra home aparecer, depois abre detail com slide up
+        setTimeout(function(){
+          if(ds){
+            ds.scrollTop = 0;
+            ds.classList.add('slide-in');
+            ds.classList.add('active');
+            // Força reflow pra animação funcionar
+            ds.offsetHeight;
+            setTimeout(function(){
+              ds.classList.remove('slide-in');
+              // Scroll até o ep após animação
+              setTimeout(function(){
+                var epCards = document.querySelectorAll('#detail-eps-list .ep-card');
+                if(epCards && epCards[epIdx]) epCards[epIdx].scrollIntoView({behavior:'smooth', block:'center'});
+              }, 350);
+            }, 30);
+          }
+        }, 100);
+      }, 340);
+    }
   }
 }
 window.goToDetailFromPlayer=goToDetailFromPlayer;
