@@ -1156,7 +1156,8 @@ window.hidePlayerControls = hidePlayerControls;
   if(!area) return;
   var _touchStartX = 0, _touchStartY = 0, _touchStartTime = 0, _touchOnButton = false;
   var _lastTapTime = 0, _lastTapX = 0, _lastTapY = 0;
-  var _doubleTapDelay = 280; // ms entre dois taps pra contar como double tap
+  var _doubleTapDelay = 280;
+  var _singleTapTimer = null;
 
   area.addEventListener('touchstart', function(e){
     _touchOnButton = !!(e.target.closest && (e.target.closest('button') || e.target.closest('input')));
@@ -1186,7 +1187,8 @@ window.hidePlayerControls = hidePlayerControls;
     var isDoubleTap = timeSinceLast < _doubleTapDelay && dxLast < 60 && dyLast < 60;
 
     if(isDoubleTap){
-      // Double tap detectado!
+      // Double tap detectado! Cancela o single tap pendente
+      clearTimeout(_singleTapTimer);
       _lastTapTime = 0; // reseta pra não triplicar
       var areaRect = area.getBoundingClientRect();
       var relX = tx - areaRect.left;
@@ -1195,15 +1197,14 @@ window.hidePlayerControls = hidePlayerControls;
       var rightZone = areaW * 0.65;
 
       if(relX < leftZone){
-        // Zona esquerda → volta 10s
         skipBack();
-        if(_ctrlVisible) showPlayerControls();
+        if(_ctrlVisible) showPlayerControls(); // reseta timer se visível
+        // se oculto: só animação, nada mais
       } else if(relX > rightZone){
-        // Zona direita → avança 10s
         skipForward();
         if(_ctrlVisible) showPlayerControls();
       } else {
-        // Centro → toggle play/pause
+        // Centro → toggle play/pause sempre mostra controles
         togglePlay();
         showPlayerControls();
       }
@@ -1217,17 +1218,24 @@ window.hidePlayerControls = hidePlayerControls;
 
     // Se os controles estão ocultos, verifica se tocou no centro do botão play/pause
     if(!_ctrlVisible && _playBtnRect){
-      var pad = -18; // área reduzida — só o miolo central do botão
+      var pad = -18;
       if(tx >= _playBtnRect.left - pad && tx <= _playBtnRect.right + pad &&
          ty >= _playBtnRect.top - pad && ty <= _playBtnRect.bottom + pad){
-        togglePlay();
-        showPlayerControls();
+        // Toque no play/pause com controles ocultos — espera pra ver se é double tap
+        clearTimeout(_singleTapTimer);
+        _singleTapTimer = setTimeout(function(){
+          togglePlay();
+          showPlayerControls();
+        }, _doubleTapDelay + 30);
         return;
       }
     }
 
-    // Qualquer outro toque → só mostra/oculta controles
-    togglePlayerControls();
+    // Qualquer outro toque — espera pra ver se é double tap antes de mostrar/ocultar
+    clearTimeout(_singleTapTimer);
+    _singleTapTimer = setTimeout(function(){
+      togglePlayerControls();
+    }, _doubleTapDelay + 30);
   }, {passive: false});
 
   // Fallback click para desktop
