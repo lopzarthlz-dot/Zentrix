@@ -1150,34 +1150,48 @@ window.togglePlayerControls = togglePlayerControls;
 window.showPlayerControls = showPlayerControls;
 window.hidePlayerControls = hidePlayerControls;
 
-// Flash rápido dos controles no double tap quando estão ocultos
-function showDoubleTapFlash(direction){
+function showPlayerControlsBrief(activeBtnId){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
-
-  // Mostra o overlay
+  clearTimeout(_ctrlTimeout);
   overlay.style.display = 'flex';
+  _ctrlVisible = false;
 
-  // Deixa todos os botões apagados exceto o que foi tocado
   var allBtns = overlay.querySelectorAll('button');
-  var activeBtnId = direction === 'back' ? 'skip-back-btn' : 'skip-fwd-btn';
+
+  // Apaga os outros rapidinho, mantém o ativo branco
   allBtns.forEach(function(btn){
-    if(btn.id === activeBtnId){
-      btn.style.opacity = '1';
-    } else {
-      btn.style.opacity = '0.2';
-    }
+    btn.style.transition = '';
+    btn.style.opacity = (btn.id === activeBtnId) ? '1' : '0.2';
   });
 
-  // Some tudo depois de 700ms e restaura opacidades
-  clearTimeout(_ctrlTimeout);
+  // Após 300ms some os cinzas com fade
+  setTimeout(function(){
+    allBtns.forEach(function(btn){
+      if(btn.id !== activeBtnId){
+        btn.style.transition = 'opacity 0.2s ease';
+        btn.style.opacity = '0';
+      }
+    });
+  }, 300);
+
+  // Após 600ms some o botão ativo também e restaura tudo
   _ctrlTimeout = setTimeout(function(){
-    allBtns.forEach(function(btn){ btn.style.opacity = ''; });
-    overlay.style.display = 'none';
-    _ctrlVisible = false;
-  }, 700);
+    allBtns.forEach(function(btn){
+      btn.style.transition = 'opacity 0.2s ease';
+      btn.style.opacity = '0';
+    });
+    setTimeout(function(){
+      allBtns.forEach(function(btn){
+        btn.style.transition = '';
+        btn.style.opacity = '';
+      });
+      overlay.style.display = 'none';
+      _ctrlVisible = false;
+    }, 200);
+  }, 600);
 }
-window.showDoubleTapFlash = showDoubleTapFlash;
+window.showPlayerControlsBrief = showPlayerControlsBrief;
 
 // Touch instantâneo na área do vídeo (sem delay de 300ms do iOS)
 (function(){
@@ -1224,14 +1238,15 @@ window.showDoubleTapFlash = showDoubleTapFlash;
       var rightZone = areaW * 0.65;
 
       if(relX < leftZone){
-        if(!_ctrlVisible) showDoubleTapFlash('back');
+        // Zona esquerda → volta 10s
         skipBack();
-        if(_ctrlVisible) showPlayerControls();
+        if(_ctrlVisible){ showPlayerControls(); } else { showPlayerControlsBrief('skip-back-btn'); }
       } else if(relX > rightZone){
-        if(!_ctrlVisible) showDoubleTapFlash('forward');
+        // Zona direita → avança 10s
         skipForward();
-        if(_ctrlVisible) showPlayerControls();
+        if(_ctrlVisible){ showPlayerControls(); } else { showPlayerControlsBrief('skip-fwd-btn'); }
       } else {
+        // Centro → toggle play/pause
         togglePlay();
         showPlayerControls();
       }
@@ -2325,23 +2340,38 @@ function showSkipFlash(direction, touchX){
   var btnEl = g(direction === 'back' ? 'skip-back-btn' : 'skip-fwd-btn');
   if(!area || !btnEl) return;
   var areaRect = area.getBoundingClientRect();
-  // Usa rect ao vivo se visível, senão usa o salvo
   var btnRect = _ctrlVisible ? btnEl.getBoundingClientRect() : (direction === 'back' ? _skipBackRect : _skipFwdRect);
   if(!btnRect || !btnRect.width) return;
 
   var centerY = btnRect.top + btnRect.height / 2 - areaRect.top;
+  var flyLeft = direction === 'back' ? (btnRect.left - areaRect.left - 30) : (btnRect.right - areaRect.left + 4);
 
+  // Acumula segundos enquanto aperta seguido
+  var flyId = 'skip-fly-' + direction;
+  var accId = '_skipAcc_' + direction;
+  var timerAccId = '_skipAccTimer_' + direction;
+
+  window[accId] = (window[accId] || 0) + 10;
+
+  // Remove voador anterior
+  var oldFly = g(flyId);
+  if(oldFly && oldFly.parentNode) oldFly.parentNode.removeChild(oldFly);
+
+  // Cria novo com total acumulado
   var numFly = document.createElement('div');
+  numFly.id = flyId;
   numFly.className = 'skip-num-fly';
-  numFly.textContent = direction === 'back' ? '-10' : '+10';
+  numFly.textContent = (direction === 'back' ? '-' : '+') + window[accId];
   numFly.style.top = centerY + 'px';
-  if(direction === 'back'){
-    numFly.style.left = (btnRect.left - areaRect.left - 30) + 'px';
-  } else {
-    numFly.style.left = (btnRect.right - areaRect.left + 4) + 'px';
-  }
+  numFly.style.left = flyLeft + 'px';
   area.appendChild(numFly);
-  setTimeout(function(){ if(numFly.parentNode) numFly.parentNode.removeChild(numFly); }, 700);
+
+  // Reseta acumulador após parar de apertar
+  clearTimeout(window[timerAccId]);
+  window[timerAccId] = setTimeout(function(){
+    window[accId] = 0;
+    if(numFly.parentNode) numFly.parentNode.removeChild(numFly);
+  }, 700);
 }
 function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');}}
 function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
