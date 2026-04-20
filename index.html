@@ -819,8 +819,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <!-- Episode menu popover -->
 <div id="ep-menu" style="display:none;position:fixed;inset:0;z-index:9000;">
   <div id="ep-menu-popover" style="position:fixed;background:#1e1e30;border-radius:12px;min-width:210px;box-shadow:0 4px 24px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.08);overflow:hidden;z-index:9001;will-change:transform;">
-    <button id="ep-menu-play" style="width:100%;padding:14px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);transition:background .1s;">Continuar Assistindo</button>
-    <button id="ep-menu-watched" style="width:100%;padding:14px 20px;background:none;border:none;color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);transition:background .1s;">Marcado como Assistido</button>
+    <button id="ep-menu-play" style="width:100%;padding:14px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Continuar Assistindo</button>
+    <button id="ep-menu-watched" style="width:100%;padding:14px 20px;background:none;border:none;color:#fff;font-size:14px;font-weight:600;text-align:left;cursor:pointer;font-family:var(--font);">Marcado como Assistido</button>
   </div>
 </div>
 
@@ -1826,12 +1826,18 @@ function openEpMenu(idx, btn){
   popover.style.left = left + 'px';
   popover.style.top = top + 'px';
 
+  // Reset button backgrounds on every open
+  var allEpBtns = popover.querySelectorAll('button');
+  allEpBtns.forEach(function(b){ b.style.background = 'none'; });
+
   // Touch mechanics: highlight, zoom, spring-back, no-close-on-release-outside
   var _epHighlighted = null;
   var _epRafZoom = null;
   var _epTouchInMenu = false;
 
-  function clearEpHighlight(){ if(_epHighlighted){ _epHighlighted.style.background=''; _epHighlighted=null; } }
+  function clearEpHighlight(){
+    if(_epHighlighted){ _epHighlighted.style.background = 'none'; _epHighlighted = null; }
+  }
 
   // Overlay: fecha no tap simples, fecha+scroll no swipe, não bloqueia scroll
   menu.onclick = null;
@@ -1964,7 +1970,13 @@ function closeEpMenu(){
   var menu = g('ep-menu');
   var popover = g('ep-menu-popover');
   if(menu){ menu.style.display = 'none'; menu.style.pointerEvents = ''; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
-  if(popover){ popover.style.transform = 'scale(1)'; popover.style.pointerEvents = ''; popover.ontouchstart = null; popover.ontouchmove = null; popover.ontouchend = null; }
+  if(popover){
+    popover.style.transform = 'scale(1)';
+    popover.style.pointerEvents = '';
+    popover.ontouchstart = null; popover.ontouchmove = null; popover.ontouchend = null;
+    // Reset all button backgrounds
+    popover.querySelectorAll('button').forEach(function(b){ b.style.background = 'none'; });
+  }
   if(_epMenuBtn){ _epMenuBtn.style.opacity = '1'; _epMenuBtn = null; }
   _epMenuIdx = -1;
 }
