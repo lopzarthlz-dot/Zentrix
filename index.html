@@ -106,12 +106,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
 .p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;align-self:center;}
-.card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;}
+.card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;transform-origin:top right;transition:transform .15s ease;}
 .card-ctx-overlay{position:fixed;inset:0;z-index:9799;}
-.card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;}
+.card-ctx-item{width:100%;padding:15px 20px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font);display:block;transition:background .1s;}
 .card-ctx-item:last-child{border-bottom:none;}
-.card-ctx-item:active{background:rgba(255,255,255,.06);}
+.card-ctx-item.highlighted{background:rgba(255,255,255,.12);}
 .card-ctx-item.danger{color:#f87171;}
+.card-ctx-separator{height:6px;background:#14141f;border:none;margin:0;display:block;}
 .p-card-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .p-card-sub{font-size:11px;color:var(--text3);margin-top:0;align-self:center;}
 .cw-card{width:280px;flex-shrink:0;cursor:pointer;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border2);background:var(--bg3);}
@@ -824,12 +825,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 
 <!-- Card Context Menu -->
-<div class="card-ctx-overlay" id="card-ctx-overlay" style="display:none;" onclick="closeCardMenu()"></div>
+<div class="card-ctx-overlay" id="card-ctx-overlay" style="display:none;"></div>
 <div class="card-ctx-menu" id="card-ctx-menu" style="display:none;">
-  <button class="card-ctx-item" id="ctx-assistir" onclick="closeCardMenu();ctxAssistir()">Começar a Assistir</button>
-  <button class="card-ctx-item" id="ctx-zentrilista" onclick="closeCardMenu();ctxZentrilista()">Adicionar à Zentrilista</button>
-  <button class="card-ctx-item" id="ctx-fav" onclick="closeCardMenu();ctxFav()">Favoritar</button>
-  <button class="card-ctx-item" id="ctx-assistido" onclick="closeCardMenu();ctxAssistido()">Marcar como Assistido</button>
+  <button class="card-ctx-item" id="ctx-assistir">Começar a Assistir</button>
+  <button class="card-ctx-item" id="ctx-zentrilista">Adicionar à Zentrilista</button>
+  <div class="card-ctx-separator"></div>
+  <button class="card-ctx-item" id="ctx-continuar" style="display:none;">Continuar Assistindo</button>
+  <button class="card-ctx-item" id="ctx-infos" style="display:none;">Infos da Série</button>
+  <button class="card-ctx-item" id="ctx-assistido">Marcar como Assistido</button>
 </div>
 
 <!-- Toast notification -->
@@ -2526,35 +2529,104 @@ function openCardMenu(itemId, btn){
   if(!menu || !overlay) return;
 
   // Atualizar labels dinâmicos
-  var favBtn = g('ctx-fav');
-  if(favBtn) favBtn.textContent = (a.fav ? 'Desfavoritar' : 'Favoritar');
   var assistidoBtn = g('ctx-assistido');
   var allWatched = a.episodes && a.episodes.length > 0 && a.episodes.every(function(ep){ return ep.watched; });
   if(assistidoBtn) assistidoBtn.textContent = allWatched ? 'Marcar como Não Assistido' : 'Marcar como Assistido';
 
+  // Mostrar "Continuar Assistindo" e "Infos da Série" apenas no CW card
+  var isCW = btn && btn.closest && btn.closest('.cw-card');
+  var continuarBtn = g('ctx-continuar');
+  var infosBtn = g('ctx-infos');
+  if(continuarBtn) continuarBtn.style.display = isCW ? 'block' : 'none';
+  if(infosBtn) infosBtn.style.display = isCW ? 'block' : 'none';
+
   // Posicionar o menu perto do botão
   var rect = btn.getBoundingClientRect();
-  var appEl = document.querySelector('.app') || document.body;
-  var appRect = appEl.getBoundingClientRect();
-  var menuW = 220, menuH = 180;
+  var menuW = 220;
+  var menuH = menu.offsetHeight || 200;
   var left = rect.left - menuW + rect.width;
   var top = rect.bottom + 6;
-
-  // Se sair da tela pra baixo, aparece acima
   if(top + menuH > window.innerHeight - 20) top = rect.top - menuH - 6;
-  // Não sair pela esquerda
   if(left < 8) left = 8;
 
   menu.style.left = left + 'px';
   menu.style.top = top + 'px';
+  menu.style.transform = 'scale(1)';
   menu.style.display = 'block';
   overlay.style.display = 'block';
+
+  // Touch: highlight + zoom dinâmico
+  var _highlighted = null;
+  function clearHighlight(){ if(_highlighted){ _highlighted.classList.remove('highlighted'); _highlighted = null; } }
+
+  overlay.ontouchstart = null;
+  overlay.ontouchmove = null;
+  overlay.ontouchend = null;
+
+  menu.ontouchstart = function(e){
+    var item = e.target.closest('.card-ctx-item');
+    clearHighlight();
+    if(item){ _highlighted = item; item.classList.add('highlighted'); }
+  };
+
+  menu.ontouchmove = function(e){
+    var t = e.touches[0];
+    var el = document.elementFromPoint(t.clientX, t.clientY);
+    var item = el && el.closest && el.closest('.card-ctx-item');
+    clearHighlight();
+    if(item && menu.contains(item)){
+      _highlighted = item; item.classList.add('highlighted');
+      menu.style.transform = 'scale(1)';
+    } else {
+      // Fora do menu — zoom proporcional à distância
+      var menuRect = menu.getBoundingClientRect();
+      var dx = Math.max(0, Math.max(menuRect.left - t.clientX, t.clientX - menuRect.right));
+      var dy = Math.max(0, Math.max(menuRect.top - t.clientY, t.clientY - menuRect.bottom));
+      var dist = Math.sqrt(dx*dx + dy*dy);
+      var scale = Math.max(0.7, 1 - dist/300);
+      menu.style.transform = 'scale('+scale+')';
+    }
+  };
+
+  menu.ontouchend = function(e){
+    var t = e.changedTouches[0];
+    var el = document.elementFromPoint(t.clientX, t.clientY);
+    var item = el && el.closest && el.closest('.card-ctx-item');
+    clearHighlight();
+    menu.style.transform = 'scale(1)';
+    if(item && menu.contains(item)){
+      var id = item.id;
+      closeCardMenu();
+      if(id === 'ctx-assistir') ctxAssistir();
+      else if(id === 'ctx-zentrilista') ctxZentrilista();
+      else if(id === 'ctx-assistido') ctxAssistido();
+      else if(id === 'ctx-continuar') ctxContinuar();
+    } else {
+      closeCardMenu();
+    }
+    e.preventDefault();
+  };
+
+  // Click fallback para desktop
+  var items_btns = menu.querySelectorAll('.card-ctx-item');
+  items_btns.forEach(function(item){
+    item.onclick = function(){
+      var id = item.id;
+      closeCardMenu();
+      if(id === 'ctx-assistir') ctxAssistir();
+      else if(id === 'ctx-zentrilista') ctxZentrilista();
+      else if(id === 'ctx-assistido') ctxAssistido();
+      else if(id === 'ctx-continuar') ctxContinuar();
+    };
+  });
+
+  overlay.onclick = function(){ closeCardMenu(); };
 }
 function closeCardMenu(){
   var menu = g('card-ctx-menu');
   var overlay = g('card-ctx-overlay');
-  if(menu) menu.style.display = 'none';
-  if(overlay) overlay.style.display = 'none';
+  if(menu){ menu.style.display = 'none'; menu.style.transform = 'scale(1)'; menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null; }
+  if(overlay){ overlay.style.display = 'none'; overlay.onclick = null; }
   _ctxItemId = null;
 }
 function ctxAssistir(){
@@ -2568,16 +2640,16 @@ function ctxZentrilista(){
   if(!savedItems.find(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); })){
     savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
     saveSaved();
-    showToast('Adicionado à Zentrilista!', '✓');
+    showToast('Adicionado à Zentrilista', '✓');
   } else {
-    showToast('Já está na Zentrilista!', 'ℹ️');
+    showToast('Já está na Zentrilista', 'ℹ️');
   }
 }
 function ctxFav(){
   if(!_ctxItemId) return;
   toggleFav(_ctxItemId);
   var a = items.find(function(x){ return x.id === _ctxItemId; });
-  if(a) showToast(a.fav?'Adicionado aos favoritos!':'Removido dos favoritos!', a.fav?'⭐':'★');
+  if(a) showToast(a.fav?'Adicionado aos favoritos':'Removido dos favoritos', a.fav?'⭐':'★');
 }
 function ctxAssistido(){
   if(!_ctxItemId) return;
@@ -2586,10 +2658,21 @@ function ctxAssistido(){
   var allWatched = a.episodes.every(function(ep){ return ep.watched; });
   a.episodes.forEach(function(ep){ ep.watched = !allWatched; if(!allWatched){ ep.savedTime = ep.duration || 0; } else { ep.savedTime = 0; } });
   saveData(); renderAll();
-  showToast(allWatched?'Marcado como não assistido!':'Marcado como assistido!', '✓');
+  showToast(allWatched?'Marcado como não assistido':'Marcado como assistido', '✓');
+}
+function ctxContinuar(){
+  if(!_ctxItemId) return;
+  var a = items.find(function(x){ return x.id === _ctxItemId; });
+  if(!a) return;
+  var eps = a.episodes || [];
+  var idx = -1;
+  for(var i=0;i<eps.length;i++){ if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){idx=i;break;} }
+  if(idx<0){ for(var i=0;i<eps.length;i++){ if(!eps[i].watched){idx=i;break;} } }
+  if(idx<0) idx=0;
+  openPlayer(a.id, idx, 'home');
 }
 window.openCardMenu=openCardMenu;window.closeCardMenu=closeCardMenu;
-window.ctxAssistir=ctxAssistir;window.ctxZentrilista=ctxZentrilista;window.ctxFav=ctxFav;window.ctxAssistido=ctxAssistido;
+window.ctxAssistir=ctxAssistir;window.ctxZentrilista=ctxZentrilista;window.ctxFav=ctxFav;window.ctxAssistido=ctxAssistido;window.ctxContinuar=ctxContinuar;
 window.getSuggestion=async function(){
   var btn=g('suggest-btn');if(btn){btn.disabled=true;btn.textContent='Pensando...';}
   var rec=g('rec-results');if(rec)rec.innerHTML='<div class="loading-msg">🤖 Analisando sua lista...</div>';
