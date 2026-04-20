@@ -2285,19 +2285,42 @@ function showSkipFlash(direction, touchX){
   var svgEl = g(direction === 'back' ? 'skip-back-svg' : 'skip-fwd-svg');
   var numEl = g(direction === 'back' ? 'skip-back-num' : 'skip-fwd-num');
 
-  if(svgEl){
-    svgEl.style.animation = 'none';
-    svgEl.offsetHeight; // reflow
-    var animName = direction === 'back' ? 'skipCircleBack' : 'skipCircleFwd';
-    svgEl.style.animation = animName + ' 0.5s ease-out forwards';
-    svgEl.style.transformOrigin = 'center center';
-    setTimeout(function(){ svgEl.style.animation = ''; }, 520);
-  }
-
-  // Esconde o "10" dentro do círculo durante a animação
-  if(numEl){
-    numEl.style.opacity = '0';
-    setTimeout(function(){ numEl.style.opacity = '1'; }, 520);
+  if(_ctrlVisible){
+    // Controles visíveis — anima o SVG real
+    if(svgEl){
+      svgEl.style.animation = 'none';
+      svgEl.offsetHeight;
+      var animName = direction === 'back' ? 'skipCircleBack' : 'skipCircleFwd';
+      svgEl.style.animation = animName + ' 0.5s ease-out forwards';
+      svgEl.style.transformOrigin = 'center center';
+      setTimeout(function(){ svgEl.style.animation = ''; }, 520);
+    }
+    if(numEl){
+      numEl.style.opacity = '0';
+      setTimeout(function(){ numEl.style.opacity = '1'; }, 520);
+    }
+  } else {
+    // Controles ocultos — cria um círculo clone na área do vídeo
+    var area2 = g('player-video-area');
+    var savedRect = direction === 'back' ? _skipBackRect : _skipFwdRect;
+    if(area2 && savedRect && savedRect.width){
+      var areaR = area2.getBoundingClientRect();
+      var cx = savedRect.left + savedRect.width/2 - areaR.left;
+      var cy = savedRect.top + savedRect.height/2 - areaR.top;
+      var cloneId = 'skip-clone-' + direction;
+      var old = g(cloneId); if(old && old.parentNode) old.parentNode.removeChild(old);
+      var clone = document.createElement('div');
+      clone.id = cloneId;
+      clone.style.cssText = 'position:absolute;pointer-events:none;z-index:10;width:48px;height:48px;left:'+(cx-24)+'px;top:'+(cy-24)+'px;';
+      var animName2 = direction === 'back' ? 'skipCircleBack' : 'skipCircleFwd';
+      clone.innerHTML = '<svg width="48" height="48" viewBox="0 0 50 50" fill="none" style="animation:'+animName2+' 0.5s ease-out forwards;transform-origin:center center;">'
+        + (direction === 'back'
+          ? '<path d="M25 10 A15 15 0 1 0 38 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="38,9 38,18 29,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
+          : '<path d="M25 10 A15 15 0 1 1 12 17.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="12,9 12,18 21,18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>')
+        + '</svg>';
+      area2.appendChild(clone);
+      setTimeout(function(){ if(clone.parentNode) clone.parentNode.removeChild(clone); }, 520);
+    }
   }
 
   // Número voa grudado na borda lateral do círculo, na altura certa
