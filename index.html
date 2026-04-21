@@ -651,7 +651,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:600px;position:relative;overflow:hidden;background:#08080f;margin-top:-52px;flex-shrink:0;">
       <!-- Background image -->
       <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;will-change:transform;">
       <!-- Gradient overlay -->
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.7) 35%, rgba(8,8,15,.15) 65%, transparent 100%);pointer-events:none;"></div>
       <!-- Content -->
@@ -1408,7 +1408,7 @@ function initHomeScroll(){
 
   // Zoom in on overscroll, restore on release
   if(bgImg){
-    bgImg.style.transformOrigin='center bottom';
+    bgImg.style.transformOrigin='center center';
     bgImg.style.transition='transform 0.35s cubic-bezier(.22,.61,.36,1)';
     bgImg.style.transform='scale(1.08)';
   }
