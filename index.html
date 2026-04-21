@@ -648,14 +648,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </button>
       </div>
     </div>
-    <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:600px;position:relative;overflow:hidden;background:#08080f;margin-top:-52px;flex-shrink:0;">
+    <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:600px;position:relative;background:#08080f;margin-top:-52px;flex-shrink:0;">
       <!-- Background image -->
-      <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+      <div id="hero-bg-img-wrap" style="position:absolute;inset:0;background-image:url('https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg');background-size:cover;background-position:center top;background-attachment:fixed;"></div>
+      <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg" style="display:none;">
       <!-- Gradient overlay -->
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.7) 35%, rgba(8,8,15,.15) 65%, transparent 100%);pointer-events:none;"></div>
       <!-- Content -->
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 20px 0;">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 20px 6px;">
         <!-- Logo -->
         <img id="hero-logo-img" src="https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png"
           style="max-width:280px;max-height:130px;object-fit:contain;object-position:left bottom;display:block;margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
@@ -664,7 +664,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <!-- Áudio -->
         <div id="hero-aud" style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:8px;font-weight:600;letter-spacing:.3px;padding-left:16px;"></div>
         <!-- Description -->
-        <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
+        <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;padding-left:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
         <!-- Buttons -->
         <div class="hero-btns">
           <button class="detail-continue-btn" id="hero-play-btn" style="flex:1;transition:transform .15s,opacity .15s;"
@@ -1407,8 +1407,7 @@ function initHomeScroll(){
   scr._scrollInit=true;
   scr.addEventListener('scroll',function(){
     var scrollY=scr.scrollTop;
-    // Parallax — imagem move mais devagar
-    if(bgImg) bgImg.style.transform='translateY(-'+Math.round(scrollY*0.35)+'px)';
+    // background-attachment:fixed já faz o parallax automaticamente
     // Fade: some quando overscroll pra cima (scrollTop negativo no iOS)
     if(scrollY>=0){
       tb.style.opacity=1;
@@ -1695,8 +1694,8 @@ function initHeroSwipe(){
 function setHeroCarouselItem(item){
   if(!item)return;
   heroItemId=item.id;
-  var bgImg=g('hero-bg-img');
-  if(bgImg&&item.bannerUrl) bgImg.src=item.bannerUrl;
+  var bgWrap=g('hero-bg-img-wrap');
+  if(bgWrap&&item.bannerUrl) bgWrap.style.backgroundImage="url('"+item.bannerUrl+"')";
   var logoImg=g('hero-logo-img');
   if(logoImg&&item.logoUrl) logoImg.src=item.logoUrl;
   var sub=g('hero-sub');
