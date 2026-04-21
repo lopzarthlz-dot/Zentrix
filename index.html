@@ -651,14 +651,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:600px;position:relative;overflow:hidden;background:#08080f;margin-top:-52px;flex-shrink:0;">
       <!-- Background image -->
       <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;will-change:transform;">
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
       <!-- Gradient overlay -->
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.7) 35%, rgba(8,8,15,.15) 65%, transparent 100%);pointer-events:none;"></div>
       <!-- Content -->
       <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 20px 6px;">
         <!-- Logo -->
         <img id="hero-logo-img" src="https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png"
-          style="max-width:280px;max-height:130px;object-fit:contain;object-position:left bottom;display:block;margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
+          style="max-width:280px;max-height:130px;object-fit:contain;object-position:left bottom;display:block;margin-bottom:4px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
         <!-- Badges -->
         <div id="hero-badge" style="display:none;"></div>
         <!-- Áudio -->
@@ -1408,7 +1408,7 @@ function initHomeScroll(){
 
   // Zoom in on overscroll, restore on release
   if(bgImg){
-    bgImg.style.transformOrigin='center center';
+    bgImg.style.transformOrigin='center bottom';
     bgImg.style.transition='transform 0.35s cubic-bezier(.22,.61,.36,1)';
     bgImg.style.transform='scale(1.08)';
   }
