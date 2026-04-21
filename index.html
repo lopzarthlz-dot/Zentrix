@@ -71,7 +71,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .screen::-webkit-scrollbar{width:2px;}
 .screen::-webkit-scrollbar-thumb{background:var(--purple2);border-radius:99px;}
 .top-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;flex-shrink:0;position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(8,8,15,.98) 70%,transparent);}
-#screen-home>.top-bar{position:absolute;top:0;left:0;right:0;z-index:60;background:linear-gradient(180deg,rgba(8,8,15,.7) 0%,transparent 100%);pointer-events:auto;}
+#screen-home>.top-bar{background:transparent;margin-bottom:-52px;}
 .logo{font-size:20px;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;}
 .top-actions{display:flex;gap:14px;align-items:center;}
 .top-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;padding:2px;}
@@ -635,7 +635,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 
 <div class="app">
-  <div class="screen active" id="screen-home" style="position:relative;">
+  <div class="screen active" id="screen-home">
     <div class="top-bar">
       <div class="logo">ZENTRIX</div>
       <div class="top-actions">
@@ -644,7 +644,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </button>
       </div>
     </div>
-    <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:480px;position:relative;overflow:hidden;background:#08080f;margin-top:-52px;flex-shrink:0;">
+    <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:540px;position:relative;overflow:hidden;background:#08080f;margin-top:-52px;flex-shrink:0;">
       <!-- Background image -->
       <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg"
         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
