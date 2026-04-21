@@ -1073,11 +1073,11 @@ var DEFAULT_ANIMES = [
     engagement: 92,
     dataLancamento: '2026-04-11',
     episodes: [
-      { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
-      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
+      { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 3420, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
+      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
       { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601905.us.archive.org/4/items/img-4573_20260420/IMG_4573.jpeg' },
       { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' }
+      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -1404,15 +1404,27 @@ function initHomeScroll(){
   if(!scr||!tb)return;
   if(scr._scrollInit)return;
   scr._scrollInit=true;
+  var lastScrollY=0;
+  var tbOpacity=1;
   scr.addEventListener('scroll',function(){
     var scrollY=scr.scrollTop;
-    // Parallax — imagem desce mais devagar que o scroll
-    if(bgImg) bgImg.style.transform='translateY(-'+Math.round(scrollY*0.4)+'px)';
-    // Fade out top bar entre 0 e 80px de scroll pra baixo
-    var fadeRange=80;
-    var opacity=Math.max(0, 1-(scrollY/fadeRange));
-    tb.style.opacity=opacity;
-    tb.style.pointerEvents=opacity<0.05?'none':'auto';
+    var delta=scrollY-lastScrollY;
+    lastScrollY=scrollY;
+    // Parallax — imagem move mais devagar
+    if(bgImg) bgImg.style.transform='translateY(-'+Math.round(scrollY*0.35)+'px)';
+    // Fade: some ao rolar pra baixo (delta positivo), volta ao rolar pra cima
+    if(scrollY<=10){
+      // No topo — sempre visível
+      tbOpacity=1;
+    } else if(delta>0){
+      // Rolando pra baixo — some
+      tbOpacity=Math.max(0, tbOpacity-delta*0.05);
+    } else if(delta<0){
+      // Rolando pra cima — aparece
+      tbOpacity=Math.min(1, tbOpacity-delta*0.05);
+    }
+    tb.style.opacity=tbOpacity;
+    tb.style.pointerEvents=tbOpacity<0.05?'none':'auto';
   },{passive:true});
 }
 window.goTo=goTo;
