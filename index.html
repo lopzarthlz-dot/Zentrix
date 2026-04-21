@@ -1067,6 +1067,7 @@ var DEFAULT_ANIMES = [
     rating: null,
     progress: {},
     cover: 'https://ia600907.us.archive.org/17/items/img-4024_202604/IMG_4024.jpeg',
+    description: 'Em um mundo onde o título de herói é, na verdade, uma sentença, Xylo Forbartz foi condenado a lutar eternamente contra monstros em uma guerra sem fim. Integrante da Unidade Penal 9004, ele não pode escapar, nem mesmo pela morte, já que sempre retorna ao campo de batalha. Preso nesse ciclo cruel, tudo começa a mudar quando uma deusa misteriosa cruza seu caminho. Entre batalhas impossíveis e segredos ocultos, Xylo pode finalmente ter uma chance de desafiar o próprio destino e quebrar a maldição que o mantém vivo.',
     lastEp: -1,
     views: 15000,
     trending: true,
@@ -1404,27 +1405,21 @@ function initHomeScroll(){
   if(!scr||!tb)return;
   if(scr._scrollInit)return;
   scr._scrollInit=true;
-  var lastScrollY=0;
-  var tbOpacity=1;
   scr.addEventListener('scroll',function(){
     var scrollY=scr.scrollTop;
-    var delta=scrollY-lastScrollY;
-    lastScrollY=scrollY;
     // Parallax — imagem move mais devagar
     if(bgImg) bgImg.style.transform='translateY(-'+Math.round(scrollY*0.35)+'px)';
-    // Fade: some ao rolar pra baixo (delta positivo), volta ao rolar pra cima
-    if(scrollY<=10){
-      // No topo — sempre visível
-      tbOpacity=1;
-    } else if(delta>0){
-      // Rolando pra baixo — some
-      tbOpacity=Math.max(0, tbOpacity-delta*0.05);
-    } else if(delta<0){
-      // Rolando pra cima — aparece
-      tbOpacity=Math.min(1, tbOpacity-delta*0.05);
+    // Fade: some quando overscroll pra cima (scrollTop negativo no iOS)
+    if(scrollY>=0){
+      tb.style.opacity=1;
+      tb.style.pointerEvents='auto';
+    } else {
+      var pullDistance=Math.abs(scrollY);
+      var fadeRange=60;
+      var opacity=Math.max(0, 1-(pullDistance/fadeRange));
+      tb.style.opacity=opacity;
+      tb.style.pointerEvents=opacity<0.05?'none':'auto';
     }
-    tb.style.opacity=tbOpacity;
-    tb.style.pointerEvents=tbOpacity<0.05?'none':'auto';
   },{passive:true});
 }
 window.goTo=goTo;
