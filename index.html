@@ -643,12 +643,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </button>
       </div>
     </div>
-    <div class="hero">
-      <div class="hero-bg"></div><div class="hero-grid"></div><div class="hero-glare"></div>
-      <div class="hero-content">
-        <div class="hero-badge" id="hero-badge">📋 Sua lista</div>
-        <div class="hero-title" id="hero-title">Bem-vindo!</div>
-        <div class="hero-sub" id="hero-sub">Adicione títulos para começar</div>
+    <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:420px;position:relative;overflow:hidden;background:#08080f;">
+      <!-- Background image -->
+      <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+      <!-- Gradient overlay -->
+      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.7) 35%, rgba(8,8,15,.15) 65%, transparent 100%);pointer-events:none;"></div>
+      <!-- Content -->
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 18px 20px;">
+        <!-- Logo -->
+        <img id="hero-logo-img" src="https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png"
+          style="max-width:200px;max-height:90px;object-fit:contain;object-position:left bottom;display:block;margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
+        <!-- Badges -->
+        <div id="hero-badge" style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:8px;display:flex;align-items:center;gap:6px;"></div>
+        <!-- Description -->
+        <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"></div>
+        <!-- Buttons -->
         <div class="hero-btns">
           <button class="detail-continue-btn" id="hero-play-btn" style="flex:1;transition:transform .15s,opacity .15s;"
             ontouchstart="this.style.transform='scale(0.96)';this.style.opacity='0.85';this._startX=event.touches[0].clientX;this._startY=event.touches[0].clientY;this._cancelled=false;"
@@ -1488,12 +1498,16 @@ function renderHome(){
   var favs=items.filter(function(x){return x.fav;});
   var has=items.length>0||savedItems.length>0;
   var empty=g('home-empty');if(empty)empty.style.display=has?'none':'flex';
+
+  // Hero badge and description
+  var badge=g('hero-badge');
+  var sub=g('hero-sub');
+
   if(watching.length>0){
     var hw = watching[0];
     heroItemId = hw.id;
-    g('hero-badge').textContent='▶ Continue assistindo';
-    g('hero-title').textContent=hw.name;
-    g('hero-sub').textContent='Anime · '+audioLabel(hw.audio);
+    if(badge) badge.innerHTML='<span style="background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.5);color:#c4b5fd;font-size:10px;font-weight:700;padding:2px 10px;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;">▶ Continue assistindo</span>';
+    if(sub) sub.textContent=hw.description||'';
     var lbl=g('hero-play-label');
     if(lbl){
       var eps=hw.episodes||[];
@@ -1508,14 +1522,13 @@ function renderHome(){
     }
   } else if(items.length>0){
     heroItemId=items[0].id;
-    g('hero-badge').textContent='📋 Sua lista';
-    g('hero-title').textContent=items[0].name;
-    g('hero-sub').textContent='Anime';
+    if(badge) badge.innerHTML='<span style="background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.5);color:#c4b5fd;font-size:10px;font-weight:700;padding:2px 10px;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;">Em alta</span>';
+    if(sub) sub.textContent=items[0].description||'';
     var lbl2=g('hero-play-label');
     if(lbl2) lbl2.textContent='Começar A Assistir E1';
-  } else{heroItemId=null;}
+  } else { heroItemId=null; }
+
   updateHeroBookmark();
-  function showSec(id,rowId,data,fn){var sec=g(id),row=g(rowId);if(!sec||!row)return;if(data.length){sec.style.display='block';row.innerHTML=data.slice(0,10).map(fn).join('');}else sec.style.display='none';}
 
   // EM ALTA: sort by trending first, then views, then engagement
   var emAlta=items.slice().sort(function(a,b){
@@ -1525,6 +1538,7 @@ function renderHome(){
     if(vb!==va)return vb-va;
     return (b.engagement||0)-(a.engagement||0);
   });
+  function showSec(id,rowId,data,fn){var sec=g(id),row=g(rowId);if(!sec||!row)return;if(data.length){sec.style.display='block';row.innerHTML=data.slice(0,10).map(fn).join('');}else sec.style.display='none';}
   showSec('sec-all','all-row',emAlta,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
 
   // CONTINUE ASSISTINDO — só mostra se tem ep não assistido ainda
@@ -2769,7 +2783,7 @@ function openCardMenu(itemId, btn){
     var item = el && el.closest && el.closest('.card-ctx-item');
     clearHighlight();
 
-    var curScale = parseFloat((menu.style.transform||'scale(1)').replace('scale(','')) || 1;
+    var curScale = parseFloat((menu.style.transform||'scale(1)').replace('scale(','').replace(')','')) || 1;
 
     if(insideMenu){
       if(item && menu.contains(item)){ _highlighted = item; item.classList.add('highlighted'); }
@@ -2822,7 +2836,7 @@ function openCardMenu(itemId, btn){
     var el = document.elementFromPoint(t.clientX, t.clientY);
     var item = el && el.closest && el.closest('.card-ctx-item');
     // Spring-back
-    var curScale = parseFloat((menu.style.transform||'scale(1)').replace('scale(','')) || 1;
+    var curScale = parseFloat((menu.style.transform||'scale(1)').replace('scale(','').replace(')','')) || 1;
     if(curScale < 0.999){
       (function animBack(){
         curScale = curScale + (1 - curScale) * 0.2;
