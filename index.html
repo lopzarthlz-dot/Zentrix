@@ -1410,6 +1410,7 @@ function initHomeScroll(){
   if(bgImg){
     bgImg.style.transformOrigin='center top';
     bgImg.style.transition='transform 0.35s cubic-bezier(.22,.61,.36,1)';
+    bgImg.style.transform='scale(1.08)';
   }
 
   scr.addEventListener('scroll',function(){
@@ -1419,7 +1420,7 @@ function initHomeScroll(){
       tb.style.opacity=1;
       tb.style.pointerEvents='auto';
       // Restore zoom when not overscrolling
-      if(bgImg) bgImg.style.transform='scale(1)';
+      if(bgImg) bgImg.style.transform='scale(1.08)';
     } else {
       var pullDistance=Math.abs(scrollY);
       // Fade
@@ -1427,10 +1428,10 @@ function initHomeScroll(){
       var opacity=Math.max(0, 1-(pullDistance/fadeRange));
       tb.style.opacity=opacity;
       tb.style.pointerEvents=opacity<0.05?'none':'auto';
-      // Zoom — max 1.15x ao puxar 120px
+      // Zoom — começa em 1.08, vai até 1.22x ao puxar 120px
       var zoomRange=120;
-      var scale=1+(pullDistance/zoomRange)*0.15;
-      scale=Math.min(1.15, scale);
+      var scale=1.08+(pullDistance/zoomRange)*0.14;
+      scale=Math.min(1.22, scale);
       if(bgImg){
         bgImg.style.transition='none';
         bgImg.style.transform='scale('+scale+')';
@@ -1442,7 +1443,7 @@ function initHomeScroll(){
   scr.addEventListener('touchend',function(){
     if(bgImg){
       bgImg.style.transition='transform 0.4s cubic-bezier(.22,.61,.36,1)';
-      bgImg.style.transform='scale(1)';
+      bgImg.style.transform='scale(1.08)';
     }
   },{passive:true});
 }
