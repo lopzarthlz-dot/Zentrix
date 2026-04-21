@@ -89,6 +89,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .hero-title{font-size:22px;font-weight:900;line-height:1.1;margin-bottom:5px;letter-spacing:-.5px;}
 .hero-sub{font-size:12px;color:var(--text2);margin-bottom:14px;}
 .hero-btns{display:flex;gap:10px;}
+.hero-indicators{display:flex;gap:5px;padding:10px 18px 4px;}
+.hero-ind{flex:1;height:3px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden;cursor:pointer;}
+.hero-ind-fill{height:100%;width:0%;background:var(--grad2);border-radius:99px;}
+.hero-ind.active .hero-ind-fill{transition:width linear;}
+.hero-ind.done .hero-ind-fill{width:100%;transition:none;}
 .hero-btn{display:flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:var(--font);}
 .hero-btn.primary{background:var(--grad2);color:#fff;box-shadow:0 0 20px rgba(56,189,248,.3);}
 .hero-btn.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border2);}
@@ -656,6 +661,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           style="max-width:280px;max-height:130px;object-fit:contain;object-position:left bottom;display:block;margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
         <!-- Badges -->
         <div id="hero-badge" style="display:none;"></div>
+        <!-- Áudio -->
+        <div id="hero-aud" style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:8px;font-weight:600;letter-spacing:.3px;"></div>
         <!-- Description -->
         <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"></div>
         <!-- Buttons -->
@@ -680,6 +687,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </div>
       </div>
     </div>
+    <div class="hero-indicators" id="hero-indicators"></div>
     <div class="section" id="sec-all" style="display:none;margin-top:8px;">
       <div class="section-header"><div class="section-title">Em alta</div></div>
       <div class="cards-scroll"><div class="cards-row" id="all-row"></div></div>
@@ -1499,36 +1507,8 @@ function renderHome(){
   var has=items.length>0||savedItems.length>0;
   var empty=g('home-empty');if(empty)empty.style.display=has?'none':'flex';
 
-  // Hero badge and description
-  var badge=g('hero-badge');
-  var sub=g('hero-sub');
-
-  if(watching.length>0){
-    var hw = watching[0];
-    heroItemId = hw.id;
-    if(badge) badge.innerHTML='';
-    if(sub) sub.textContent=hw.description||'';
-    var lbl=g('hero-play-label');
-    if(lbl){
-      var eps=hw.episodes||[];
-      var allWatched=eps.length>0&&eps.every(function(ep){return ep.watched;});
-      var hasProgress=eps.some(function(ep){return ep.savedTime&&ep.savedTime>0&&!ep.watched;});
-      var nextIdx=-1;
-      for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}
-      if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
-      if(allWatched) lbl.textContent='Começar A Assistir';
-      else if(hasProgress) lbl.textContent='Continue Assistindo E'+(nextIdx+1);
-      else lbl.textContent='Começar A Assistir E'+(nextIdx>=0?nextIdx+1:1);
-    }
-  } else if(items.length>0){
-    heroItemId=items[0].id;
-    if(badge) badge.innerHTML='';
-    if(sub) sub.textContent=items[0].description||'';
-    var lbl2=g('hero-play-label');
-    if(lbl2) lbl2.textContent='Começar A Assistir E1';
-  } else { heroItemId=null; }
-
-  updateHeroBookmark();
+  // Hero carousel
+  initHeroCarousel();
 
   // EM ALTA: sort by trending first, then views, then engagement
   var emAlta=items.slice().sort(function(a,b){
@@ -1604,6 +1584,104 @@ function updateHeroBookmark(){
 window.heroBookmark = heroBookmark;
 function heroPlay(){if(!heroItemId){openModal('add-modal');return;}openDetail(heroItemId);}
 window.heroPlay=heroPlay;
+
+// ===== HERO INDICATOR BARS =====
+var _heroCarouselItems=[];
+var _heroCarouselIdx=0;
+var _heroCarouselTimer=null;
+var _heroCarouselFillRAF=null;
+var _heroCarouselStart=null;
+var HERO_DURATION=6000;
+
+function renderHeroIndicators(){
+  var container=g('hero-indicators');
+  if(!container)return;
+  var n=_heroCarouselItems.length;
+  if(n<=0){container.style.display='none';return;}
+  container.style.display='flex';
+  container.innerHTML='';
+  for(var i=0;i<n;i++){
+    (function(idx){
+      var bar=document.createElement('div');
+      bar.className='hero-ind'+(idx===_heroCarouselIdx?' active':'')+(idx<_heroCarouselIdx?' done':'');
+      var fill=document.createElement('div');
+      fill.className='hero-ind-fill';
+      if(idx===_heroCarouselIdx) fill.style.transitionDuration=HERO_DURATION+'ms';
+      bar.appendChild(fill);
+      bar.addEventListener('click',function(){ heroCarouselGoTo(idx); });
+      container.appendChild(bar);
+    })(i);
+  }
+  // Trigger fill animation on active bar
+  if(n>0){
+    var activeFill=container.children[_heroCarouselIdx]&&container.children[_heroCarouselIdx].querySelector('.hero-ind-fill');
+    if(activeFill){
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          activeFill.style.width='100%';
+        });
+      });
+    }
+  }
+}
+
+function heroCarouselGoTo(idx){
+  clearTimeout(_heroCarouselTimer);
+  _heroCarouselIdx=idx;
+  setHeroCarouselItem(_heroCarouselItems[idx]);
+  renderHeroIndicators();
+  _heroCarouselTimer=setTimeout(heroCarouselNext, HERO_DURATION);
+}
+
+function heroCarouselNext(){
+  if(_heroCarouselItems.length<=1)return;
+  _heroCarouselIdx=(_heroCarouselIdx+1)%_heroCarouselItems.length;
+  heroCarouselGoTo(_heroCarouselIdx);
+}
+
+function setHeroCarouselItem(item){
+  if(!item)return;
+  heroItemId=item.id;
+  var bgImg=g('hero-bg-img');
+  if(bgImg&&item.bannerUrl) bgImg.src=item.bannerUrl;
+  var logoImg=g('hero-logo-img');
+  if(logoImg&&item.logoUrl) logoImg.src=item.logoUrl;
+  var sub=g('hero-sub');
+  if(sub) sub.textContent=item.description||'';
+  var aud=g('hero-aud');
+  if(aud){
+    var audLabel=item.audio==='d'?'Dub':item.audio==='s'?'Leg':'Dub | Leg';
+    aud.textContent=audLabel;
+  }
+  var lbl=g('hero-play-label');
+  if(lbl){
+    var eps=item.episodes||[];
+    var allWatched=eps.length>0&&eps.every(function(ep){return ep.watched;});
+    var hasProgress=eps.some(function(ep){return ep.savedTime&&ep.savedTime>0&&!ep.watched;});
+    var nextIdx=-1;
+    for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}
+    if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
+    if(allWatched) lbl.textContent='Começar A Assistir';
+    else if(hasProgress) lbl.textContent='Continue Assistindo E'+(nextIdx+1);
+    else lbl.textContent='Começar A Assistir E'+(nextIdx>=0?nextIdx+1:1);
+  }
+  updateHeroBookmark();
+}
+
+function initHeroCarousel(){
+  clearTimeout(_heroCarouselTimer);
+  // Usa todos os itens como carousel (watching primeiro, depois o resto)
+  var watching=items.filter(function(x){return x.status==='watching';});
+  var others=items.filter(function(x){return x.status!=='watching';});
+  _heroCarouselItems=watching.concat(others).slice(0,8);
+  _heroCarouselIdx=0;
+  if(_heroCarouselItems.length===0){g('hero-indicators')&&(g('hero-indicators').style.display='none');return;}
+  setHeroCarouselItem(_heroCarouselItems[0]);
+  renderHeroIndicators();
+  if(_heroCarouselItems.length>1){
+    _heroCarouselTimer=setTimeout(heroCarouselNext, HERO_DURATION);
+  }
+}
 function renderLista(){
   var list=items.slice();
   if(filter==='watching')list=list.filter(function(x){return x.status==='watching';});
