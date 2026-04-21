@@ -70,7 +70,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .screen.active{display:flex;}
 .screen::-webkit-scrollbar{width:2px;}
 .screen::-webkit-scrollbar-thumb{background:var(--purple2);border-radius:99px;}
-.top-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;flex-shrink:0;position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(8,8,15,.98) 70%,transparent);}
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;flex-shrink:0;position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(8,8,15,.98) 70%,transparent);transition:opacity .15s ease;}
 .logo{font-size:20px;font-weight:900;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;}
 .top-actions{display:flex;gap:14px;align-items:center;}
 .top-btn{background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;padding:2px;}
@@ -1390,12 +1390,31 @@ function goTo(s){
   var scr=g('screen-'+s);if(scr)scr.classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(function(x){x.classList.toggle('active',x.dataset.nav===s);});
   var fab=g('fab');if(fab)fab.style.display=(s==='lista'||s==='home')?'flex':'none';
-  if(s==='home')renderHome();
+  if(s==='home'){renderHome();initHomeScroll();}
   else if(s==='lista')renderLista();
   else if(s==='salvos')renderSalvos();
   else if(s==='descobrir')renderDisc();
   else if(s==='perfil')renderPerfil();
   else if(s==='busca'){var si=g('search-input');if(si)setTimeout(function(){si.focus();},100);renderBusca();}
+}
+function initHomeScroll(){
+  var scr=g('screen-home');
+  var tb=scr?scr.querySelector('.top-bar'):null;
+  var bgImg=g('hero-bg-img');
+  if(!scr||!tb)return;
+  if(scr._scrollInit)return;
+  scr._scrollInit=true;
+  scr.addEventListener('scroll',function(){
+    var scrollY=scr.scrollTop;
+    // Parallax — imagem sobe 40% da velocidade do scroll
+    if(bgImg) bgImg.style.transform='translateY('+Math.round(scrollY*0.4)+'px)';
+    // Fade out top bar entre 0 e 80px de scroll
+    var fadeRange=80;
+    var opacity=Math.max(0, 1-(scrollY/fadeRange));
+    tb.style.opacity=opacity;
+    // Esconde pointer events quando invisível
+    tb.style.pointerEvents=opacity<0.05?'none':'auto';
+  },{passive:true});
 }
 window.goTo=goTo;
 function openModal(id){var m=g(id);if(!m)return;m.classList.add('active');var inp=m.querySelector('.modal-input');if(inp)setTimeout(function(){inp.focus();},100);}
@@ -1634,9 +1653,37 @@ function heroCarouselGoTo(idx){
 }
 
 function heroCarouselNext(){
-  if(_heroCarouselItems.length<=1)return;
   _heroCarouselIdx=(_heroCarouselIdx+1)%_heroCarouselItems.length;
   heroCarouselGoTo(_heroCarouselIdx);
+}
+
+function heroCarouselPrev(){
+  _heroCarouselIdx=(_heroCarouselIdx-1+_heroCarouselItems.length)%_heroCarouselItems.length;
+  heroCarouselGoTo(_heroCarouselIdx);
+}
+
+function initHeroSwipe(){
+  var banner=g('hero-banner');
+  if(!banner||banner._swipeInit)return;
+  banner._swipeInit=true;
+  var startX=0,startY=0,moved=false;
+  banner.addEventListener('touchstart',function(e){
+    startX=e.touches[0].clientX;
+    startY=e.touches[0].clientY;
+    moved=false;
+  },{passive:true});
+  banner.addEventListener('touchmove',function(e){
+    var dx=Math.abs(e.touches[0].clientX-startX);
+    var dy=Math.abs(e.touches[0].clientY-startY);
+    if(dx>dy&&dx>8) moved=true;
+  },{passive:true});
+  banner.addEventListener('touchend',function(e){
+    if(!moved)return;
+    var diff=e.changedTouches[0].clientX-startX;
+    if(Math.abs(diff)<40)return;
+    if(diff<0) heroCarouselNext();
+    else heroCarouselPrev();
+  },{passive:true});
 }
 
 function setHeroCarouselItem(item){
@@ -1678,9 +1725,10 @@ function initHeroCarousel(){
   if(_heroCarouselItems.length===0){g('hero-indicators')&&(g('hero-indicators').style.display='none');return;}
   setHeroCarouselItem(_heroCarouselItems[0]);
   renderHeroIndicators();
-  if(_heroCarouselItems.length>1){
-    _heroCarouselTimer=setTimeout(heroCarouselNext, HERO_DURATION);
-  }
+  // Loop sempre, mesmo com 1 anime
+  _heroCarouselTimer=setTimeout(heroCarouselNext, HERO_DURATION);
+  // Swipe
+  initHeroSwipe();
 }
 function renderLista(){
   var list=items.slice();
@@ -3990,6 +4038,7 @@ function stopFloatAnimation(){
 
 renderAll();
 goTo('home');
+initHomeScroll();
 if(!checkSession()){
   var loginScr = g('login-screen');
   if(loginScr) loginScr.style.display = 'flex';
