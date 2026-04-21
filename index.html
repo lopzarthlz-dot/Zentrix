@@ -664,7 +664,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <!-- Áudio -->
         <div id="hero-aud" style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:8px;font-weight:600;letter-spacing:.3px;padding-left:16px;"></div>
         <!-- Description -->
-        <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"></div>
+        <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
         <!-- Buttons -->
         <div class="hero-btns">
           <button class="detail-continue-btn" id="hero-play-btn" style="flex:1;transition:transform .15s,opacity .15s;"
@@ -1406,13 +1406,12 @@ function initHomeScroll(){
   scr._scrollInit=true;
   scr.addEventListener('scroll',function(){
     var scrollY=scr.scrollTop;
-    // Parallax — imagem sobe 40% da velocidade do scroll
-    if(bgImg) bgImg.style.transform='translateY('+Math.round(scrollY*0.4)+'px)';
-    // Fade out top bar entre 0 e 80px de scroll
+    // Parallax — imagem desce mais devagar que o scroll
+    if(bgImg) bgImg.style.transform='translateY(-'+Math.round(scrollY*0.4)+'px)';
+    // Fade out top bar entre 0 e 80px de scroll pra baixo
     var fadeRange=80;
     var opacity=Math.max(0, 1-(scrollY/fadeRange));
     tb.style.opacity=opacity;
-    // Esconde pointer events quando invisível
     tb.style.pointerEvents=opacity<0.05?'none':'auto';
   },{passive:true});
 }
