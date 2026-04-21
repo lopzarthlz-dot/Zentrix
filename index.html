@@ -648,10 +648,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </button>
       </div>
     </div>
-    <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:600px;position:relative;background:#08080f;margin-top:-52px;flex-shrink:0;">
+    <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:600px;position:relative;overflow:hidden;background:#08080f;margin-top:-52px;flex-shrink:0;">
       <!-- Background image -->
-      <div id="hero-bg-img-wrap" style="position:absolute;inset:0;background-image:url('https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg');background-size:cover;background-position:center top;background-attachment:fixed;"></div>
-      <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg" style="display:none;">
+      <img id="hero-bg-img" src="https://ia600708.us.archive.org/22/items/img-4584_202604/IMG_4584.jpeg"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
       <!-- Gradient overlay -->
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.7) 35%, rgba(8,8,15,.15) 65%, transparent 100%);pointer-events:none;"></div>
       <!-- Content -->
@@ -1405,19 +1405,44 @@ function initHomeScroll(){
   if(!scr||!tb)return;
   if(scr._scrollInit)return;
   scr._scrollInit=true;
+
+  // Zoom in on overscroll, restore on release
+  if(bgImg){
+    bgImg.style.transformOrigin='center top';
+    bgImg.style.transition='transform 0.35s cubic-bezier(.22,.61,.36,1)';
+  }
+
   scr.addEventListener('scroll',function(){
     var scrollY=scr.scrollTop;
-    // background-attachment:fixed já faz o parallax automaticamente
-    // Fade: some quando overscroll pra cima (scrollTop negativo no iOS)
+    // Fade top bar on overscroll up
     if(scrollY>=0){
       tb.style.opacity=1;
       tb.style.pointerEvents='auto';
+      // Restore zoom when not overscrolling
+      if(bgImg) bgImg.style.transform='scale(1)';
     } else {
       var pullDistance=Math.abs(scrollY);
+      // Fade
       var fadeRange=60;
       var opacity=Math.max(0, 1-(pullDistance/fadeRange));
       tb.style.opacity=opacity;
       tb.style.pointerEvents=opacity<0.05?'none':'auto';
+      // Zoom — max 1.15x ao puxar 120px
+      var zoomRange=120;
+      var scale=1+(pullDistance/zoomRange)*0.15;
+      scale=Math.min(1.15, scale);
+      if(bgImg){
+        bgImg.style.transition='none';
+        bgImg.style.transform='scale('+scale+')';
+      }
+    }
+  },{passive:true});
+
+  // On touch end restore zoom with spring animation
+  scr.addEventListener('touchend',function(){
+    if(bgImg){
+      bgImg.style.transition='transform 0.4s cubic-bezier(.22,.61,.36,1)';
+      bgImg.style.transform='scale(1)';
     }
   },{passive:true});
 }
@@ -1694,8 +1719,8 @@ function initHeroSwipe(){
 function setHeroCarouselItem(item){
   if(!item)return;
   heroItemId=item.id;
-  var bgWrap=g('hero-bg-img-wrap');
-  if(bgWrap&&item.bannerUrl) bgWrap.style.backgroundImage="url('"+item.bannerUrl+"')";
+  var bgImg=g('hero-bg-img');
+  if(bgImg&&item.bannerUrl) bgImg.src=item.bannerUrl;
   var logoImg=g('hero-logo-img');
   if(logoImg&&item.logoUrl) logoImg.src=item.logoUrl;
   var sub=g('hero-sub');
