@@ -1056,10 +1056,10 @@ var DEFAULT_ANIMES = [
     dataLancamento: '2026-04-11',
     episodes: [
       { id: 'ep1', name: 'Sentenciado a ser Herói', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
-      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
-      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
-      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' },
-      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600804.us.archive.org/19/items/img-4149_202604/IMG_4149.jpeg' }
+      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
+      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601905.us.archive.org/4/items/img-4573_20260420/IMG_4573.jpeg' },
+      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 0, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -2482,6 +2482,7 @@ window.openLinkModal=openLinkModal;window.openLinkModalForEp=openLinkModalForEp;
 function loadEpisode(idx){
   var a=items.find(function(x){return x.id===playerItemId;});if(!a||!a.episodes||!a.episodes[idx])return;
   var ep=a.episodes[idx];playerEpIdx=idx;a.lastEp=idx;saveData();
+  _lastSavedTime=-1; _cwUpdated=false; // reset per-episode flags
   var epl=g('player-ep-label');if(epl)epl.textContent='E'+(idx+1)+' — '+ep.name;
   // Update info section below video
   var animeName=g('player-anime-name');if(animeName)animeName.textContent=a.name;
@@ -2592,6 +2593,7 @@ function toggleFullscreen(){if(vid&&vid.webkitEnterFullscreen){vid.webkitEnterFu
 window.toggleFullscreen=toggleFullscreen;
 // Save progress helper - called from multiple events
 var _lastSavedTime = -1;
+var _cwUpdated = false;
 function saveCurrentProgress(){
   if(!playerItemId||playerEpIdx<0||!vid||!vid.duration||vid.currentTime<=0)return;
   var a=items.find(function(x){return x.id===playerItemId;});
@@ -2605,7 +2607,13 @@ function saveCurrentProgress(){
 vid.addEventListener('timeupdate',function(){
   if(isSeeking||!vid.duration)return;
   updateProgress(vid.currentTime,vid.duration);
-  // Save every 5 seconds using a time-based check (more reliable on iOS than %N===0)
+  // Update Continue Assistindo after 1 second of playback
+  if(!_cwUpdated && vid.currentTime >= 1){
+    _cwUpdated = true;
+    saveCurrentProgress();
+    renderHome();
+  }
+  // Save every 5 seconds
   var cur=Math.floor(vid.currentTime);
   if(cur>0&&cur%5===0&&cur!==_lastSavedTime){
     _lastSavedTime=cur;
@@ -2666,6 +2674,7 @@ document.addEventListener('visibilitychange',function(){
 // ===== CARD CONTEXT MENU =====
 var _ctxItemId = null;
 var _cardShrinkClose = null; // set per-open
+var _cardMenuGen = 0; // generation counter to cancel stale rAFs
 function openCardMenu(itemId, btn){
   _ctxItemId = itemId;
   var a = items.find(function(x){ return x.id === itemId; });
@@ -2697,6 +2706,7 @@ function openCardMenu(itemId, btn){
 
   // Posicionar o menu perto do botão — nunca tampar o botão, nunca sair da tela
   var rect = btn.getBoundingClientRect();
+  ++_cardMenuGen; // cancel any pending style resets from previous close
   menu.style.display = 'block';
   menu.style.transform = 'scale(1)';
   var menuW = menu.offsetWidth || 220;
@@ -2855,18 +2865,18 @@ function openCardMenu(itemId, btn){
       _cardScrollDone = true;
       _cardMenuClosing = true;
       document.removeEventListener('scroll', _cardScrollHandler, true);
+      ++_cardMenuGen;
       menu.style.display = 'none';
       menu.style.pointerEvents = '';
       menu.ontouchstart = null; menu.ontouchmove = null; menu.ontouchend = null;
       var ov = g('card-ctx-overlay');
       if(ov){ ov.style.display='none'; ov.onclick=null; }
       _ctxItemId = null; _cardShrinkClose = null;
-      setTimeout(function(){
-        menu.style.transform = 'scale(1)';
-        menu.style.opacity = '1';
-        menu.style.transition = '';
-        _cardMenuClosing = false;
-      }, 50);
+      // Reset styles synchronously since menu is already display:none
+      menu.style.transform = 'scale(1)';
+      menu.style.opacity = '1';
+      menu.style.transition = '';
+      setTimeout(function(){ _cardMenuClosing = false; }, 50);
     }
   };
   document.addEventListener('scroll', _cardScrollHandler, true);
@@ -2887,14 +2897,21 @@ function openCardMenu(itemId, btn){
   setTimeout(function(){ document.addEventListener('touchstart', _cardOutsideHandler, true); }, 50);
 }
 function _closeCardMenuImmediate(){
+  var gen = ++_cardMenuGen; // increment generation
   var menu = g('card-ctx-menu');
   var menuCW = g('card-ctx-menu-cw');
   var overlay = g('card-ctx-overlay');
-  // Set display:none first to prevent flash from transform reset
-  if(menu){ menu.style.display='none'; menu.style.pointerEvents=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; requestAnimationFrame(function(){ menu.style.transform='scale(1)'; menu.style.opacity='1'; menu.style.transition=''; }); }
-  if(menuCW){ menuCW.style.display='none'; menuCW.style.pointerEvents=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; requestAnimationFrame(function(){ menuCW.style.transform='scale(1)'; menuCW.style.opacity='1'; menuCW.style.transition=''; }); }
+  if(menu){ menu.style.display='none'; menu.style.pointerEvents=''; menu.ontouchstart=null; menu.ontouchmove=null; menu.ontouchend=null; }
+  if(menuCW){ menuCW.style.display='none'; menuCW.style.pointerEvents=''; menuCW.ontouchstart=null; menuCW.ontouchmove=null; menuCW.ontouchend=null; }
   if(overlay){ overlay.style.display='none'; overlay.onclick=null; overlay.ontouchstart=null; overlay.ontouchmove=null; }
   _ctxItemId=null; _cardShrinkClose=null;
+  // Reset styles after hidden — only if generation hasn't changed (no new menu opened)
+  requestAnimationFrame(function(){
+    if(_cardMenuGen !== gen) return; // new menu opened, skip reset
+    var m = g('card-ctx-menu'); var mc = g('card-ctx-menu-cw');
+    if(m){ m.style.transform='scale(1)'; m.style.opacity='1'; m.style.transition=''; }
+    if(mc){ mc.style.transform='scale(1)'; mc.style.opacity='1'; mc.style.transition=''; }
+  });
 }
 function closeCardMenu(){
   if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
