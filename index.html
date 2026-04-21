@@ -1798,6 +1798,7 @@ function openDetail(itemId){
   var ds=g('detail-screen');if(ds)ds.classList.add('active');
   document.body.style.overflow='hidden';
   if(ds)ds.scrollTop=0;
+  preloadEpDurations(a);
 }
 function closeDetail(preserveId){
   var ds=g('detail-screen');if(ds)ds.classList.remove('active');
@@ -1806,6 +1807,34 @@ function closeDetail(preserveId){
   renderAll();
 }
 window.openDetail=openDetail;window.closeDetail=closeDetail;
+function preloadEpDurations(anime){
+  if(!anime||!anime.episodes)return;
+  anime.episodes.forEach(function(ep){
+    if(ep.duration&&ep.duration>0)return; // já tem duração
+    var src=ep.linkUrl||ep.fileUrl;
+    if(!src)return;
+    var vid=document.createElement('video');
+    vid.preload='metadata';
+    vid.style.display='none';
+    vid.src=src;
+    vid.addEventListener('loadedmetadata',function(){
+      if(vid.duration&&isFinite(vid.duration)&&vid.duration>0){
+        ep.duration=Math.round(vid.duration);
+        saveData();
+        renderDetailEps();
+        updateContinueBar();
+      }
+      vid.src='';
+      if(vid.parentNode)vid.parentNode.removeChild(vid);
+    });
+    vid.addEventListener('error',function(){
+      vid.src='';
+      if(vid.parentNode)vid.parentNode.removeChild(vid);
+    });
+    document.body.appendChild(vid);
+  });
+}
+
 function renderDetailEps(){
   var a=items.find(function(x){return x.id===detailItemId;});if(!a)return;
   var eps=a.episodes||[];
