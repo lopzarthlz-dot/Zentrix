@@ -2675,6 +2675,8 @@ document.addEventListener('visibilitychange',function(){
 var _ctxItemId = null;
 var _cardShrinkClose = null; // set per-open
 var _cardMenuGen = 0; // generation counter to cancel stale rAFs
+var _cardOutsideHandlerRef = null; // global ref to remove stale outside handler
+var _cardScrollHandlerRef = null; // global ref to remove stale scroll handler
 function openCardMenu(itemId, btn){
   _ctxItemId = itemId;
   var a = items.find(function(x){ return x.id === itemId; });
@@ -2848,6 +2850,10 @@ function openCardMenu(itemId, btn){
   overlay.ontouchmove = null;
   overlay.ontouchend = null;
 
+  // Remove any stale handlers from previous open
+  if(_cardScrollHandlerRef){ document.removeEventListener('scroll', _cardScrollHandlerRef, true); _cardScrollHandlerRef=null; }
+  if(_cardOutsideHandlerRef){ document.removeEventListener('touchstart', _cardOutsideHandlerRef, true); _cardOutsideHandlerRef=null; }
+
   // Shrink+fade on scroll
   var _cardScrollY0 = window.scrollY || window.pageYOffset || 0;
   var _cardScrollDone = false;
@@ -2865,6 +2871,8 @@ function openCardMenu(itemId, btn){
       _cardScrollDone = true;
       _cardMenuClosing = true;
       document.removeEventListener('scroll', _cardScrollHandler, true);
+      _cardScrollHandlerRef = null;
+      if(_cardOutsideHandlerRef){ document.removeEventListener('touchstart', _cardOutsideHandlerRef, true); _cardOutsideHandlerRef=null; }
       ++_cardMenuGen;
       menu.style.display = 'none';
       menu.style.pointerEvents = '';
@@ -2872,13 +2880,13 @@ function openCardMenu(itemId, btn){
       var ov = g('card-ctx-overlay');
       if(ov){ ov.style.display='none'; ov.onclick=null; }
       _ctxItemId = null; _cardShrinkClose = null;
-      // Reset styles synchronously since menu is already display:none
       menu.style.transform = 'scale(1)';
       menu.style.opacity = '1';
       menu.style.transition = '';
       setTimeout(function(){ _cardMenuClosing = false; }, 50);
     }
   };
+  _cardScrollHandlerRef = _cardScrollHandler;
   document.addEventListener('scroll', _cardScrollHandler, true);
 
   var _activeMenu = isCW ? g('card-ctx-menu-cw') : g('card-ctx-menu');
@@ -2891,9 +2899,11 @@ function openCardMenu(itemId, btn){
                  t.clientY >= menuRect.top  && t.clientY <= menuRect.bottom;
     if(!inside){
       document.removeEventListener('touchstart', _cardOutsideHandler, true);
+      _cardOutsideHandlerRef = null;
       if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
     }
   };
+  _cardOutsideHandlerRef = _cardOutsideHandler;
   setTimeout(function(){ document.addEventListener('touchstart', _cardOutsideHandler, true); }, 50);
 }
 function _closeCardMenuImmediate(){
