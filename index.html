@@ -2984,12 +2984,12 @@ window.toggleFullscreen=toggleFullscreen;
 var _lastSavedTime = -1;
 var _cwUpdated = false;
 function saveCurrentProgress(){
-  if(!playerItemId||playerEpIdx<0||!vid||!vid.duration||vid.currentTime<=0)return;
+  if(!playerItemId||playerEpIdx<0||!vid||vid.currentTime<=0)return;
   var a=items.find(function(x){return x.id===playerItemId;});
   if(!a||!a.episodes||!a.episodes[playerEpIdx])return;
   var ep=a.episodes[playerEpIdx];
   ep.savedTime=vid.currentTime;
-  ep.duration=vid.duration;
+  if(vid.duration&&!isNaN(vid.duration)) ep.duration=vid.duration;
   saveData();
 }
 
