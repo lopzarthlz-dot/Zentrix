@@ -21,195 +21,6 @@
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;}
 
-/* DESKTOP WRAPPER */
-@media(min-width:768px){
-  html,body{overflow:auto;}
-  body{
-    background:
-      radial-gradient(ellipse at 20% 30%, rgba(109,40,217,.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 70%, rgba(14,165,233,.1) 0%, transparent 50%),
-      #050508;
-    display:block;
-  }
-  body::before{
-    content:'';
-    position:fixed;
-    inset:0;
-    background-image:
-      repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,.01) 40px,rgba(255,255,255,.01) 41px),
-      repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,.01) 40px,rgba(255,255,255,.01) 41px);
-    pointer-events:none;
-    z-index:0;
-  }
-
-  /* App ocupa tela toda */
-  .app{
-    max-width:100%;
-    width:100%;
-    height:100vh;
-    margin:0;
-    border-radius:0;
-    display:flex;
-    flex-direction:column;
-    position:relative;
-    z-index:1;
-  }
-
-  /* Top bar vira nav principal horizontal */
-  .top-bar{
-    width:100%;
-    height:60px;
-    padding:0 32px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:rgba(8,8,15,.97);
-    border-bottom:1px solid var(--border);
-    position:sticky;
-    top:0;
-    z-index:200;
-    flex-shrink:0;
-  }
-
-  /* Bottom nav vira top nav horizontal */
-  .bottom-nav{
-    display:none !important;
-  }
-
-  /* Criar nav desktop embutida no top-bar via JS — por enquanto escondemos e adicionamos links inline */
-  .desktop-nav{
-    display:flex;
-    align-items:center;
-    gap:4px;
-  }
-  .desktop-nav-btn{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    padding:8px 16px;
-    border-radius:8px;
-    background:none;
-    border:none;
-    color:var(--text2);
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-    font-family:var(--font);
-    transition:background .15s, color .15s;
-    white-space:nowrap;
-  }
-  .desktop-nav-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
-  .desktop-nav-btn.active{color:var(--blue);}
-  .desktop-nav-btn.active .desktop-nav-icon{filter:drop-shadow(0 0 6px var(--blue));}
-  .desktop-nav-icon{font-size:16px;}
-
-  /* Tela principal rola normalmente */
-  .screen{
-    flex:1;
-    overflow-y:auto;
-    overflow-x:hidden;
-    padding-bottom:40px;
-  }
-
-  /* Hero maior */
-  .hero{aspect-ratio:16/5;max-height:380px;}
-  .hero-title{font-size:28px;}
-
-  /* Cards grid responsivo */
-  .cards-scroll{padding:0 24px;}
-  .p-card{width:155px;}
-  .p-card-img{width:155px;height:218px;}
-
-  /* Seções com mais espaço */
-  .section-header{padding:0 24px 10px;}
-  .inline-search{margin:0 24px 10px;}
-
-  /* FAB reposicionado */
-  .fab{right:32px;bottom:32px;}
-
-  /* OVERLAYS — tela cheia fixed */
-  #login-screen{
-    position:fixed !important;
-    inset:0 !important;
-    max-width:100% !important;
-    margin:0 !important;
-  }
-  #profile-screen,
-  #profile-loading-screen,
-  #manage-profiles-screen,
-  #edit-profile-screen,
-  #create-profile-screen{
-    position:fixed !important;
-    inset:0 !important;
-    max-width:100% !important;
-    margin:0 !important;
-  }
-
-  /* Auth form centralizado */
-  .auth-overlay{
-    position:fixed !important;
-    inset:0 !important;
-    max-width:100% !important;
-    bottom:0 !important;
-    background:rgba(0,0,0,.7) !important;
-  }
-  .auth-form{
-    position:fixed !important;
-    top:50% !important;
-    left:50% !important;
-    bottom:auto !important;
-    right:auto !important;
-    transform:translate(-50%,-50%) !important;
-    width:460px !important;
-    max-width:95vw !important;
-    max-height:90vh !important;
-    border-radius:16px !important;
-    margin:0 !important;
-    height:auto !important;
-  }
-
-  /* Modais centralizados */
-  .modal-wrap{
-    position:fixed !important;
-    inset:0 !important;
-    max-width:100% !important;
-    margin:0 !important;
-    justify-content:center !important;
-    align-items:center !important;
-  }
-  .modal-sheet{border-radius:16px !important;width:500px;max-width:95vw;}
-  .link-modal-wrap{
-    position:fixed !important;
-    inset:0 !important;
-    max-width:100% !important;
-    margin:0 !important;
-    justify-content:center !important;
-    align-items:center !important;
-  }
-  .link-modal-sheet{border-radius:16px !important;width:460px;max-width:95vw;}
-
-  /* Detail screen — tela cheia */
-  .detail-screen{
-    position:fixed !important;
-    inset:0 !important;
-    max-width:100% !important;
-    margin:0 !important;
-  }
-
-  /* Player — tela cheia */
-  .player-overlay{
-    position:fixed !important;
-    inset:0 !important;
-    max-width:100% !important;
-    margin:0 !important;
-  }
-  .player-video-area video{
-    max-height:calc(100vh - 160px) !important;
-  }
-
-  .card-ctx-menu{position:fixed;}
-}
-
 /* LOGIN SCREEN */
 #login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 16px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
 #login-screen.hidden{display:none;}
@@ -831,7 +642,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="screen active" id="screen-home">
     <div class="top-bar">
       <div class="logo">ZENTRIX</div>
-
       <div class="top-actions">
         <button class="top-btn" onclick="goTo('busca')" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
@@ -846,10 +656,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.7) 35%, rgba(8,8,15,.15) 65%, transparent 100%);pointer-events:none;"></div>
       <!-- Content -->
       <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 12px 6px;display:flex;flex-direction:column;justify-content:flex-end;">
+        <!-- Logo com position absolute -->
+        <img id="hero-logo-img" src="https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png"
+          style="position:absolute;max-width:280px;max-height:130px;object-fit:contain;object-position:left bottom;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));left:-8px;bottom:148px;">
         <!-- Logo + Áudio juntos -->
         <div style="display:flex;flex-direction:column;gap:1px;margin-bottom:8px;">
-          <img id="hero-logo-img" src="https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png"
-            style="max-width:280px;max-height:130px;object-fit:contain;object-position:left bottom;display:block;margin-left:-14px;margin-top:12px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
           <div id="hero-badge" style="display:none;"></div>
           <div id="hero-aud" style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;padding-left:16px;"></div>
         </div>
@@ -2984,12 +2795,12 @@ window.toggleFullscreen=toggleFullscreen;
 var _lastSavedTime = -1;
 var _cwUpdated = false;
 function saveCurrentProgress(){
-  if(!playerItemId||playerEpIdx<0||!vid||vid.currentTime<=0)return;
+  if(!playerItemId||playerEpIdx<0||!vid||!vid.duration||vid.currentTime<=0)return;
   var a=items.find(function(x){return x.id===playerItemId;});
   if(!a||!a.episodes||!a.episodes[playerEpIdx])return;
   var ep=a.episodes[playerEpIdx];
   ep.savedTime=vid.currentTime;
-  if(vid.duration&&!isNaN(vid.duration)) ep.duration=vid.duration;
+  ep.duration=vid.duration;
   saveData();
 }
 
@@ -4284,66 +4095,6 @@ function startFloatAnimation(){
 function stopFloatAnimation(){
   if(_floatRAF){ cancelAnimationFrame(_floatRAF); _floatRAF = null; }
 }
-
-// ===== DEVICE DETECTION =====
-var ZentrixDevice = (function(){
-  function detect(){
-    var ua = navigator.userAgent || '';
-    var isTouchDevice = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
-    var isNarrow = window.innerWidth < 768;
-    var isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(ua);
-    var type = (isMobileUA || (isTouchDevice && isNarrow)) ? 'mobile' : 'desktop';
-    var os = 'unknown';
-    if(/Android/i.test(ua)) os = 'android';
-    else if(/iPhone|iPad|iPod/i.test(ua)) os = 'ios';
-    else if(/Windows/i.test(ua)) os = 'windows';
-    else if(/Mac/i.test(ua)) os = 'mac';
-    else if(/Linux/i.test(ua)) os = 'linux';
-    return { type: type, os: os, touch: isTouchDevice, width: window.innerWidth };
-  }
-
-  var info = detect();
-
-  // Salva no sessionStorage para uso em qualquer parte do app
-  try { sessionStorage.setItem('zentrix_device', JSON.stringify(info)); } catch(e){}
-
-  // Aplica classe no body para uso via CSS se necessário
-  document.body.classList.add('device-' + info.type);
-  document.body.classList.add('os-' + info.os);
-
-  // Re-detecta se janela for redimensionada (ex: modo de tela dividida)
-  window.addEventListener('resize', function(){
-    var updated = detect();
-    try { sessionStorage.setItem('zentrix_device', JSON.stringify(updated)); } catch(e){}
-    document.body.className = document.body.className
-      .replace(/device-\w+/g, '').replace(/os-\w+/g, '').trim();
-    document.body.classList.add('device-' + updated.type);
-    document.body.classList.add('os-' + updated.os);
-  });
-
-  console.log('Zentrix Device:', info.type, '|', info.os, '| touch:', info.touch, '| width:', info.width + 'px');
-  return {
-    get: function(){ try{ return JSON.parse(sessionStorage.getItem('zentrix_device')); }catch(e){ return info; } },
-    isMobile: function(){ return info.type === 'mobile'; },
-    isDesktop: function(){ return info.type === 'desktop'; }
-  };
-})();
-window.ZentrixDevice = ZentrixDevice;
-
-// ===== DESKTOP NAV SYNC =====
-function updateDesktopNav(screen){
-  var map = {home:'dnav-home',listas:'dnav-listas',explorar:'dnav-explorar',conta:'dnav-conta'};
-  document.querySelectorAll('.desktop-nav-btn').forEach(function(b){ b.classList.remove('active'); });
-  var id = map[screen];
-  if(id){ var el = g(id); if(el) el.classList.add('active'); }
-}
-window.updateDesktopNav = updateDesktopNav;
-// Intercepta goTo para sincronizar o estado da nav desktop
-var _origGoTo = goTo;
-goTo = function(scr){
-  _origGoTo(scr);
-  updateDesktopNav(scr);
-};
 
 renderAll();
 goTo('home');
