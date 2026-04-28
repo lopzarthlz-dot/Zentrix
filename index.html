@@ -1645,8 +1645,7 @@ function heroPlay(){
   for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}
   if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
   if(nextIdx<0) nextIdx=0;
-  openDetail(heroItemId);
-  setTimeout(function(){playEpFromDetail(nextIdx);}, 200);
+  openPlayer(heroItemId, nextIdx, 'home');
 }
 window.heroPlay=heroPlay;
 
@@ -2847,6 +2846,10 @@ vid.addEventListener('timeupdate',function(){
   if(!_cwUpdated && vid.currentTime >= 1){
     _cwUpdated = true;
     saveCurrentProgress();
+    if(playerItemId===heroItemId){
+      var _heroA=items.find(function(x){return x.id===heroItemId;});
+      if(_heroA) setHeroCarouselItem(_heroA);
+    }
     renderHome();
   }
   // Save every 5 seconds
