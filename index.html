@@ -1636,7 +1636,18 @@ function updateHeroBookmark(){
   }
 }
 window.heroBookmark = heroBookmark;
-function heroPlay(){if(!heroItemId){openModal('add-modal');return;}openDetail(heroItemId);}
+function heroPlay(){
+  if(!heroItemId){openModal('add-modal');return;}
+  var a=items.find(function(x){return x.id===heroItemId;});
+  if(!a){openModal('add-modal');return;}
+  var eps=a.episodes||[];
+  var nextIdx=-1;
+  for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}
+  if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
+  if(nextIdx<0) nextIdx=0;
+  openDetail(heroItemId);
+  setTimeout(function(){playEpFromDetail(nextIdx);}, 200);
+}
 window.heroPlay=heroPlay;
 
 // ===== HERO INDICATOR BARS =====
@@ -2476,9 +2487,31 @@ function renderEpList(){
 function renderNextEp(){
   var a=items.find(function(x){return x.id===playerItemId;});
   var sec=g('next-ep-section');
+  var allEpsBtn=document.querySelector('.all-eps-btn');
   if(!a||!a.episodes||playerEpIdx<0){if(sec)sec.style.display='none';return;}
   var nextIdx=playerEpIdx+1;
-  if(nextIdx>=a.episodes.length){if(sec)sec.style.display='none';return;}
+  var isLastEp=nextIdx>=a.episodes.length;
+  if(isLastEp){
+    // Último ep — mostra linha mas sem próximo ep, esconde botão Todos os Episódios
+    if(sec){
+      sec.style.display='block';
+      var card=g('next-ep-card');
+      var title=sec.querySelector('.next-ep-title');
+      if(card) card.style.display='none';
+      if(title) title.style.display='none';
+    }
+    if(allEpsBtn) allEpsBtn.style.display='none';
+    return;
+  }
+  // Não é último ep — mostra tudo normalmente
+  if(sec){
+    sec.style.display='block';
+    var card2=g('next-ep-card');
+    var title2=sec.querySelector('.next-ep-title');
+    if(card2) card2.style.display='flex';
+    if(title2) title2.style.display='block';
+  }
+  if(allEpsBtn) allEpsBtn.style.display='block';
   var nextEp=a.episodes[nextIdx];
   if(sec)sec.style.display='block';
   var numEl=g('next-ep-num');var nameEl=g('next-ep-name');var durEl=g('next-ep-dur');var thumbEl=g('next-ep-thumb');var card=g('next-ep-card');
