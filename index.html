@@ -1504,10 +1504,17 @@ function mkCW(a){
   var eps=a.episodes||[];
   var targetIdx=-1;
   // Prioridade 1: lastEp se não assistido
-  if(a.lastEp>=0&&eps[a.lastEp]&&!eps[a.lastEp].watched){targetIdx=a.lastEp;}
-  // Prioridade 2: ep em progresso (savedTime > 0 e não assistido)
+  if(a.lastEp>=0&&eps[a.lastEp]&&!eps[a.lastEp].watched){
+    targetIdx=a.lastEp;
+  }
+  // Prioridade 2: lastEp+1 em sequência (mesmo que já assistido)
+  else if(a.lastEp>=0){
+    var next=a.lastEp+1;
+    if(next<eps.length) targetIdx=next;
+  }
+  // Prioridade 3: ep em progresso
   if(targetIdx<0){for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){targetIdx=i;break;}}}
-  // Prioridade 3: primeiro ep não assistido
+  // Prioridade 4: primeiro ep não assistido
   if(targetIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){targetIdx=i;break;}}}
   if(targetIdx<0) return ''; // todos assistidos, não mostra
   var ep=eps[targetIdx]||null;
@@ -1680,7 +1687,13 @@ function heroPlay(){
   if(!a){openModal('add-modal');return;}
   var eps=a.episodes||[];
   var nextIdx=-1;
-  for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}
+  // Prioridade 1: lastEp se não assistido
+  if(a.lastEp>=0&&eps[a.lastEp]&&!eps[a.lastEp].watched){nextIdx=a.lastEp;}
+  // Prioridade 2: lastEp+1 em sequência
+  else if(a.lastEp>=0&&a.lastEp+1<eps.length){nextIdx=a.lastEp+1;}
+  // Prioridade 3: ep em progresso
+  if(nextIdx<0){for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}}
+  // Prioridade 4: primeiro ep não assistido
   if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
   if(nextIdx<0) nextIdx=0;
   openPlayer(heroItemId, nextIdx, 'home');
@@ -2775,10 +2788,8 @@ function loadEpisode(idx){
   _lastSavedTime=-1; _cwUpdated=false; // reset per-episode flags
   // Atualiza Continue Assistindo e banner imediatamente
   renderContinueAssistindo();
-  if(playerItemId===heroItemId){
-    var _ha=items.find(function(x){return x.id===heroItemId;});
-    if(_ha) setHeroCarouselItem(_ha);
-  }
+  var _ha=items.find(function(x){return x.id===playerItemId;});
+  if(_ha){heroItemId=playerItemId;setHeroCarouselItem(_ha);}
   var epl=g('player-ep-label');if(epl)epl.textContent='E'+(idx+1)+' — '+ep.name;
   // Update info section below video
   var animeName=g('player-anime-name');if(animeName)animeName.textContent=a.name;
