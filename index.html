@@ -353,7 +353,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .ep-file-btn{font-size:10px;padding:4px 10px;border-radius:99px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);color:var(--blue);cursor:pointer;font-weight:700;font-family:var(--font);}
 .ep-link-btn{font-size:10px;padding:4px 10px;border-radius:99px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);color:var(--purple3);cursor:pointer;font-weight:700;font-family:var(--font);}
 .ep-del-btn{background:none;border:none;cursor:pointer;font-size:15px;color:var(--text3);padding:0 4px;}
-.next-ep-section{border-top:1px solid rgba(255,255,255,.08);padding:14px 16px 8px;}
+.next-ep-section{border-top:1px solid rgba(255,255,255,.08);padding:12px 16px 8px;}
 .next-ep-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
 .next-ep-card{display:flex;gap:12px;align-items:center;cursor:pointer;}
 .next-ep-card:active{opacity:.7;}
@@ -977,18 +977,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
   <!-- Info abaixo do vídeo -->
-  <div style="background:#000;padding:14px 16px 12px;flex-shrink:0;">
+  <div style="background:#000;padding:14px 16px 0px;flex-shrink:0;">
     <div id="player-anime-name" style="font-size:13px;color:var(--blue);font-weight:700;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
     <div id="player-ep-info" style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
     <div id="player-ep-lang" style="font-size:13px;color:var(--text3);"></div>
     <!-- Descrição expansível -->
-    <div id="player-ep-desc-wrap" style="margin-top:10px;cursor:pointer;" onclick="toggleEpDesc()">
-      <div id="player-ep-desc-short" style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"></div>
-      <div id="player-ep-desc-saiba" style="font-size:13px;color:var(--blue);font-weight:600;margin-top:4px;">... Saiba Mais</div>
+    <div id="player-ep-desc-wrap" style="margin-top:18px;margin-bottom:0px;cursor:pointer;" onclick="toggleEpDesc()">
+      <div id="player-ep-desc-short" style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
+      <div id="player-ep-desc-saiba" style="display:none;"></div>
       <!-- Conteúdo expandido -->
       <div id="player-ep-desc-expanded" style="display:none;overflow:hidden;">
         <div id="player-ep-desc-full" style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;margin-top:2px;"></div>
-        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);">
+        <div style="margin-top:14px;">
           <div style="font-size:12px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:4px;">Classificação de Conteúdo</div>
           <div id="player-ep-rating-age" style="font-size:13px;color:rgba(255,255,255,.7);font-weight:700;"></div>
           <div id="player-ep-content-rating" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;"></div>
@@ -1095,13 +1095,13 @@ var DEFAULT_ANIMES = [
       { id: 'ep1', name: 'Sentenciado a ser Herói', desc: 'Xylo faz o possível para cumprir suas missões, mesmo sendo visto com desconfiança e rejeição por aqueles ao seu redor.', linkUrl: 'https://ia601603.us.archive.org/25/items/copy_2512069D-E085-4039-B16D-A3EBC768F676/copy_2512069D-E085-4039-B16D-A3EBC768F676.mp4', fileUrl: null, savedTime: 0, duration: 3420, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
       { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', desc: 'A missão leva o grupo até a mina de Zewan Gan, mas Xylo percebe que há algo além do objetivo aparente.', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
       { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', desc: 'Presos no túnel, Xylo precisa garantir a sobrevivência do grupo, o que exige cooperação em meio ao perigo.', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601905.us.archive.org/4/items/img-4573_20260420/IMG_4573.jpeg' },
-      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', desc: 'Ao chegar na Fortaleza Mureed durante um festival, o grupo encontra um raro momento de calma… que não dura muito.', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', desc: 'Antes do confronto decisivo, Xylo e seus aliados se preparam sabendo que estão em clara desvantagem.', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep6', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 2', desc: 'A batalha começa e rapidamente foge do controle, trazendo consequências inesperadas mesmo com todo o planejamento.', linkUrl: 'https://ia601007.us.archive.org/10/items/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep7', name: 'Sentença: Camuflagem de férias na cidade portuária de loff', desc: 'Após se recuperar, Xylo percebe que uma nova ameaça silenciosa já está se espalhando pela cidade.', linkUrl: 'https://ia600801.us.archive.org/20/items/screen-recording-04-25-2026-05-10-33-1/ScreenRecording_04-25-2026%2005-10-33_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep8', name: 'Ordem de espera: loff, a cidade portuária', desc: 'Depois de conterem um ataque surpresa, o grupo parte em busca de quem está por trás de tudo.', linkUrl: 'https://ia902900.us.archive.org/15/items/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep9', name: 'Punição: Investigação secreta na Concha de Sodrick', desc: 'Uma organização sombria entra em cena, revelando conexões perigosas dentro da própria guilda.', linkUrl: 'https://ia902808.us.archive.org/7/items/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep10', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 1', desc: 'Um breve momento de paz surge, mas sinais indicam que outro confronto está prestes a acontecer.', linkUrl: 'https://ia600608.us.archive.org/2/items/copy_7251406C-67E2-4822-BBC9-736956365884/copy_7251406C-67E2-4822-BBC9-736956365884.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' }
+      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', desc: 'Ao chegar na Fortaleza Mureed durante um festival, o grupo encontra um raro momento de calma… que não dura muito.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', desc: 'Antes do confronto decisivo, Xylo e seus aliados se preparam sabendo que estão em clara desvantagem.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep6', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 2', desc: 'A batalha começa e rapidamente foge do controle, trazendo consequências inesperadas mesmo com todo o planejamento.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia601007.us.archive.org/10/items/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep7', name: 'Sentença: Camuflagem de férias na cidade portuária de loff', desc: 'Após se recuperar, Xylo percebe que uma nova ameaça silenciosa já está se espalhando pela cidade.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600801.us.archive.org/20/items/screen-recording-04-25-2026-05-10-33-1/ScreenRecording_04-25-2026%2005-10-33_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep8', name: 'Ordem de espera: loff, a cidade portuária', desc: 'Depois de conterem um ataque surpresa, o grupo parte em busca de quem está por trás de tudo.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902900.us.archive.org/15/items/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep9', name: 'Punição: Investigação secreta na Concha de Sodrick', desc: 'Uma organização sombria entra em cena, revelando conexões perigosas dentro da própria guilda.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902808.us.archive.org/7/items/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep10', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 1', desc: 'Um breve momento de paz surge, mas sinais indicam que outro confronto está prestes a acontecer.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600608.us.archive.org/2/items/copy_7251406C-67E2-4822-BBC9-736956365884/copy_7251406C-67E2-4822-BBC9-736956365884.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -2736,17 +2736,14 @@ function autoDetectDuration(itemId, epIdx, url){
 function toggleEpDesc(){
   var expanded=g('player-ep-desc-expanded');
   var short=g('player-ep-desc-short');
-  var saiba=g('player-ep-desc-saiba');
   if(!expanded)return;
   var isOpen=expanded.style.display!=='none';
   if(isOpen){
     expanded.style.display='none';
-    if(short){short.style.webkitLineClamp=2;short.style.overflow='hidden';}
-    if(saiba) saiba.style.display='block';
+    if(short) short.style.display='block';
   } else {
     expanded.style.display='block';
-    if(short){short.style.webkitLineClamp='unset';short.style.overflow='visible';}
-    if(saiba) saiba.style.display='none';
+    if(short) short.style.display='none';
   }
 }
 window.toggleEpDesc=toggleEpDesc;
@@ -2771,14 +2768,13 @@ function loadEpisode(idx){
   if(descWrap){
     if(ep.desc){
       descWrap.style.display='block';
-      if(descShort) descShort.textContent=ep.desc;
+      if(descShort) descShort.innerHTML=ep.desc+'<span style="color:rgba(255,255,255,.7);"> ... </span><span style="color:var(--blue);font-weight:600;">Saiba Mais</span>';
       if(descFull) descFull.textContent=ep.desc;
       if(ratingAge) ratingAge.textContent=a.rating_age||'';
-      if(contentRating) contentRating.textContent=a.content_rating||'';
+      if(contentRating) contentRating.textContent=ep.content_rating||a.content_rating||'';
       // Reset collapsed state
       if(descExpanded) descExpanded.style.display='none';
-      if(descSaiba) descSaiba.style.display='block';
-      if(descShort){descShort.style.webkitLineClamp=2;descShort.style.overflow='hidden';}
+      if(descShort) descShort.style.display='block';
     } else {
       descWrap.style.display='none';
     }
