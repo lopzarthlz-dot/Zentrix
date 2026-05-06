@@ -1073,6 +1073,7 @@ var DEFAULT_ANIMES = [
     views: 15000,
     trending: true,
     genres: ['Action', 'Drama', 'Fantasy'],
+    rating_age: 'A16',
     engagement: 92,
     dataLancamento: '2026-04-11',
     episodes: [
@@ -1748,7 +1749,8 @@ function setHeroCarouselItem(item){
     var audLabel=item.audio==='d'?'Dub':item.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=item.genres&&item.genres.length?' '+item.genres.join(', '):'';
     var diamond=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    aud.innerHTML=audLabel+diamond+genreStr;
+    var ratingBadge=item.rating_age?'<span style="display:inline-block;background:#c0392b;color:#fff;font-size:9px;font-weight:800;padding:1px 4px;border-radius:3px;letter-spacing:.3px;vertical-align:middle;margin-right:6px;">'+item.rating_age+'</span>':'';
+    aud.innerHTML=ratingBadge+audLabel+diamond+genreStr;
   }
   var lbl=g('hero-play-label');
   if(lbl){
