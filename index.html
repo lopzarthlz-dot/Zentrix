@@ -1573,6 +1573,24 @@ function mkLI(a){
 }
 
 // ===== RENDERS =====
+function renderContinueAssistindo(){
+  var watching=sorted(items.filter(function(x){return x.status==='watching';}));
+  var cwList=watching.filter(function(a){
+    if(!a.episodes||a.episodes.length===0) return false;
+    var hasUnwatched = a.episodes.some(function(ep){ return !ep.watched; });
+    if(!hasUnwatched) return false;
+    return a.lastEp>=0 || a.episodes.some(function(ep){ return ep.savedTime&&ep.savedTime>0; });
+  });
+  var sec=g('sec-cw'), row=g('cw-row');
+  if(!sec||!row) return;
+  if(cwList.length){
+    sec.style.display='block';
+    row.innerHTML=cwList.slice(0,10).map(mkCW).join('');
+  } else {
+    sec.style.display='none';
+  }
+}
+
 function renderHome(){
   var watching=sorted(items.filter(function(x){return x.status==='watching';}));
   var watched=sorted(items.filter(function(x){return x.status==='watched';}));
@@ -2908,7 +2926,7 @@ vid.addEventListener('timeupdate',function(){
       var _heroA=items.find(function(x){return x.id===heroItemId;});
       if(_heroA) setHeroCarouselItem(_heroA);
     }
-    renderHome();
+    renderContinueAssistindo();
   }
   // Save every 5 seconds
   var cur=Math.floor(vid.currentTime);
