@@ -1506,7 +1506,9 @@ function mkCW(a){
   var targetIdx=-1;
   // Primeiro: ep em progresso (savedTime > 0 e não assistido)
   for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){targetIdx=i;break;}}
-  // Segundo: primeiro ep não assistido
+  // Segundo: lastEp se não assistido
+  if(targetIdx<0&&a.lastEp>=0&&eps[a.lastEp]&&!eps[a.lastEp].watched){targetIdx=a.lastEp;}
+  // Terceiro: primeiro ep não assistido
   if(targetIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){targetIdx=i;break;}}}
   if(targetIdx<0) return ''; // todos assistidos, não mostra
   var ep=eps[targetIdx]||null;
@@ -2772,6 +2774,12 @@ function loadEpisode(idx){
   var a=items.find(function(x){return x.id===playerItemId;});if(!a||!a.episodes||!a.episodes[idx])return;
   var ep=a.episodes[idx];playerEpIdx=idx;a.lastEp=idx;saveData();
   _lastSavedTime=-1; _cwUpdated=false; // reset per-episode flags
+  // Atualiza Continue Assistindo e banner imediatamente
+  renderContinueAssistindo();
+  if(playerItemId===heroItemId){
+    var _ha=items.find(function(x){return x.id===heroItemId;});
+    if(_ha) setHeroCarouselItem(_ha);
+  }
   var epl=g('player-ep-label');if(epl)epl.textContent='E'+(idx+1)+' — '+ep.name;
   // Update info section below video
   var animeName=g('player-anime-name');if(animeName)animeName.textContent=a.name;
