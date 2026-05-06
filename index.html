@@ -1747,7 +1747,7 @@ function setHeroCarouselItem(item){
   if(aud){
     var audLabel=item.audio==='d'?'Dub':item.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=item.genres&&item.genres.length?' '+item.genres.join(', '):'';
-    var diamond=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 5px 1px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
+    var diamond=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
     aud.innerHTML=audLabel+diamond+genreStr;
   }
   var lbl=g('hero-play-label');
