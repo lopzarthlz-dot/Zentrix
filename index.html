@@ -1502,13 +1502,12 @@ function mkSavedPC(s){
 }
 function mkCW(a){
   var eps=a.episodes||[];
-  // Sempre pega o próximo ep não assistido
   var targetIdx=-1;
-  // Primeiro: ep em progresso (savedTime > 0 e não assistido)
-  for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){targetIdx=i;break;}}
-  // Segundo: lastEp se não assistido
-  if(targetIdx<0&&a.lastEp>=0&&eps[a.lastEp]&&!eps[a.lastEp].watched){targetIdx=a.lastEp;}
-  // Terceiro: primeiro ep não assistido
+  // Prioridade 1: lastEp se não assistido
+  if(a.lastEp>=0&&eps[a.lastEp]&&!eps[a.lastEp].watched){targetIdx=a.lastEp;}
+  // Prioridade 2: ep em progresso (savedTime > 0 e não assistido)
+  if(targetIdx<0){for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){targetIdx=i;break;}}}
+  // Prioridade 3: primeiro ep não assistido
   if(targetIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){targetIdx=i;break;}}}
   if(targetIdx<0) return ''; // todos assistidos, não mostra
   var ep=eps[targetIdx]||null;
