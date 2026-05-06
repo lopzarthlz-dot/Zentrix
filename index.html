@@ -2129,7 +2129,8 @@ function openEpMenu(idx, btn){
     popover.style.opacity = opacity.toFixed(3);
     if(progress >= 1){
       document.removeEventListener('scroll', _epScrollHandler, true);
-      _epShrinkClose(function(){ _closeEpMenuImmediate(); });
+      if(_epShrinkClose) _epShrinkClose(function(){ _closeEpMenuImmediate(); });
+      else _closeEpMenuImmediate();
     }
   };
   document.addEventListener('scroll', _epScrollHandler, true);
@@ -2138,7 +2139,8 @@ function openEpMenu(idx, btn){
     var r=popover.getBoundingClientRect(),t=e.touches?e.touches[0]:e;
     if(!(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom)){
       document.removeEventListener('touchstart',_epOut,true);
-      _epShrinkClose(function(){ _closeEpMenuImmediate(); });
+      if(_epShrinkClose) _epShrinkClose(function(){ _closeEpMenuImmediate(); });
+      else _closeEpMenuImmediate();
     }
   };
   setTimeout(function(){ document.addEventListener('touchstart',_epOut,true); },80);
