@@ -1951,13 +1951,28 @@ function initDetailParallax(){
   if(!ds||!img)return;
   if(ds._parallaxInit)return;
   ds._parallaxInit=true;
+
+  img.style.transformOrigin='center bottom';
+  img.style.transition='transform 0.35s cubic-bezier(.22,.61,.36,1)';
+  img.style.transform='scale(1.08)';
+
   ds.addEventListener('scroll',function(){
     var scrollY=ds.scrollTop;
     if(scrollY>=0){
-      img.style.transform='translateY(-'+Math.min(scrollY*0.35,80)+'px)';
+      img.style.transform='scale(1.08)';
     } else {
-      img.style.transform='translateY(0)';
+      var pullDistance=Math.abs(scrollY);
+      var zoomRange=120;
+      var scale=1.08+(pullDistance/zoomRange)*0.14;
+      scale=Math.min(1.22,scale);
+      img.style.transition='none';
+      img.style.transform='scale('+scale+')';
     }
+  },{passive:true});
+
+  ds.addEventListener('touchend',function(){
+    img.style.transition='transform 0.4s cubic-bezier(.22,.61,.36,1)';
+    img.style.transform='scale(1.08)';
   },{passive:true});
 }
 window.openDetail=openDetail;window.closeDetail=closeDetail;
