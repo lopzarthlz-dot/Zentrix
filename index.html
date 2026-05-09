@@ -803,7 +803,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="detail-tags-row" id="detail-tags-row"></div>
     <!-- Botão Minha Lista centralizado -->
     <div style="display:flex;justify-content:center;margin-bottom:16px;">
-      <button class="detail-mylist-btn" id="detail-mylist-btn" onclick="toggleDetailFav()">
+      <button class="detail-mylist-btn" id="detail-mylist-btn">
         <svg id="detail-mylist-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span id="detail-mylist-label">Minha Lista</span>
       </button>
@@ -811,7 +811,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <!-- Descrição -->
     <div id="detail-desc-wrap" style="margin-bottom:4px;">
       <div class="detail-desc-text" id="detail-desc-text" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
-      <button class="detail-more-btn" id="detail-more-btn" onclick="toggleDetailDesc()">Mais Detalhes</button>
+      <button class="detail-more-btn" id="detail-more-btn" onclick="openMoreDetails()">Mais Detalhes</button>
     </div>
     <!-- Episódios -->
     <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><span class="season-arrow">▼</span> Season 1</div></div>
@@ -2008,6 +2008,25 @@ function toggleDetailFav(){
   a.fav=!a.fav;saveData();updateDetailMyList(a);
 }
 window.toggleDetailDesc=toggleDetailDesc;window.toggleDetailFav=toggleDetailFav;
+function openMoreDetails(){
+  var a=items.find(function(x){return x.id===detailItemId;});if(!a)return;
+  var scr=g('more-details-screen');if(!scr)return;
+  g('more-details-title').textContent=a.name||'';
+  g('more-details-desc').textContent=a.description||'';
+  var ratingAge=a.rating_age||'';
+  var contentRating=a.content_rating||'';
+  g('more-details-rating').textContent=(ratingAge?ratingAge+'\n':'')+contentRating;
+  var epCount=a.episodes?a.episodes.length:0;
+  g('more-details-duration').textContent='1 Temporada, '+epCount+' Episódios';
+  scr.style.display='block';
+  setTimeout(function(){scr.style.transform='translateY(0)';},10);
+}
+function closeMoreDetails(){
+  var scr=g('more-details-screen');if(!scr)return;
+  scr.style.transform='translateY(100%)';
+  setTimeout(function(){scr.style.display='none';},350);
+}
+window.openMoreDetails=openMoreDetails;window.closeMoreDetails=closeMoreDetails;
 function preloadEpDurations(anime){
   if(!anime||!anime.episodes)return;
   anime.episodes.forEach(function(ep){
@@ -4342,7 +4361,28 @@ console.log('Zentrix OK!');
 
 });
 </script>
-<!-- Error Handler -->
+<!-- More Details Screen -->
+<div id="more-details-screen" style="display:none;position:fixed;inset:0;z-index:400;background:#000;max-width:480px;margin:0 auto;left:0;right:0;overflow-y:auto;transform:translateY(100%);transition:transform 0.35s cubic-bezier(.4,0,.2,1);">
+  <div style="padding:20px 20px 60px;">
+    <button onclick="closeMoreDetails()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:0;margin-bottom:24px;display:flex;align-items:center;justify-content:center;width:36px;height:36px;">✕</button>
+    <div id="more-details-title" style="font-size:24px;font-weight:800;color:#fff;margin-bottom:20px;line-height:1.2;"></div>
+    <div id="more-details-desc" style="font-size:15px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:32px;"></div>
+    <div style="margin-bottom:24px;">
+      <div style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;">Classificação de Conteúdo</div>
+      <div id="more-details-rating" style="font-size:15px;color:rgba(255,255,255,.85);line-height:1.6;"></div>
+    </div>
+    <div style="margin-bottom:24px;">
+      <div style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;">Duração</div>
+      <div id="more-details-duration" style="font-size:15px;color:rgba(255,255,255,.85);"></div>
+    </div>
+    <div style="margin-bottom:24px;">
+      <div style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;">Áudio</div>
+      <div style="font-size:15px;color:rgba(255,255,255,.85);">Português (Brasil)</div>
+    </div>
+  </div>
+</div>
+
+
 <div id="zentrix-error-toast" style="display:none;position:fixed;bottom:80px;left:12px;right:12px;background:#1a0a0a;border:1px solid #ff4444;border-radius:10px;padding:10px 14px;z-index:99999;font-size:11px;font-family:monospace;color:#ff8888;max-height:120px;overflow-y:auto;"></div>
 <script>
 window.onerror=function(msg,src,line,col,err){
