@@ -271,7 +271,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .detail-hero-glow1{display:none;}
 .detail-hero-glow2{display:none;}
 .detail-hero-fade{display:none;}
-.detail-hero-back{position:absolute;top:52px;left:14px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:22px;cursor:pointer;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);z-index:2;}
+.detail-hero-back{position:absolute;top:14px;left:14px;background:rgba(0,0,0,.6);border:none;color:#fff;font-size:18px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);z-index:2;font-weight:700;}
 .detail-hero-logo{position:absolute;bottom:24px;left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:2;padding:0 24px;}
 .detail-hero-logo img{max-width:260px;max-height:110px;object-fit:contain;filter:drop-shadow(0 2px 12px rgba(0,0,0,.9));}
 .detail-body{padding:0 16px;flex:1;}
@@ -796,7 +796,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="detail-hero-bg"></div>
     <img class="detail-hero-img" id="detail-hero-img" src="" alt="">
     <div class="detail-hero-fade"></div>
-    <button class="detail-hero-back" onclick="closeDetail()">←</button>
+    <button class="detail-hero-back" onclick="closeDetail()">✕</button>
   </div>
   <div class="detail-body">
     <!-- Tags centralizadas -->
@@ -1936,6 +1936,7 @@ function openDetail(itemId){
   var ds=g('detail-screen');if(ds)ds.classList.add('active');
   document.body.style.overflow='hidden';
   if(ds)ds.scrollTop=0;
+  initDetailParallax();
   preloadEpDurations(a);
 }
 function closeDetail(preserveId){
@@ -1943,6 +1944,21 @@ function closeDetail(preserveId){
   document.body.style.overflow='';
   if(!preserveId) detailItemId=null;
   renderAll();
+}
+function initDetailParallax(){
+  var ds=g('detail-screen');
+  var img=g('detail-hero-img');
+  if(!ds||!img)return;
+  if(ds._parallaxInit)return;
+  ds._parallaxInit=true;
+  ds.addEventListener('scroll',function(){
+    var scrollY=ds.scrollTop;
+    if(scrollY>=0){
+      img.style.transform='translateY(-'+Math.min(scrollY*0.35,80)+'px)';
+    } else {
+      img.style.transform='translateY(0)';
+    }
+  },{passive:true});
 }
 window.openDetail=openDetail;window.closeDetail=closeDetail;
 function toggleDetailDesc(){
