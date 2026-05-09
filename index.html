@@ -273,12 +273,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .detail-hero-glow2{display:none;}
 .detail-hero-fade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,1) 0%,rgba(0,0,0,.8) 35%,rgba(0,0,0,.2) 63%,transparent 100%);pointer-events:none;}
 .detail-hero-back{position:absolute;top:52px;left:14px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:22px;cursor:pointer;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);z-index:2;}
-.detail-hero-title{position:absolute;bottom:20px;left:18px;right:18px;font-size:28px;font-weight:900;letter-spacing:-.5px;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.8);z-index:2;}
+.detail-hero-title{display:none;}
+.detail-hero-logo{position:absolute;bottom:24px;left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:2;padding:0 24px;}
+.detail-hero-logo img{max-width:260px;max-height:110px;object-fit:contain;filter:drop-shadow(0 2px 12px rgba(0,0,0,.9));}
 .detail-body{padding:0 16px;flex:1;}
+.detail-tags-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-top:12px;justify-content:center;}
 .detail-mylist-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:var(--blue);font-family:var(--font);font-size:12px;font-weight:700;padding:4px 8px;transition:opacity .15s;}
 .detail-mylist-btn:active{opacity:.6;}
 .detail-desc-text{font-size:14px;color:rgba(255,255,255,.8);line-height:1.55;margin-bottom:6px;}
-.detail-more-btn{background:none;border:none;color:var(--blue);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);padding:0;margin-bottom:18px;}
+.detail-more-btn{background:none;border:none;color:var(--blue);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);padding:0;margin-bottom:18px;display:block;width:100%;text-align:center;}
 .detail-more-btn:active{opacity:.6;}
 .detail-tags-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-top:4px;}
 .season-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:0 -16px 0;}
@@ -796,13 +799,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <img class="detail-hero-img" id="detail-hero-img" src="" alt="">
     <div class="detail-hero-fade"></div>
     <button class="detail-hero-back" onclick="closeDetail()">←</button>
-    <div class="detail-hero-title" id="detail-hero-title"></div>
+    <div class="detail-hero-logo">
+      <img id="detail-hero-logo-img" src="" alt="">
+    </div>
   </div>
   <div class="detail-body">
-    <!-- Tags: Anime, Dub, gêneros -->
+    <!-- Tags centralizadas -->
     <div class="detail-tags-row" id="detail-tags-row"></div>
-    <!-- Botão Minha Lista -->
-    <div style="display:flex;align-items:center;margin-bottom:16px;margin-top:2px;">
+    <!-- Botão Minha Lista centralizado -->
+    <div style="display:flex;justify-content:center;margin-bottom:16px;">
       <button class="detail-mylist-btn" id="detail-mylist-btn" onclick="toggleDetailFav()">
         <svg id="detail-mylist-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span id="detail-mylist-label">Minha Lista</span>
@@ -1103,6 +1108,7 @@ var DEFAULT_ANIMES = [
     cover: 'https://ia600907.us.archive.org/17/items/img-4024_202604/IMG_4024.jpeg',
     bannerUrl: 'https://ia903103.us.archive.org/12/items/img-5339_202605/IMG_5339.jpeg',
     detailImg: 'https://ia600505.us.archive.org/11/items/img-5340_202605/IMG_5340.jpeg',
+    logoUrl: 'https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png',
     description: 'Em um mundo onde o título de herói é, na verdade, uma sentença, Xylo Forbartz foi condenado a lutar eternamente contra monstros em uma guerra sem fim. Integrante da Unidade Penal 9004, ele não pode escapar, nem mesmo pela morte, já que sempre retorna ao campo de batalha. Preso nesse ciclo cruel, tudo começa a mudar quando uma deusa misteriosa cruza seu caminho. Entre batalhas impossíveis e segredos ocultos, Xylo pode finalmente ter uma chance de desafiar o próprio destino e quebrar a maldição que o mantém vivo.',
     lastEp: -1,
     views: 15000,
@@ -1914,12 +1920,17 @@ function openDetail(itemId){
   var ht=g('detail-hero-title');if(ht)ht.textContent=a.name;
   // Banner image
   var hi=g('detail-hero-img');
-  if(hi) hi.src=a.bannerUrl||a.detailImg||a.cover||'';
-  // Tags
+  if(hi) hi.src=a.detailImg||a.bannerUrl||a.cover||'';
+  // Logo
+  var li=g('detail-hero-logo-img');
+  if(li) li.src=a.logoUrl||'';
+  // Tags no mesmo estilo do hero da home
   var tr=g('detail-tags-row');
   if(tr){
-    var genres=a.genres&&a.genres.length?a.genres.map(function(g){return '<span class="li-tag" style="background:rgba(255,255,255,.08);color:var(--text2);border:1px solid var(--border2);">'+g+'</span>';}).join(''):'';
-    tr.innerHTML='<span class="li-tag anime-serie">Anime</span><span class="li-tag aud">'+audioLabel(a.audio)+'</span>'+genres;
+    var audLabel=a.audio==='d'?'Dub':a.audio==='s'?'Leg':'Dub | Leg';
+    var genreStr=a.genres&&a.genres.length?' '+a.genres.join(', '):'';
+    var diamond=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
+    tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+audLabel+diamond+genreStr+'</span>';
   }
   // Descrição
   var dt=g('detail-desc-text');
