@@ -2015,7 +2015,7 @@ function openMoreDetails(){
   g('more-details-desc').textContent=a.description||'';
   var ratingAge=a.rating_age||'';
   var contentRating=a.content_rating||'';
-  g('more-details-rating').textContent=(ratingAge?ratingAge+'\n':'')+contentRating;
+  g('more-details-rating').innerHTML=(ratingAge?'<div>'+ratingAge+'</div>':'')+( contentRating?'<div>'+contentRating+'</div>':'');
   var epCount=a.episodes?a.episodes.length:0;
   g('more-details-duration').textContent='1 Temporada, '+epCount+' Episódios';
   scr.style.display='block';
