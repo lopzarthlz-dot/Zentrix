@@ -2053,22 +2053,27 @@ function closeMoreDetails(){
 window.openMoreDetails=openMoreDetails;window.closeMoreDetails=closeMoreDetails;
 function toggleDetailMenu(){
   var menu=g('detail-dots-menu');
+  var btn=g('detail-dots-btn');
   if(!menu)return;
   if(menu._open){
     menu.style.opacity='0';
     menu.style.transform='scale(0.9) translateY(-8px)';
+    if(btn) btn.style.opacity='1';
     setTimeout(function(){menu.style.display='none';menu._open=false;},200);
   } else {
     menu.style.display='block';
     menu._open=true;
+    if(btn) btn.style.opacity='0.4';
     setTimeout(function(){menu.style.opacity='1';menu.style.transform='scale(1) translateY(0)';},10);
   }
 }
 function closeDetailMenu(){
   var menu=g('detail-dots-menu');
+  var btn=g('detail-dots-btn');
   if(!menu||!menu._open)return;
   menu.style.opacity='0';
   menu.style.transform='scale(0.9) translateY(-8px)';
+  if(btn) btn.style.opacity='1';
   setTimeout(function(){menu.style.display='none';menu._open=false;},200);
 }
 function detailMenuContinue(){
