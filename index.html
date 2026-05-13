@@ -861,7 +861,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 
 <!-- Season Picker Screen -->
-<div id="season-picker" style="display:none;position:fixed;inset:0;z-index:9500;background:#111;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;transform:translateY(100%);transition:transform 0.35s cubic-bezier(.4,0,.2,1);">
+<div id="season-picker" style="display:none;position:fixed;inset:0;z-index:9500;background:#000;max-width:480px;margin:0 auto;left:0;right:0;flex-direction:column;transform:translateY(100%);transition:transform 0.35s cubic-bezier(.4,0,.2,1);">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1a1a1a;flex-shrink:0;">
     <button onclick="closeSeasonPicker()" style="background:none;border:none;color:#fff;font-size:36px;cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-family:var(--font);">✕</button>
     <div style="font-size:16px;font-weight:700;color:#fff;">Temporadas</div>
@@ -1141,7 +1141,9 @@ var DEFAULT_ANIMES = [
       { id: 'ep7', name: 'Sentença: Camuflagem de férias na cidade portuária de loff', desc: 'Após se recuperar, Xylo percebe que uma nova ameaça silenciosa já está se espalhando pela cidade.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600801.us.archive.org/20/items/screen-recording-04-25-2026-05-10-33-1/ScreenRecording_04-25-2026%2005-10-33_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
       { id: 'ep8', name: 'Ordem de espera: loff, a cidade portuária', desc: 'Depois de conterem um ataque surpresa, o grupo parte em busca de quem está por trás de tudo.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902900.us.archive.org/15/items/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
       { id: 'ep9', name: 'Punição: Investigação secreta na Concha de Sodrick', desc: 'Uma organização sombria entra em cena, revelando conexões perigosas dentro da própria guilda.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902808.us.archive.org/7/items/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
-      { id: 'ep10', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 1', desc: 'Um breve momento de paz surge, mas sinais indicam que outro confronto está prestes a acontecer.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600608.us.archive.org/2/items/copy_7251406C-67E2-4822-BBC9-736956365884/copy_7251406C-67E2-4822-BBC9-736956365884.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' }
+      { id: 'ep10', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 1', desc: 'Um breve momento de paz surge, mas sinais indicam que outro confronto está prestes a acontecer.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600608.us.archive.org/2/items/copy_7251406C-67E2-4822-BBC9-736956365884/copy_7251406C-67E2-4822-BBC9-736956365884.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep11', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 2', desc: 'Marcado por uma condenação eterna, Xylo enfrenta um ciclo interminável de batalhas contra inimigos sem fim.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600807.us.archive.org/16/items/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' },
+      { id: 'ep12', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 3', desc: 'Após concluir mais uma missão, o grupo segue em frente, sem saber quais desafios o futuro ainda reserva.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600403.us.archive.org/25/items/copy_282CD98A-5474-414C-998D-78D4F5706608/copy_282CD98A-5474-414C-998D-78D4F5706608.mp4', fileUrl: null, savedTime: 0, duration: 1740, watched: false, coverUrl: 'https://ia600806.us.archive.org/17/items/img-4553_20260420_2249/IMG_4553.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -2538,48 +2540,78 @@ window.closeSeasonPicker = closeSeasonPicker;
 (function(){
   var ds = g('detail-screen');
   if(!ds) return;
-  var startY=0, startScrollTop=0, dragging=false, dragStarted=false;
-  var threshold = window.innerHeight * 0.35;
+  var startY=0, startX=0, currentY=0, dragging=false, lockScroll=false;
+  var threshold = window.innerHeight * 0.45;
+  var minDragToActivate = 60; // precisa arrastar bastante pra ativar
 
   ds.addEventListener('touchstart', function(e){
     if(e.touches.length > 1) return;
     startY = e.touches[0].clientY;
-    startScrollTop = ds.scrollTop;
+    startX = e.touches[0].clientX;
+    currentY = 0;
     dragging = false;
-    dragStarted = false;
+    lockScroll = false;
   }, {passive:true});
 
   ds.addEventListener('touchmove', function(e){
     var dy = e.touches[0].clientY - startY;
-    // Só ativa drag se tiver no topo E arrastando pra baixo
-    if(!dragStarted){
-      if(ds.scrollTop <= 0 && dy > 8){
-        dragStarted = true;
+    var dx = e.touches[0].clientX - startX;
+    
+    // Se ainda não decidiu o modo
+    if(!dragging && !lockScroll){
+      // Movimento mais horizontal que vertical = scroll normal
+      if(Math.abs(dx) > Math.abs(dy)){
+        lockScroll = true;
+        return;
+      }
+      // Só ativa drag se: está no topo da tela, movimento pra baixo, e passou do mínimo
+      if(ds.scrollTop <= 0 && dy > minDragToActivate){
         dragging = true;
-      } else return;
+      } else if(dy < 0 || ds.scrollTop > 0){
+        // Rolando pra cima ou já scrollou — permite scroll normal
+        lockScroll = true;
+        return;
+      }
     }
+    
+    if(lockScroll) return;
     if(!dragging) return;
+    
     e.preventDefault();
-    var move = Math.max(0, dy);
+    currentY = Math.max(0, dy - minDragToActivate);
+    // Resistência progressiva — quanto mais arrasta mais difícil
+    var resistance = 0.55;
+    var move = currentY * resistance;
     ds.style.transform = 'translateY('+move+'px)';
     ds.style.transition = 'none';
+    // Reduz opacidade levemente
+    ds.style.opacity = Math.max(0.7, 1 - move/600);
   }, {passive:false});
 
   ds.addEventListener('touchend', function(e){
-    if(!dragging){ ds.style.transform=''; ds.style.transition=''; return; }
-    dragging = false; dragStarted = false;
+    if(!dragging){
+      ds.style.transform='';
+      ds.style.transition='';
+      ds.style.opacity='';
+      return;
+    }
+    dragging = false; lockScroll = false;
     var dy = e.changedTouches[0].clientY - startY;
-    if(dy > threshold){
-      ds.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+    var move = Math.max(0, (dy - minDragToActivate) * 0.55);
+    
+    if(move > threshold * 0.55){
+      ds.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s ease';
       ds.style.transform = 'translateY(100%)';
+      ds.style.opacity = '0';
       setTimeout(function(){
-        ds.style.transform=''; ds.style.transition='';
+        ds.style.transform=''; ds.style.transition=''; ds.style.opacity='';
         closeDetail();
       }, 300);
     } else {
-      ds.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+      ds.style.transition = 'transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.35s ease';
       ds.style.transform = 'translateY(0)';
-      setTimeout(function(){ ds.style.transform=''; ds.style.transition=''; }, 300);
+      ds.style.opacity = '1';
+      setTimeout(function(){ ds.style.transform=''; ds.style.transition=''; ds.style.opacity=''; }, 350);
     }
   }, {passive:true});
 })();
@@ -2589,43 +2621,52 @@ window.closeSeasonPicker = closeSeasonPicker;
   var pv = g('player-video-area');
   var po = g('player-overlay');
   if(!pv || !po) return;
-  var startY=0, dragging=false, dragStarted=false;
-  var threshold = window.innerHeight * 0.3;
+  var startY=0, startX=0, dragging=false, lockScroll=false;
+  var threshold = window.innerHeight * 0.35;
+  var minDrag = 40;
 
   pv.addEventListener('touchstart', function(e){
     if(e.touches.length > 1) return;
     startY = e.touches[0].clientY;
-    dragging = false; dragStarted = false;
+    startX = e.touches[0].clientX;
+    dragging = false; lockScroll = false;
   }, {passive:true});
 
   pv.addEventListener('touchmove', function(e){
     var dy = e.touches[0].clientY - startY;
-    if(!dragStarted){
-      if(dy > 8){ dragStarted=true; dragging=true; }
+    var dx = e.touches[0].clientX - startX;
+    if(!dragging && !lockScroll){
+      if(Math.abs(dx) > Math.abs(dy)){ lockScroll=true; return; }
+      if(dy > minDrag){ dragging=true; }
       else return;
     }
+    if(lockScroll) return;
     if(!dragging) return;
     e.stopPropagation();
-    var move = Math.max(0, dy);
+    var move = Math.max(0, (dy - minDrag) * 0.6);
     po.style.transform = 'translateY('+move+'px)';
     po.style.transition = 'none';
+    po.style.opacity = Math.max(0.7, 1 - move/500);
   }, {passive:false});
 
   pv.addEventListener('touchend', function(e){
-    if(!dragging){ po.style.transform=''; po.style.transition=''; return; }
-    dragging = false; dragStarted = false;
+    if(!dragging){ po.style.transform=''; po.style.transition=''; po.style.opacity=''; return; }
+    dragging = false; lockScroll = false;
     var dy = e.changedTouches[0].clientY - startY;
-    if(dy > threshold){
-      po.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+    var move = Math.max(0, (dy - minDrag) * 0.6);
+    if(move > threshold * 0.5){
+      po.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s ease';
       po.style.transform = 'translateY(100%)';
+      po.style.opacity = '0';
       setTimeout(function(){
-        po.style.transform=''; po.style.transition='';
+        po.style.transform=''; po.style.transition=''; po.style.opacity='';
         goBackFromPlayer();
       }, 300);
     } else {
-      po.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+      po.style.transition = 'transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.35s ease';
       po.style.transform = 'translateY(0)';
-      setTimeout(function(){ po.style.transform=''; po.style.transition=''; }, 300);
+      po.style.opacity = '1';
+      setTimeout(function(){ po.style.transform=''; po.style.transition=''; po.style.opacity=''; }, 350);
     }
   }, {passive:true});
 })();
