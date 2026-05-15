@@ -657,7 +657,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div class="hero" id="hero-banner" style="aspect-ratio:unset;height:575px;position:relative;overflow:hidden;background:#08080f;margin-top:-52px;flex-shrink:0;">
       <!-- Background image -->
       <img id="hero-bg-img" src="https://ia903103.us.archive.org/12/items/img-5339_202605/IMG_5339.jpeg"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;cursor:pointer;"
+        ontouchstart="this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
+        ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>10||Math.abs(event.touches[0].clientY-this._sy)>10)this._c=true;"
+        ontouchend="if(!this._c&&heroItemId)openDetail(heroItemId);"
+        onclick="if(heroItemId)openDetail(heroItemId);">
       <!-- Gradient overlay -->
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.8) 35%, rgba(8,8,15,.2) 58%, transparent 100%);pointer-events:none;"></div>
       <!-- Content -->
