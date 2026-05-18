@@ -663,7 +663,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         ontouchend="if(!this._c)heroBannerTap();"
         onclick="heroBannerTap();">
       <!-- Área invisível cobrindo só a parte de cima (da descrição pra cima) para capturar toque -->
-      <div style="position:absolute;top:0;left:0;right:0;bottom:180px;z-index:1;cursor:pointer;"
+      <div style="position:absolute;top:0;left:0;right:0;bottom:230px;z-index:1;cursor:pointer;"
         ontouchstart="this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
         ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>10||Math.abs(event.touches[0].clientY-this._sy)>10)this._c=true;"
         ontouchend="if(!this._c)heroBannerTap();"
