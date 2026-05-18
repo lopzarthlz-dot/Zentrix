@@ -104,9 +104,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .cards-scroll{overflow-x:auto;padding:0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .cards-scroll::-webkit-scrollbar{display:none;}
 .cards-row{display:flex;gap:10px;width:max-content;}
-.p-card{width:145px;flex-shrink:0;cursor:pointer;transition:transform .15s ease;-webkit-user-select:none;user-select:none;}
+.p-card{width:165px;flex-shrink:0;cursor:pointer;transition:transform .15s ease;-webkit-user-select:none;user-select:none;}
 .p-card:active{transform:scale(0.94);}
-.p-card-img{width:145px;height:203px;border-radius:var(--radius);background:linear-gradient(160deg,var(--bg4) 0%,var(--bg3) 100%);overflow:hidden;position:relative;margin-bottom:8px;border:1px solid var(--border);}
+.p-card-img{width:165px;height:231px;border-radius:var(--radius);background:linear-gradient(160deg,var(--bg4) 0%,var(--bg3) 100%);overflow:hidden;position:relative;margin-bottom:8px;border:1px solid var(--border);}
 .p-card-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:.25;}
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
@@ -969,7 +969,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       </div>
     </div>
     <!-- Overlay de controles sobre o vídeo -->
-    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);">
+    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);opacity:0;transition:opacity 0.25s ease;">
       <!-- Topo: botão voltar + título | próximo ep + fullscreen -->
       <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 12px;" onclick="event.stopPropagation()">
         <!-- Esquerda: voltar -->
@@ -1236,11 +1236,19 @@ function showPlayerControls(){
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
   overlay.style.display = 'flex';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      overlay.style.opacity = '1';
+    });
+  });
   _ctrlVisible = true;
   _saveCtrlRects();
   _ctrlTimeout = setTimeout(function(){
-    overlay.style.display = 'none';
-    _ctrlVisible = false;
+    overlay.style.opacity = '0';
+    setTimeout(function(){
+      overlay.style.display = 'none';
+      _ctrlVisible = false;
+    }, 250);
   }, 3000);
 }
 function hidePlayerControls(){
@@ -1248,8 +1256,11 @@ function hidePlayerControls(){
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
   _saveCtrlRects();
-  overlay.style.display = 'none';
-  _ctrlVisible = false;
+  overlay.style.opacity = '0';
+  setTimeout(function(){
+    overlay.style.display = 'none';
+    _ctrlVisible = false;
+  }, 250);
 }
 function togglePlayerControls(){
   if(_ctrlVisible) hidePlayerControls();
