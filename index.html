@@ -681,7 +681,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div id="hero-aud" style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;padding-left:16px;"></div>
         </div>
         <!-- Description -->
-        <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;padding-left:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
+        <div id="hero-sub" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;padding-left:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;"
+          ontouchstart="this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
+          ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>10||Math.abs(event.touches[0].clientY-this._sy)>10)this._c=true;"
+          ontouchend="if(!this._c)heroBannerTap();"
+          onclick="heroBannerTap();"></div>
         <!-- Buttons -->
         <div class="hero-btns">
           <button class="detail-continue-btn" id="hero-play-btn" style="flex:1;transition:transform .15s,opacity .15s;"
