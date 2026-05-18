@@ -1854,14 +1854,17 @@ function setHeroCarouselItem(item){
   var lbl=g('hero-play-label');
   if(lbl){
     var eps=item.episodes||[];
+    var targetIdx=-1;
+    // Exatamente a mesma lógica do mkCW (Continue Assistindo de baixo)
+    if(item.lastEp>=0&&eps[item.lastEp]&&!eps[item.lastEp].watched){ targetIdx=item.lastEp; }
+    else if(item.lastEp>=0){ var next=item.lastEp+1; if(next<eps.length) targetIdx=next; }
+    if(targetIdx<0){for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){targetIdx=i;break;}}}
+    if(targetIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){targetIdx=i;break;}}}
     var allWatched=eps.length>0&&eps.every(function(ep){return ep.watched;});
-    var hasProgress=eps.some(function(ep){return ep.savedTime&&ep.savedTime>0&&!ep.watched;});
-    var nextIdx=-1;
-    for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>0&&!eps[i].watched){nextIdx=i;break;}}
-    if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
+    var hasProgress=targetIdx>=0&&eps[targetIdx]&&eps[targetIdx].savedTime&&eps[targetIdx].savedTime>1;
     if(allWatched) lbl.textContent='Começar A Assistir';
-    else if(hasProgress) lbl.textContent='Continue Assistindo E'+(nextIdx+1);
-    else lbl.textContent='Começar A Assistir E'+(nextIdx>=0?nextIdx+1:1);
+    else if(hasProgress) lbl.textContent='Continue Assistindo E'+(targetIdx+1);
+    else lbl.textContent='Começar A Assistir E'+(targetIdx>=0?targetIdx+1:1);
   }
   updateHeroBookmark();
 }
