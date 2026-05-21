@@ -222,7 +222,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-banner{height:120px;background:radial-gradient(ellipse at 30% 50%,rgba(109,40,217,.6),transparent 60%),radial-gradient(ellipse at 80% 40%,rgba(14,165,233,.4),transparent 55%),var(--bg2);position:relative;flex-shrink:0;}
 .profile-banner-fade{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,var(--bg));}
 .profile-av-row{padding:0 16px;margin-top:-36px;position:relative;z-index:1;display:flex;align-items:flex-end;gap:14px;margin-bottom:14px;}
-.profile-av{width:72px;height:72px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;border:3px solid #fff;flex-shrink:0;box-shadow:0 0 24px var(--neon-glow);}
+.profile-av{width:72px;height:72px;border-radius:50%;background:var(--grad2);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;border:1.5px solid #fff;flex-shrink:0;box-shadow:0 0 24px var(--neon-glow);overflow:hidden;}
 .profile-name{font-size:20px;font-weight:900;}
 .profile-handle{font-size:12px;color:var(--text3);}
 .stats-strip{display:flex;padding:0 16px 20px;border-bottom:1px solid var(--border);}
@@ -242,9 +242,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .empty-sub{font-size:13px;color:var(--text3);line-height:1.6;}
 .empty-cta{margin-top:8px;padding:10px 24px;border-radius:99px;background:var(--grad2);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
 .profile-slot{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;}
-.profile-circle{width:120px;height:120px;border-radius:50%;border:3px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;transition:border-color .2s;}
+.profile-circle{width:120px;height:120px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;transition:border-color .2s;}
 .profile-circle.add{background:rgba(255,255,255,.06);}
-.profile-circle.filled{background:var(--grad2);}
+.profile-circle.filled{background:var(--grad2);border:1.5px solid rgba(255,255,255,.8);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
 @keyframes skipNumOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}}
 @keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.7);}30%{opacity:1;transform:translateY(-50%) scale(1.1);}70%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.8);}}
@@ -1142,10 +1142,10 @@ var DEFAULT_ANIMES = [
     dataLancamento: '2026-04-11',
     episodes: [
       { id: 'ep1', name: 'Sentenciado a ser Herói', desc: 'Xylo faz o possível para cumprir suas missões, mesmo sendo visto com desconfiança e rejeição por aqueles ao seu redor.', linkUrl: 'https://ia601405.us.archive.org/20/items/copy_6DA39432-AF85-4AE9-8769-B8DB419AF51A/copy_6DA39432-AF85-4AE9-8769-B8DB419AF51A.mp4', fileUrl: null, savedTime: 0, duration: 3480, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
-      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', desc: 'A missão leva o grupo até a mina de Zewan Gan, mas Xylo percebe que há algo além do objetivo aparente.', linkUrl: 'https://ia800809.us.archive.org/1/items/copy_D17D323E-89BA-446D-949A-6505778C98DC/copy_D17D323E-89BA-446D-949A-6505778C98DC.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
-      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', desc: 'Presos no túnel, Xylo precisa garantir a sobrevivência do grupo, o que exige cooperação em meio ao perigo.', linkUrl: 'https://ia600703.us.archive.org/27/items/copy_95fa6027-6446-481f-9e8a-4cb2ab2687bd_202604/copy_95FA6027-6446-481F-9E8A-4CB2AB2687BD.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601905.us.archive.org/4/items/img-4573_20260420/IMG_4573.jpeg' },
-      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', desc: 'Ao chegar na Fortaleza Mureed durante um festival, o grupo encontra um raro momento de calma… que não dura muito.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600606.us.archive.org/13/items/copy_72840537-6B9E-43CD-9838-7880E3549982/copy_72840537-6B9E-43CD-9838-7880E3549982.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600105.us.archive.org/27/items/img-5470_202605/IMG_5470.png' },
-      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', desc: 'Antes do confronto decisivo, Xylo e seus aliados se preparam sabendo que estão em clara desvantagem.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902801.us.archive.org/31/items/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094/copy_BCA66F3E-63D4-40DB-AB9E-7783CC7D6094.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia902908.us.archive.org/22/items/img-5473_20260518/IMG_5473.jpeg' },
+      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', desc: 'A missão leva o grupo até a mina de Zewan Gan, mas Xylo percebe que há algo além do objetivo aparente.', linkUrl: 'https://ia600409.us.archive.org/29/items/screen-recording-05-16-2026-03-38-39-1/ScreenRecording_05-16-2026%2003-38-39_1.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
+      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', desc: 'Presos no túnel, Xylo precisa garantir a sobrevivência do grupo, o que exige cooperação em meio ao perigo.', linkUrl: 'https://ia600903.us.archive.org/35/items/copy_8B2AFA00-CCD2-448E-92A3-69381470A448/copy_8B2AFA00-CCD2-448E-92A3-69381470A448.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601905.us.archive.org/4/items/img-4573_20260420/IMG_4573.jpeg' },
+      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', desc: 'Ao chegar na Fortaleza Mureed durante um festival, o grupo encontra um raro momento de calma… que não dura muito.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600707.us.archive.org/22/items/screen-recording-05-17-2026-03-04-15-1/ScreenRecording_05-17-2026%2003-04-15_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600105.us.archive.org/27/items/img-5470_202605/IMG_5470.png' },
+      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', desc: 'Antes do confronto decisivo, Xylo e seus aliados se preparam sabendo que estão em clara desvantagem.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902908.us.archive.org/13/items/screen-recording-05-17-2026-03-54-11-1/ScreenRecording_05-17-2026%2003-54-11_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia902908.us.archive.org/22/items/img-5473_20260518/IMG_5473.jpeg' },
       { id: 'ep6', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 2', desc: 'A batalha começa e rapidamente foge do controle, trazendo consequências inesperadas mesmo com todo o planejamento.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia601007.us.archive.org/10/items/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601901.us.archive.org/23/items/img-5486_202605/IMG_5486.jpeg' },
       { id: 'ep7', name: 'Sentença: Camuflagem de férias na cidade portuária de loff', desc: 'Após se recuperar, Xylo percebe que uma nova ameaça silenciosa já está se espalhando pela cidade.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600801.us.archive.org/20/items/screen-recording-04-25-2026-05-10-33-1/ScreenRecording_04-25-2026%2005-10-33_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia902901.us.archive.org/5/items/img-5492_202605/IMG_5492.png' },
       { id: 'ep8', name: 'Ordem de espera: loff, a cidade portuária', desc: 'Depois de conterem um ataque surpresa, o grupo parte em busca de quem está por trás de tudo.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902900.us.archive.org/15/items/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601501.us.archive.org/35/items/img-5499_202605/IMG_5499.jpeg' },
@@ -1587,10 +1587,10 @@ function mkCW(a){
   var minsLabel='';
   if(ep&&ep.duration&&ep.duration>0){
     if(ep.savedTime&&ep.savedTime>0){
-      var rem=Math.floor((ep.duration-ep.savedTime)/60);
+      var rem=Math.round((ep.duration-ep.savedTime)/60);
       if(rem>0) minsLabel=rem+'m restantes';
     } else {
-      var tot=Math.floor(ep.duration/60);
+      var tot=Math.round(ep.duration/60);
       if(tot>0) minsLabel=tot+'m';
     }
   }
@@ -2217,11 +2217,11 @@ function renderDetailEps(){
       timeLabelColor='var(--blue)';
     } else if(ep.duration&&ep.duration>0){
       if(ep.savedTime&&ep.savedTime>1){
-        var rem=Math.floor((ep.duration-ep.savedTime)/60);
+        var rem=Math.round((ep.duration-ep.savedTime)/60);
         timeLabel=rem>0?rem+'m restantes':'Assistido';
         timeLabelColor='var(--blue)';
       } else {
-        timeLabel=Math.floor(ep.duration/60)+'m';
+        timeLabel=Math.round(ep.duration/60)+'m';
       }
     }
     return '<div class="ep-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){playEpFromDetail('+i+')})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){playEpFromDetail('+i+')})">' +
@@ -2264,38 +2264,29 @@ function updateContinueBar(){
   var eps=a.episodes||[];
   if(!eps.length){bar.style.display='none';return;}
 
-  // Verificar se todos foram assistidos
   var allWatched = eps.every(function(ep){ return ep.watched; });
   var lbl = g('detail-continue-label');
 
   if(allWatched){
-    // Estado 3: todos assistidos — igual a nunca assistido
     bar.style.display='block';
     btn.dataset.epIdx=0;
     if(lbl) lbl.textContent='Começar A Assistir E1';
     return;
   }
 
-  // Achar próximo ep em progresso (>1s)
+  // Mesma lógica do mkCW — lastEp tem prioridade
   var nextIdx=-1;
-  for(var i=0;i<eps.length;i++){
-    if(eps[i].savedTime&&eps[i].savedTime>1&&!eps[i].watched){nextIdx=i;break;}
-  }
-  // Se não achou em progresso, achar primeiro não assistido
-  if(nextIdx<0){
-    for(var i=0;i<eps.length;i++){
-      if(!eps[i].watched){nextIdx=i;break;}
-    }
-  }
+  if(a.lastEp>=0&&eps[a.lastEp]&&!eps[a.lastEp].watched){ nextIdx=a.lastEp; }
+  else if(a.lastEp>=0){ var nxt=a.lastEp+1; if(nxt<eps.length) nextIdx=nxt; }
+  if(nextIdx<0){for(var i=0;i<eps.length;i++){if(eps[i].savedTime&&eps[i].savedTime>1&&!eps[i].watched){nextIdx=i;break;}}}
+  if(nextIdx<0){for(var i=0;i<eps.length;i++){if(!eps[i].watched){nextIdx=i;break;}}}
 
   bar.style.display='block';
   btn.dataset.epIdx=nextIdx>=0?nextIdx:0;
 
   if(nextIdx>=0 && eps[nextIdx].savedTime && eps[nextIdx].savedTime>1){
-    // Estado 2: em progresso — "Continue Assistindo EX"
     if(lbl) lbl.textContent='Continue Assistindo E'+(nextIdx+1);
   } else {
-    // Estado 1: nunca assistiu — "Começar A Assistir EX"
     if(lbl) lbl.textContent='Começar A Assistir E'+(nextIdx>=0?nextIdx+1:1);
   }
 }
@@ -2773,8 +2764,8 @@ function renderEpList(){
     var timeInfo='';
     if(ep.watched){timeInfo='Assistido';}
     else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>0){var rem=Math.floor((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'Assistido';}
-      else{timeInfo=Math.floor(ep.duration/60)+'m';}
+      if(ep.savedTime&&ep.savedTime>0){var rem=Math.round((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'Assistido';}
+      else{timeInfo=Math.round(ep.duration/60)+'m';}
     }
     // Thumbnail
     var thumbHtml='';
@@ -2862,11 +2853,11 @@ function renderNextEp(){
       durBadge.textContent = 'Assistido';
       durBadge.style.display = 'block';
     } else if(hasProg){
-      var rem = Math.floor((nextEp.duration - nextEp.savedTime) / 60);
+      var rem = Math.round((nextEp.duration - nextEp.savedTime) / 60);
       durBadge.textContent = rem > 0 ? rem+'m restantes' : 'Assistido';
       durBadge.style.display = 'block';
     } else {
-      var dur = nextEp.duration > 0 ? Math.floor(nextEp.duration/60)+'m' : '';
+      var dur = nextEp.duration > 0 ? Math.round(nextEp.duration/60)+'m' : '';
       if(dur){ durBadge.textContent = dur; durBadge.style.display = 'block'; }
       else { durBadge.style.display = 'none'; }
     }
@@ -2885,7 +2876,7 @@ function renderNextEp(){
     }
   }
 
-  var dur=nextEp.duration>0?Math.floor(nextEp.duration/60)+'m':'';
+  var dur=nextEp.duration>0?Math.round(nextEp.duration/60)+'m':'';
   if(durEl)durEl.textContent=dur;
   if(thumbEl){
     var oldImg=thumbEl.querySelector('img');if(oldImg)oldImg.remove();
@@ -3810,8 +3801,8 @@ function renderManageGrid(){
     if(pos.bottom) posStyle += 'bottom:'+pos.bottom+';';
     html += '<div class="profile-slot" style="position:absolute;'+posStyle+'">' +
       '<div class="profile-circle-wrap">' +
-      '<div class="profile-circle filled" style="width:120px;height:120px;" onclick="openEditProfile('+i+')">' +
-        '<img src="https://ia600502.us.archive.org/9/items/177-bdc-4-f-6546-459-f-98-b-7-4-f-04-f-48-ce-3-fa/177BDC4F-6546-459F-98B7-4F04F48CE3FA.png" style="width:100%;height:100%;object-fit:cover;"/>' +
+      '<div class="profile-circle filled" style="width:120px;height:120px;overflow:hidden;" onclick="openEditProfile('+i+')">' +
+        '<img src="https://ia600502.us.archive.org/9/items/177-bdc-4-f-6546-459-f-98-b-7-4-f-04-f-48-ce-3-fa/177BDC4F-6546-459F-98B7-4F04F48CE3FA.png" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>' +
       '</div></div>' +
       '<div onclick="openEditProfile('+i+')" style="position:absolute;bottom:34px;right:-8px;width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);">'+
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'+
