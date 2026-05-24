@@ -1860,7 +1860,8 @@ function setHeroCarouselItem(item){
     var audLabel=item.audio==='d'?'Dub':item.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=item.genres&&item.genres.length?' '+item.genres.join(', '):'';
     var diamond=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    aud.innerHTML=audLabel+diamond+genreStr;
+    var diamondLeft=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 6px 1px 0;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
+    aud.innerHTML=diamondLeft+audLabel+diamond+genreStr;
   }
   var lbl=g('hero-play-label');
   if(lbl){
@@ -1970,7 +1971,8 @@ function openDetail(itemId){
     var audLabel=a.audio==='d'?'Dub':a.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=a.genres&&a.genres.length?' '+a.genres.join(', '):'';
     var diamond=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+audLabel+diamond+genreStr+'</span>';
+    var diamondLeft=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 6px 1px 0;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
+    tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+diamondLeft+audLabel+diamond+genreStr+'</span>';
   }
   // Descrição
   var dt=g('detail-desc-text');
