@@ -1589,7 +1589,7 @@ function mkCW(a){
   if(ep&&ep.duration&&ep.duration>0){
     if(ep.savedTime&&ep.savedTime>0){
       var rem=Math.floor((ep.duration-ep.savedTime)/60);
-      if(rem>0) minsLabel=rem+'m restantes';
+      minsLabel=rem>0?rem+'m restantes':'1m restantes';
     } else {
       var tot=Math.round(ep.duration/60);
       if(tot>0) minsLabel=(ep.id==='ep1'&&ep.duration>=3479&&ep.duration<=3481)?'58m':tot+'m';
@@ -2222,7 +2222,7 @@ function renderDetailEps(){
     } else if(ep.duration&&ep.duration>0){
       if(ep.savedTime&&ep.savedTime>1){
         var rem=Math.floor((ep.duration-ep.savedTime)/60);
-        timeLabel=rem>0?rem+'m restantes':'Assistido';
+        timeLabel=rem>0?rem+'m restantes':'1m restantes';
         timeLabelColor='var(--blue)';
       } else {
         var totMins=Math.round(ep.duration/60);
@@ -2770,7 +2770,7 @@ function renderEpList(){
     var timeInfo='';
     if(ep.watched){timeInfo='Assistido';}
     else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>0){var rem=Math.floor((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'Assistido';}
+      if(ep.savedTime&&ep.savedTime>0){var rem=Math.floor((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'1m restantes';}
       else{timeInfo=Math.round(ep.duration/60)+'m';}
     }
     // Thumbnail
