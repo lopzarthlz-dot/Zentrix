@@ -1588,7 +1588,7 @@ function mkCW(a){
   var minsLabel='';
   if(ep&&ep.duration&&ep.duration>0){
     if(ep.savedTime&&ep.savedTime>0){
-      var rem=Math.round((ep.duration-ep.savedTime)/60);
+      var rem=Math.floor((ep.duration-ep.savedTime)/60);
       if(rem>0) minsLabel=rem+'m restantes';
     } else {
       var tot=Math.round(ep.duration/60);
@@ -2221,7 +2221,7 @@ function renderDetailEps(){
       timeLabelColor='var(--blue)';
     } else if(ep.duration&&ep.duration>0){
       if(ep.savedTime&&ep.savedTime>1){
-        var rem=Math.round((ep.duration-ep.savedTime)/60);
+        var rem=Math.floor((ep.duration-ep.savedTime)/60);
         timeLabel=rem>0?rem+'m restantes':'Assistido';
         timeLabelColor='var(--blue)';
       } else {
@@ -2770,7 +2770,7 @@ function renderEpList(){
     var timeInfo='';
     if(ep.watched){timeInfo='Assistido';}
     else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>0){var rem=Math.round((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'Assistido';}
+      if(ep.savedTime&&ep.savedTime>0){var rem=Math.floor((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'Assistido';}
       else{timeInfo=Math.round(ep.duration/60)+'m';}
     }
     // Thumbnail
