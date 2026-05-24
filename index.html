@@ -841,7 +841,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="detail-desc-text" id="detail-desc-text" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
       <button class="detail-more-btn" id="detail-more-btn" onclick="openMoreDetails()">Mais Detalhes</button>
     </div>
-    <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><span class="season-arrow">▼</span> Season 1</div></div>
+    <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg> Season 1</div></div>
     <div style="padding-top:4px;">
       <div class="eps-list" id="detail-eps-list"></div>
     </div>
@@ -1604,6 +1604,7 @@ function mkCW(a){
             : '<div class="cw-thumb-emoji">⚔️</div>')
       ) +
       '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.92) 0%,rgba(8,8,15,.3) 55%,transparent 100%);pointer-events:none;"></div>' +
+      (a.rating_age?'<img src="https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png" style="position:absolute;top:6px;left:6px;height:18px;width:auto;z-index:3;border-radius:2px;"/>':'')+
       '<button ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.cw-card\'));" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this)" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this)" style="position:absolute;top:6px;right:6px;background:none;border:none;color:#fff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:1;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:2;">···</button>' +
       '<div class="cw-play-ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="8,6 26,16 8,26" fill="white"/></svg></div>' +
       (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
@@ -2248,6 +2249,7 @@ function renderDetailEps(){
         ) +
         (!isWatched && prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
         (!isWatched && timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
+        (a.rating_age?'<img src="https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png" style="position:absolute;top:6px;left:6px;height:16px;width:auto;z-index:3;border-radius:2px;"/>':'')+
       '</div>' +
       '<div class="ep-card-info">' +
         '<div class="ep-card-num-name">'+(i+1)+'. '+ep.name+'</div>' +
