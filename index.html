@@ -2669,7 +2669,7 @@ window.toggleFav=toggleFav;window.toggleExpand=toggleExpand;window.saveProgress2
 
 // ===== PLAYER =====
 function setPlayIcon(p){var btn=g('play-pause-btn');if(btn)btn.textContent=p?'⏸':'▶';setPlayIconOverlay(p);}
-function updateProgress(cur,dur){var pct=dur>0?(cur/dur)*100:0;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';var pr=g('progress-range');if(pr)pr.value=Math.round(pct*10);var tc=g('time-cur');if(tc){var _a=items.find(function(x){return x.id===playerItemId;});var _ep=_a&&_a.episodes&&_a.episodes[playerEpIdx];var _dur=(_ep&&_ep.id==='ep1'&&dur>=3479&&dur<=3481)?3480:dur;tc.textContent=fmtTime(Math.min(cur,_dur));}var tt=g('time-tot');if(tt){var a=items.find(function(x){return x.id===playerItemId;});var ep=a&&a.episodes&&a.episodes[playerEpIdx];tt.textContent=(ep&&ep.id==='ep1'&&dur>=3479&&dur<=3480)?'58:00':fmtTime(dur);}}
+function updateProgress(cur,dur){var pct=dur>0?(cur/dur)*100:0;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';var pr=g('progress-range');if(pr)pr.value=Math.round(pct*10);var tc=g('time-cur');if(tc){var _a=items.find(function(x){return x.id===playerItemId;});var _ep=_a&&_a.episodes&&_a.episodes[playerEpIdx];var _isEp1=_ep&&_ep.id==='ep1'&&dur>=3479&&dur<=3481;var _cur=_isEp1?Math.min(Math.ceil(cur),3480):cur;tc.textContent=fmtTime(_cur);}var tt=g('time-tot');if(tt){var a=items.find(function(x){return x.id===playerItemId;});var ep=a&&a.episodes&&a.episodes[playerEpIdx];tt.textContent=(ep&&ep.id==='ep1'&&dur>=3479&&dur<=3480)?'58:00':fmtTime(dur);}}
 function showLoading(){var ov=g('loading-overlay');if(ov)ov.classList.add('show');}
 function hideLoading(){var ov=g('loading-overlay');if(ov)ov.classList.remove('show');}
 function showNoFile(){if(vid)vid.style.display='none';var nf=g('no-file-msg');if(nf)nf.classList.add('show');var epl=g('player-ep-label');if(epl)epl.textContent='Selecione um episódio';updateProgress(0,0);setPlayIcon(false);}
@@ -3233,6 +3233,10 @@ vid.addEventListener('play',function(){setPlayIcon(true);});
 vid.addEventListener('pause',function(){setPlayIcon(false);saveCurrentProgress();});
 vid.addEventListener('ended',function(){
   setPlayIcon(false);
+  // Força 58:00 no EP1 ao terminar
+  var _aEnd=items.find(function(x){return x.id===playerItemId;});
+  var _epEnd=_aEnd&&_aEnd.episodes&&_aEnd.episodes[playerEpIdx];
+  if(_epEnd&&_epEnd.id==='ep1'){var tc=g('time-cur');if(tc)tc.textContent='58:00';}
   if(playerItemId&&playerEpIdx>=0){
     var a=items.find(function(x){return x.id===playerItemId;});
     if(a&&a.episodes&&a.episodes[playerEpIdx]){
