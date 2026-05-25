@@ -1235,19 +1235,19 @@ function showPlayerControls(keepAlive){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
-  overlay.style.transition = 'opacity 0.08s ease';
+  overlay.style.transition = 'none';
   overlay.style.display = 'flex';
   overlay.style.opacity = '1';
   _ctrlVisible = true;
   _saveCtrlRects();
   if(!keepAlive){
     _ctrlTimeout = setTimeout(function(){
-      overlay.style.transition = 'opacity 0.35s ease';
+      overlay.style.transition = 'opacity 0.18s ease';
       overlay.style.opacity = '0';
       setTimeout(function(){
         overlay.style.display = 'none';
         _ctrlVisible = false;
-      }, 350);
+      }, 180);
     }, 4000);
   }
 }
@@ -1256,12 +1256,12 @@ function hidePlayerControls(){
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
   _saveCtrlRects();
-  overlay.style.transition = 'opacity 0.35s ease';
+  overlay.style.transition = 'opacity 0.18s ease';
   overlay.style.opacity = '0';
   setTimeout(function(){
     overlay.style.display = 'none';
     _ctrlVisible = false;
-  }, 350);
+  }, 180);
 }
 function togglePlayerControls(){
   if(_ctrlVisible) hidePlayerControls();
