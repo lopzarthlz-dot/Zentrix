@@ -3096,7 +3096,7 @@ function loadEpisode(idx){
   renderEpList();
   renderNextEp();
 }
-function togglePlay(){if(!vid||!vid.src)return;if(vid.paused){vid.play().then(function(){setPlayIcon(true);}).catch(function(){});}else{vid.pause();setPlayIcon(false);}}
+function togglePlay(){if(!vid||!vid.src)return;if(vid.paused){vid.play().then(function(){setPlayIcon(true);}).catch(function(){});}else{vid.pause();setPlayIcon(false);}showPlayerControls();}
 function seekByClick(e){if(!vid||!vid.duration)return;var track=g('progress-track');if(!track)return;var rect=track.getBoundingClientRect();var pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));vid.currentTime=pct*vid.duration;}
 function onProgressInput(val){if(!vid||!vid.duration)return;isSeeking=true;var pct=val/10;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';}
 function onProgressChange(val){if(!vid||!vid.duration)return;vid.currentTime=(val/10/100)*vid.duration;isSeeking=false;}
@@ -3181,8 +3181,8 @@ function showSkipFlash(direction, touchX){
     if(numFly.parentNode) numFly.parentNode.removeChild(numFly);
   }, 700);
 }
-function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');}}
-function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
+function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');showPlayerControls();}}
+function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');showPlayerControls();}}
 
 window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;
 function toggleFullscreen(){if(vid&&vid.webkitEnterFullscreen){vid.webkitEnterFullscreen();return;}var ov=g('player-overlay');if(!document.fullscreenElement&&!document.webkitFullscreenElement){if(ov&&ov.requestFullscreen)ov.requestFullscreen();else if(ov&&ov.webkitRequestFullscreen)ov.webkitRequestFullscreen();}else{if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}}
