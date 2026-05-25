@@ -969,7 +969,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       </div>
     </div>
     <!-- Overlay de controles sobre o vídeo -->
-    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);opacity:0;transition:opacity 0.25s ease;">
+    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);opacity:0;transition:opacity 0.12s ease;">
       <!-- Topo: botão voltar + título | próximo ep + fullscreen -->
       <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 12px;" onclick="event.stopPropagation()">
         <!-- Esquerda: voltar -->
@@ -1231,7 +1231,7 @@ function _saveCtrlRects(){
   var sf = g('skip-fwd-btn');
   if(sf) _skipFwdRect = sf.getBoundingClientRect();
 }
-function showPlayerControls(){
+function showPlayerControls(keepAlive){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
@@ -1243,13 +1243,15 @@ function showPlayerControls(){
   });
   _ctrlVisible = true;
   _saveCtrlRects();
-  _ctrlTimeout = setTimeout(function(){
-    overlay.style.opacity = '0';
-    setTimeout(function(){
-      overlay.style.display = 'none';
-      _ctrlVisible = false;
-    }, 250);
-  }, 3000);
+  if(!keepAlive){
+    _ctrlTimeout = setTimeout(function(){
+      overlay.style.opacity = '0';
+      setTimeout(function(){
+        overlay.style.display = 'none';
+        _ctrlVisible = false;
+      }, 150);
+    }, 4000);
+  }
 }
 function hidePlayerControls(){
   var overlay = g('player-ctrl-overlay');
@@ -1318,11 +1320,11 @@ window.hidePlayerControls = hidePlayerControls;
 
       if(relX < leftZone){
         skipBack();
-        if(_ctrlVisible) showPlayerControls(); // reseta timer se visível
+        showPlayerControls();
         // se oculto: só animação, nada mais
       } else if(relX > rightZone){
         skipForward();
-        if(_ctrlVisible) showPlayerControls();
+        showPlayerControls();
       } else {
         // Centro → toggle play/pause sempre mostra controles
         togglePlay();
@@ -1588,7 +1590,7 @@ function mkCW(a){
   var minsLabel='';
   if(ep&&ep.duration&&ep.duration>0){
     if(ep.savedTime&&ep.savedTime>0){
-      var rem=Math.ceil((ep.duration-ep.savedTime)/60);
+      var rem=Math.floor((ep.duration-ep.savedTime)/60);
       minsLabel=rem>0?rem+'m restantes':'1m restantes';
     } else {
       var tot=Math.round(ep.duration/60);
@@ -2221,7 +2223,7 @@ function renderDetailEps(){
       timeLabelColor='var(--blue)';
     } else if(ep.duration&&ep.duration>0){
       if(ep.savedTime&&ep.savedTime>1){
-        var rem=Math.ceil((ep.duration-ep.savedTime)/60);
+        var rem=Math.floor((ep.duration-ep.savedTime)/60);
         timeLabel=rem>0?rem+'m restantes':'1m restantes';
         timeLabelColor='var(--blue)';
       } else {
@@ -2770,7 +2772,7 @@ function renderEpList(){
     var timeInfo='';
     if(ep.watched){timeInfo='Assistido';}
     else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>0){var rem=Math.ceil((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'1m restantes';}
+      if(ep.savedTime&&ep.savedTime>0){var rem=Math.floor((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'1m restantes';}
       else{timeInfo=Math.round(ep.duration/60)+'m';}
     }
     // Thumbnail
