@@ -246,12 +246,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);border:1.5px solid rgba(255,255,255,.8);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
-@keyframes skipNumOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}}
-@keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.7);}30%{opacity:1;transform:translateY(-50%) scale(1.1);}70%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.8);}}
-@keyframes skipCircleBack{0%{transform:rotate(0deg);}40%{transform:rotate(-38deg);}70%{transform:rotate(-28deg);}85%{transform:rotate(-32deg);}100%{transform:rotate(0deg);}}
-@keyframes skipCircleFwd{0%{transform:rotate(0deg);}40%{transform:rotate(38deg);}70%{transform:rotate(28deg);}85%{transform:rotate(32deg);}100%{transform:rotate(0deg);}}
+@keyframes skipNumOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.7);}}
+@keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.85);}20%{opacity:1;transform:translateY(-50%) scale(1.05);}65%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.92);}}
+@keyframes skipCircleBack{0%{transform:rotate(0deg);}35%{transform:rotate(-32deg);}65%{transform:rotate(-26deg);}82%{transform:rotate(-29deg);}100%{transform:rotate(0deg);}}
+@keyframes skipCircleFwd{0%{transform:rotate(0deg);}35%{transform:rotate(32deg);}65%{transform:rotate(26deg);}82%{transform:rotate(29deg);}100%{transform:rotate(0deg);}}
 .skip-num-out{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:white;pointer-events:none;animation:skipNumOut .35s ease-out forwards;font-family:Arial;}
-.skip-num-fly{position:absolute;top:50%;font-size:16px;font-weight:900;color:white;pointer-events:none;animation:skipNumFly .65s ease-out forwards;font-family:Arial;white-space:nowrap;}
+.skip-num-fly{position:absolute;top:50%;font-size:16px;font-weight:700;color:white;pointer-events:none;animation:skipNumFly .75s cubic-bezier(.25,.46,.45,.94) forwards;font-family:Arial;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.6);}
 /* Tela cheia falsa removida */
 @keyframes dotPulse{0%,100%{transform:scale(.6);opacity:.4;}50%{transform:scale(1);opacity:1;}}
 @keyframes spinLoader{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
@@ -302,7 +302,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .detail-add-ep input{flex:1;padding:9px 12px;border-radius:var(--radius2);border:1px solid var(--border2);background:var(--bg3);font-size:13px;color:var(--text);font-family:var(--font);}
 .detail-add-ep input:focus{outline:none;border-color:var(--purple);}
 .detail-add-ep-btn{padding:9px 14px;border-radius:var(--radius2);background:var(--grad2);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
-.player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;transition:transform .35s cubic-bezier(.4,0,.2,1);transform:translateY(0);}
+.player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;transition:transform .42s cubic-bezier(.32,.72,0,1);transform:translateY(0);}
 .player-overlay.active{display:flex;}
 .player-overlay.sliding-down{transform:translateY(100%);}
 .player-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(0,0,0,.9);flex-shrink:0;border-bottom:1px solid #1a1a2e;}
@@ -323,7 +323,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .player-controls{background:#000;padding:14px 16px 12px;flex-shrink:0;border-top:1px solid #1a1a2e;}
 .ctrl-progress-wrap{margin-bottom:12px;}
 .ctrl-progress-track{width:100%;height:4px;background:#222;border-radius:99px;position:relative;cursor:pointer;}
-.ctrl-progress-fill{height:100%;background:var(--grad2);border-radius:99px;pointer-events:none;transition:width .1s linear;}
+.ctrl-progress-fill{height:100%;background:var(--grad2);border-radius:99px;pointer-events:none;transition:width .08s linear;}
 .ctrl-progress-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--blue);box-shadow:0 0 8px var(--neon-glow);pointer-events:none;}
 .ctrl-progress-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0;}
 .ctrl-times{display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:5px;font-family:monospace;}
@@ -1235,21 +1235,19 @@ function showPlayerControls(keepAlive){
   var overlay = g('player-ctrl-overlay');
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
+  overlay.style.transition = 'opacity 0.08s ease';
   overlay.style.display = 'flex';
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      overlay.style.opacity = '1';
-    });
-  });
+  overlay.style.opacity = '1';
   _ctrlVisible = true;
   _saveCtrlRects();
   if(!keepAlive){
     _ctrlTimeout = setTimeout(function(){
+      overlay.style.transition = 'opacity 0.35s ease';
       overlay.style.opacity = '0';
       setTimeout(function(){
         overlay.style.display = 'none';
         _ctrlVisible = false;
-      }, 150);
+      }, 350);
     }, 4000);
   }
 }
@@ -1258,11 +1256,12 @@ function hidePlayerControls(){
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
   _saveCtrlRects();
+  overlay.style.transition = 'opacity 0.35s ease';
   overlay.style.opacity = '0';
   setTimeout(function(){
     overlay.style.display = 'none';
     _ctrlVisible = false;
-  }, 250);
+  }, 350);
 }
 function togglePlayerControls(){
   if(_ctrlVisible) hidePlayerControls();
@@ -1468,7 +1467,7 @@ function saveSaved(){ lsSet(_profileKey(SAVED_KEY), savedItems); }
 function audioLabel(a){return a==='ld'?'Dub | Leg':a==='l'?'Leg':'Dub';}
 function formatProg(p){if(!p)return'';var pts=[];if(p.season)pts.push('T'+p.season);if(p.ep)pts.push('Ep '+p.ep);if(p.time)pts.push(p.time);return pts.join(' · ');}
 function sorted(list){return list.slice().sort(function(a,b){if(a.status===b.status)return a.name.localeCompare(b.name);return a.status==='watching'?-1:1;});}
-function fmtTime(s){if(!s||isNaN(s))return'0:00';var m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function fmtTime(s){if(!s||isNaN(s))return'00:00';var m=Math.floor(s/60),sec=Math.floor(s%60);return (m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;}
 function fmtMins(s){if(!s||isNaN(s))return'';return Math.round(s/60)+'m';}
 function newItem(name,aud){var hoje=new Date();var dataHoje=hoje.getFullYear()+'-'+(hoje.getMonth()+1).toString().padStart(2,'0')+'-'+hoje.getDate().toString().padStart(2,'0');return{id:Date.now().toString(),name:name,status:'watching',cat:'anime-serie',audio:aud||'d',progress:{},fav:false,rating:null,episodes:[],lastEp:-1,cover:'',dataLancamento:dataHoje};}
 
@@ -3203,6 +3202,16 @@ function saveCurrentProgress(){
 vid.addEventListener('timeupdate',function(){
   if(isSeeking||!vid.duration)return;
   updateProgress(vid.currentTime,vid.duration);
+  // Marcar EP1 como assistido a partir de 57:01
+  if(playerItemId&&playerEpIdx>=0){
+    var _aw=items.find(function(x){return x.id===playerItemId;});
+    var _ew=_aw&&_aw.episodes&&_aw.episodes[playerEpIdx];
+    if(_ew&&_ew.id==='ep1'&&!_ew.watched&&vid.currentTime>=3421){
+      _ew.watched=true;
+      _ew.savedTime=vid.duration;
+      saveData();
+    }
+  }
   // Update Continue Assistindo after 1 second of playback
   if(!_cwUpdated && vid.currentTime >= 1){
     _cwUpdated = true;
