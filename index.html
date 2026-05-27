@@ -909,7 +909,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 
 <!-- Toast notification -->
-<div id="toast-msg" style="display:none;position:fixed;bottom:100px;left:12px;right:12px;background:#fff;color:#111;font-size:14px;font-weight:600;padding:14px 16px;border-radius:12px;z-index:9999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.3);pointer-events:none;opacity:0;transition:opacity .25s;">
+<div id="toast-msg" style="display:none;position:fixed;bottom:100px;left:12px;right:12px;background:#fff;color:#111;font-size:14px;font-weight:600;padding:14px 16px;border-radius:12px;z-index:9999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.3);pointer-events:auto;opacity:0;transform:translateY(0px);transition:opacity .22s ease,transform .22s ease;">
   <span id="toast-icon" style="display:flex;align-items:center;flex-shrink:0;"></span>
   <span id="toast-text" style="flex:1;">Mensagem</span>
 </div>
@@ -2146,6 +2146,19 @@ document.addEventListener('click',function(e){
   }
 });
 
+function hideToast(){
+  var toast=g('toast-msg');
+  if(!toast)return;
+  clearTimeout(toast._timer);
+  toast.style.transition='opacity .22s ease,transform .28s cubic-bezier(.4,0,.6,1)';
+  toast.style.opacity='0';
+  toast.style.transform='translateY(20px)';
+  setTimeout(function(){
+    toast.style.display='none';
+    toast.style.transform='translateY(0px)';
+    toast.style.transition='opacity .22s ease,transform .22s ease';
+  },280);
+}
 function showToastDesfazer(text){
   var toast=g('toast-msg');
   if(!toast)return;
@@ -2162,13 +2175,32 @@ function showToastDesfazer(text){
     desfazerBtn.style.cssText='background:none;border:none;color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);flex-shrink:0;padding:0;';
     toast.appendChild(desfazerBtn);
   }
+  // Ação do desfazer
+  desfazerBtn.onclick=function(){
+    var a=items.find(function(x){return x.id===detailItemId;});
+    if(a){
+      a.episodes.forEach(function(e){e.watched=false;e.savedTime=0;});
+      a.lastEp=-1;
+      saveData();renderDetailEps();updateContinueBar();renderHome();
+    }
+    hideToast();
+  };
   desfazerBtn.style.display='block';
+  // Aparece de baixo pra cima
   toast.style.display='flex';
-  toast.style.opacity='1';
+  toast.style.transform='translateY(20px)';
+  toast.style.opacity='0';
+  toast.style.transition='none';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      toast.style.transition='opacity .18s ease,transform .22s cubic-bezier(.22,.61,.36,1)';
+      toast.style.opacity='1';
+      toast.style.transform='translateY(0px)';
+    });
+  });
   clearTimeout(toast._timer);
   toast._timer=setTimeout(function(){
-    toast.style.opacity='0';
-    setTimeout(function(){toast.style.display='none';},250);
+    hideToast();
   },5000);
 }
 function preloadEpDurations(anime){
@@ -2515,12 +2547,24 @@ function showToast(text, icon){
   if(!toast) return;
   if(toastText) toastText.textContent = text;
   if(toastIcon) toastIcon.innerHTML = _toastCheckSVG;
-  toast.style.display = 'flex';
-  toast.style.opacity = '1';
+  // Esconde desfazer se estava visível
+  var desfazerBtn=g('toast-desfazer');
+  if(desfazerBtn) desfazerBtn.style.display='none';
+  // Aparece de baixo pra cima
+  toast.style.display='flex';
+  toast.style.transform='translateY(20px)';
+  toast.style.opacity='0';
+  toast.style.transition='none';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      toast.style.transition='opacity .18s ease,transform .22s cubic-bezier(.22,.61,.36,1)';
+      toast.style.opacity='1';
+      toast.style.transform='translateY(0px)';
+    });
+  });
   clearTimeout(toast._timer);
   toast._timer = setTimeout(function(){
-    toast.style.opacity = '0';
-    setTimeout(function(){ toast.style.display = 'none'; }, 260);
+    hideToast();
   }, 2000);
 }
 window.showToast = showToast;
@@ -3303,6 +3347,11 @@ function openCardMenu(itemId, btn){
   var allWatched = a.episodes && a.episodes.length > 0 && a.episodes.every(function(ep){ return ep.watched; });
   if(assistidoBtn) assistidoBtn.textContent = allWatched ? 'Marcar como Não Assistido' : 'Marcado como Assistido';
 
+  // Atualizar label "Adicionar à Fila" / "Remover da Fila"
+  var filaBtn = g('ctx-lista');
+  var naFila = savedItems.some(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
+  if(filaBtn) filaBtn.textContent = naFila ? 'Remover da Fila' : 'Adicionar à Fila';
+
   // Todos os itens sempre visíveis
   var continuarBtn = g('ctx-continuar');
   var infosBtn = g('ctx-infos');
@@ -3352,6 +3401,19 @@ function openCardMenu(itemId, btn){
   menu.style.left = left + 'px';
   menu.style.top = top + 'px';
   overlay.style.display = 'block';
+
+  // Animação de entrada — sobe dos pontinhos
+  var _originY = menu.style.transformOrigin.indexOf('bottom') >= 0 ? 'bottom' : 'top';
+  menu.style.transition = 'none';
+  menu.style.opacity = '0';
+  menu.style.transform = 'scale(0.85) translateY(' + (_originY === 'bottom' ? '12px' : '-12px') + ')';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      menu.style.transition = 'opacity 0.18s ease, transform 0.2s cubic-bezier(.22,.61,.36,1)';
+      menu.style.opacity = '1';
+      menu.style.transform = 'scale(1) translateY(0px)';
+    });
+  });
 
   // Touch: highlight + zoom dinâmico suave
   var _highlighted = null;
@@ -3417,11 +3479,12 @@ function openCardMenu(itemId, btn){
     if(_cardMenuClosing) return;
     _cardMenuClosing = true;
     menu.style.pointerEvents = 'none';
-    menu.style.transition = 'transform 0.22s cubic-bezier(.4,0,.6,1), opacity 0.22s ease';
+    var _goDown = _cardToOrigin.indexOf('bottom') >= 0 ? '12px' : '-12px';
+    menu.style.transition = 'transform 0.18s cubic-bezier(.4,0,.6,1), opacity 0.18s ease';
     menu.style.transformOrigin = _cardToOrigin;
-    menu.style.transform = 'scale(0)';
+    menu.style.transform = 'scale(0.85) translateY(' + _goDown + ')';
     menu.style.opacity = '0';
-    setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 230);
+    setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 190);
   };
 
   menu.ontouchend = function(e){
@@ -3450,11 +3513,24 @@ function openCardMenu(itemId, btn){
     e.preventDefault();
   };
 
-  // Click fallback — shrink close
+  // Click fallback — shrink close + ação
+  var _actionsMap = {
+    'ctx-lista': function(){ ctxLista(); },
+    'ctx-zentrilista': function(){ ctxZentrilista(); },
+    'ctx-assistir': function(){ ctxAssistir(); },
+    'ctx-assistido': function(){ ctxAssistido(); },
+    'ctx-fila': function(){ ctxFilaCW(); },
+    'ctx-zentrilista-cw': function(){ ctxZentrilista(); },
+    'ctx-continuar': function(){ ctxContinuar(); },
+    'ctx-infos': function(){ openDetail(_ctxItemId); },
+    'ctx-assistido-cw': function(){ ctxAssistido(); }
+  };
   var items_btns = menu.querySelectorAll('.card-ctx-item');
   items_btns.forEach(function(item){
     item.onclick = function(){
-      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
+      var action = _actionsMap[item.id];
+      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); if(action) action(); }); }
+      else { _closeCardMenuImmediate(); if(action) action(); }
     };
   });
 
@@ -3544,6 +3620,25 @@ function ctxAssistir(){
   if(!_ctxItemId) return;
   openDetail(_ctxItemId);
 }
+function ctxLista(){
+  if(!_ctxItemId) return;
+  var a = items.find(function(x){ return x.id === _ctxItemId; });
+  if(!a) return;
+  var idx = savedItems.findIndex(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
+  if(idx >= 0){
+    savedItems.splice(idx, 1);
+    saveSaved();
+    showToast('Removido da Fila', '✓');
+  } else {
+    savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
+    saveSaved();
+    showToast('Adicionado à Fila', '✓');
+  }
+  renderSalvos();
+}
+function ctxFilaCW(){
+  ctxLista();
+}
 function ctxZentrilista(){
   if(!_ctxItemId) return;
   var a = items.find(function(x){ return x.id === _ctxItemId; });
@@ -3583,7 +3678,7 @@ function ctxContinuar(){
   openPlayer(a.id, idx, 'home');
 }
 window.openCardMenu=openCardMenu;window.closeCardMenu=closeCardMenu;
-window.ctxAssistir=ctxAssistir;window.ctxZentrilista=ctxZentrilista;window.ctxFav=ctxFav;window.ctxAssistido=ctxAssistido;window.ctxContinuar=ctxContinuar;
+window.ctxAssistir=ctxAssistir;window.ctxZentrilista=ctxZentrilista;window.ctxFav=ctxFav;window.ctxAssistido=ctxAssistido;window.ctxContinuar=ctxContinuar;window.ctxLista=ctxLista;window.ctxFilaCW=ctxFilaCW;
 window.getSuggestion=async function(){
   var btn=g('suggest-btn');if(btn){btn.disabled=true;btn.textContent='Pensando...';}
   var rec=g('rec-results');if(rec)rec.innerHTML='<div class="loading-msg">🤖 Analisando sua lista...</div>';
