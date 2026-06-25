@@ -246,12 +246,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .profile-circle.add{background:rgba(255,255,255,.06);}
 .profile-circle.filled{background:var(--grad2);border:1.5px solid rgba(255,255,255,.8);}
 .profile-slot-name{font-size:13px;color:#fff;font-weight:600;text-align:center;max-width:140px;word-break:break-word;}
-@keyframes skipNumOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.7);}}
-@keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.85);}20%{opacity:1;transform:translateY(-50%) scale(1.05);}65%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.92);}}
-@keyframes skipCircleBack{0%{transform:rotate(0deg);}35%{transform:rotate(-32deg);}65%{transform:rotate(-26deg);}82%{transform:rotate(-29deg);}100%{transform:rotate(0deg);}}
-@keyframes skipCircleFwd{0%{transform:rotate(0deg);}35%{transform:rotate(32deg);}65%{transform:rotate(26deg);}82%{transform:rotate(29deg);}100%{transform:rotate(0deg);}}
+@keyframes skipNumOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}}
+@keyframes skipNumFly{0%{opacity:0;transform:translateY(-50%) scale(0.7);}30%{opacity:1;transform:translateY(-50%) scale(1.1);}70%{opacity:1;transform:translateY(-50%) scale(1);}100%{opacity:0;transform:translateY(-50%) scale(0.8);}}
+@keyframes skipCircleBack{0%{transform:rotate(0deg);}40%{transform:rotate(-38deg);}70%{transform:rotate(-28deg);}85%{transform:rotate(-32deg);}100%{transform:rotate(0deg);}}
+@keyframes skipCircleFwd{0%{transform:rotate(0deg);}40%{transform:rotate(38deg);}70%{transform:rotate(28deg);}85%{transform:rotate(32deg);}100%{transform:rotate(0deg);}}
 .skip-num-out{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:white;pointer-events:none;animation:skipNumOut .35s ease-out forwards;font-family:Arial;}
-.skip-num-fly{position:absolute;top:50%;font-size:16px;font-weight:700;color:white;pointer-events:none;animation:skipNumFly .75s cubic-bezier(.25,.46,.45,.94) forwards;font-family:Arial;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.6);}
+.skip-num-fly{position:absolute;top:50%;font-size:16px;font-weight:900;color:white;pointer-events:none;animation:skipNumFly .65s ease-out forwards;font-family:Arial;white-space:nowrap;}
 /* Tela cheia falsa removida */
 @keyframes dotPulse{0%,100%{transform:scale(.6);opacity:.4;}50%{transform:scale(1);opacity:1;}}
 @keyframes spinLoader{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
@@ -302,7 +302,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .detail-add-ep input{flex:1;padding:9px 12px;border-radius:var(--radius2);border:1px solid var(--border2);background:var(--bg3);font-size:13px;color:var(--text);font-family:var(--font);}
 .detail-add-ep input:focus{outline:none;border-color:var(--purple);}
 .detail-add-ep-btn{padding:9px 14px;border-radius:var(--radius2);background:var(--grad2);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
-.player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;transition:transform .42s cubic-bezier(.32,.72,0,1);transform:translateY(0);}
+.player-overlay{position:fixed;inset:0;background:#000;z-index:1000;display:none;flex-direction:column;max-width:480px;margin:0 auto;left:0;right:0;transition:transform .35s cubic-bezier(.4,0,.2,1);transform:translateY(0);}
 .player-overlay.active{display:flex;}
 .player-overlay.sliding-down{transform:translateY(100%);}
 .player-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(0,0,0,.9);flex-shrink:0;border-bottom:1px solid #1a1a2e;}
@@ -323,7 +323,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .player-controls{background:#000;padding:14px 16px 12px;flex-shrink:0;border-top:1px solid #1a1a2e;}
 .ctrl-progress-wrap{margin-bottom:12px;}
 .ctrl-progress-track{width:100%;height:4px;background:#222;border-radius:99px;position:relative;cursor:pointer;}
-.ctrl-progress-fill{height:100%;background:var(--grad2);border-radius:99px;pointer-events:none;transition:width .08s linear;}
+.ctrl-progress-fill{height:100%;background:var(--grad2);border-radius:99px;pointer-events:none;transition:width .1s linear;}
 .ctrl-progress-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--blue);box-shadow:0 0 8px var(--neon-glow);pointer-events:none;}
 .ctrl-progress-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0;}
 .ctrl-times{display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:5px;font-family:monospace;}
@@ -841,7 +841,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="detail-desc-text" id="detail-desc-text" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
       <button class="detail-more-btn" id="detail-more-btn" onclick="openMoreDetails()">Mais Detalhes</button>
     </div>
-    <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg> Season 1</div></div>
+    <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><span class="season-arrow">▼</span> Season 1</div></div>
     <div style="padding-top:4px;">
       <div class="eps-list" id="detail-eps-list"></div>
     </div>
@@ -909,7 +909,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 </div>
 
 <!-- Toast notification -->
-<div id="toast-msg" style="display:none;position:fixed;bottom:100px;left:12px;right:12px;background:#fff;color:#111;font-size:14px;font-weight:600;padding:14px 16px;border-radius:12px;z-index:9999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.3);pointer-events:auto;opacity:0;transform:translateY(0px);transition:opacity .22s ease,transform .22s ease;">
+<div id="toast-msg" style="display:none;position:fixed;bottom:100px;left:12px;right:12px;background:#fff;color:#111;font-size:14px;font-weight:600;padding:14px 16px;border-radius:12px;z-index:9999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.3);pointer-events:none;opacity:0;transition:opacity .25s;">
   <span id="toast-icon" style="display:flex;align-items:center;flex-shrink:0;"></span>
   <span id="toast-text" style="flex:1;">Mensagem</span>
 </div>
@@ -960,6 +960,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <div class="player-video-area" id="player-video-area">
     <video id="main-video" playsinline webkit-playsinline preload="auto"></video>
     <div class="loading-overlay" id="loading-overlay"><div class="spinner"></div><div style="font-size:12px;color:#555;">Carregando...</div></div>
+    <!-- Botão Pular Abertura/Créditos -->
+    <div id="skip-btn-wrap" style="position:absolute;bottom:52px;right:0;z-index:20;pointer-events:auto;transform:translateX(110%);transition:transform 0.32s cubic-bezier(.22,.61,.36,1);display:none;">
+      <button id="skip-btn" onclick="doSkip()" style="display:flex;align-items:center;gap:8px;background:rgba(30,30,30,0.92);border:none;color:#fff;font-size:13px;font-weight:700;padding:10px 16px 10px 14px;border-radius:6px 0 0 6px;cursor:pointer;font-family:var(--font);white-space:nowrap;backdrop-filter:blur(4px);box-shadow:-2px 2px 12px rgba(0,0,0,.5);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,4 15,12 5,20"/><polygon points="13,4 23,12 13,20"/><rect x="1" y="4" width="3" height="16" rx="1" fill="white"/></svg>
+        <span id="skip-btn-label">Pular Abertura</span>
+      </button>
+    </div>
     <div class="player-no-file show" id="no-file-msg">
       <span style="font-size:40px;">🎬</span>
       <p>Nenhum vídeo carregado</p>
@@ -969,7 +976,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       </div>
     </div>
     <!-- Overlay de controles sobre o vídeo -->
-    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);opacity:0;transition:opacity 0.12s ease;">
+    <div id="player-ctrl-overlay" style="position:absolute;inset:0;display:none;flex-direction:column;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,transparent 25%,transparent 60%,rgba(0,0,0,.5) 100%);opacity:0;transition:opacity 0.25s ease;">
       <!-- Topo: botão voltar + título | próximo ep + fullscreen -->
       <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 12px;" onclick="event.stopPropagation()">
         <!-- Esquerda: voltar -->
@@ -1141,18 +1148,18 @@ var DEFAULT_ANIMES = [
     engagement: 92,
     dataLancamento: '2026-04-11',
     episodes: [
-      { id: 'ep1', name: 'Sentenciado a ser Herói', desc: 'Xylo faz o possível para cumprir suas missões, mesmo sendo visto com desconfiança e rejeição por aqueles ao seu redor.', linkUrl: 'https://ia601405.us.archive.org/20/items/copy_6DA39432-AF85-4AE9-8769-B8DB419AF51A/copy_6DA39432-AF85-4AE9-8769-B8DB419AF51A.mp4', fileUrl: null, savedTime: 0, duration: 3480, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
-      { id: 'ep2', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', desc: 'A missão leva o grupo até a mina de Zewan Gan, mas Xylo percebe que há algo além do objetivo aparente.', linkUrl: 'https://ia600409.us.archive.org/29/items/screen-recording-05-16-2026-03-38-39-1/ScreenRecording_05-16-2026%2003-38-39_1.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
-      { id: 'ep3', name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', desc: 'Presos no túnel, Xylo precisa garantir a sobrevivência do grupo, o que exige cooperação em meio ao perigo.', linkUrl: 'https://ia600903.us.archive.org/35/items/copy_8B2AFA00-CCD2-448E-92A3-69381470A448/copy_8B2AFA00-CCD2-448E-92A3-69381470A448.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601905.us.archive.org/4/items/img-4573_20260420/IMG_4573.jpeg' },
-      { id: 'ep4', name: 'Ordem de espera: Fortaleza Mureed', desc: 'Ao chegar na Fortaleza Mureed durante um festival, o grupo encontra um raro momento de calma… que não dura muito.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600707.us.archive.org/22/items/screen-recording-05-17-2026-03-04-15-1/ScreenRecording_05-17-2026%2003-04-15_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600105.us.archive.org/27/items/img-5470_202605/IMG_5470.png' },
-      { id: 'ep5', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', desc: 'Antes do confronto decisivo, Xylo e seus aliados se preparam sabendo que estão em clara desvantagem.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902908.us.archive.org/13/items/screen-recording-05-17-2026-03-54-11-1/ScreenRecording_05-17-2026%2003-54-11_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia902908.us.archive.org/22/items/img-5473_20260518/IMG_5473.jpeg' },
-      { id: 'ep6', name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 2', desc: 'A batalha começa e rapidamente foge do controle, trazendo consequências inesperadas mesmo com todo o planejamento.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia601007.us.archive.org/10/items/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601901.us.archive.org/23/items/img-5486_202605/IMG_5486.jpeg' },
-      { id: 'ep7', name: 'Sentença: Camuflagem de férias na cidade portuária de loff', desc: 'Após se recuperar, Xylo percebe que uma nova ameaça silenciosa já está se espalhando pela cidade.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600801.us.archive.org/20/items/screen-recording-04-25-2026-05-10-33-1/ScreenRecording_04-25-2026%2005-10-33_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia902901.us.archive.org/5/items/img-5492_202605/IMG_5492.png' },
-      { id: 'ep8', name: 'Ordem de espera: loff, a cidade portuária', desc: 'Depois de conterem um ataque surpresa, o grupo parte em busca de quem está por trás de tudo.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902900.us.archive.org/15/items/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601501.us.archive.org/35/items/img-5499_202605/IMG_5499.jpeg' },
-      { id: 'ep9', name: 'Punição: Investigação secreta na Concha de Sodrick', desc: 'Uma organização sombria entra em cena, revelando conexões perigosas dentro da própria guilda.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902808.us.archive.org/7/items/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia601607.us.archive.org/31/items/img-5514_202605/IMG_5514.jpeg' },
-      { id: 'ep10', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 1', desc: 'Um breve momento de paz surge, mas sinais indicam que outro confronto está prestes a acontecer.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600608.us.archive.org/2/items/copy_7251406C-67E2-4822-BBC9-736956365884/copy_7251406C-67E2-4822-BBC9-736956365884.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600504.us.archive.org/22/items/img-5522_20260519/IMG_5522.jpeg' },
-      { id: 'ep11', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 2', desc: 'Marcado por uma condenação eterna, Xylo enfrenta um ciclo interminável de batalhas contra inimigos sem fim.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600807.us.archive.org/16/items/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia903107.us.archive.org/9/items/img-5529_202605/IMG_5529.jpeg' },
-      { id: 'ep12', name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 3', desc: 'Após concluir mais uma missão, o grupo segue em frente, sem saber quais desafios o futuro ainda reserva.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600403.us.archive.org/25/items/copy_282CD98A-5474-414C-998D-78D4F5706608/copy_282CD98A-5474-414C-998D-78D4F5706608.mp4', fileUrl: null, savedTime: 0, duration: 1740, watched: false, coverUrl: 'https://ia903208.us.archive.org/26/items/img-5539_202605/IMG_5539.png' }
+      { id: 'ep1', name: 'Sentenciado a ser Herói', skip:{ed:{start:3195,end:3285}}, desc: 'Xylo faz o possível para cumprir suas missões, mesmo sendo visto com desconfiança e rejeição por aqueles ao seu redor.', linkUrl: 'https://ia601405.us.archive.org/20/items/copy_6DA39432-AF85-4AE9-8769-B8DB419AF51A/copy_6DA39432-AF85-4AE9-8769-B8DB419AF51A.mp4', fileUrl: null, savedTime: 0, duration: 3480, watched: false, coverUrl: 'https://ia601602.us.archive.org/24/items/img-4179_202604/IMG_4179.jpeg' },
+      { id: 'ep2', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 1', desc: 'A missão leva o grupo até a mina de Zewan Gan, mas Xylo percebe que há algo além do objetivo aparente.', linkUrl: 'https://ia600409.us.archive.org/29/items/screen-recording-05-16-2026-03-38-39-1/ScreenRecording_05-16-2026%2003-38-39_1.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia902805.us.archive.org/20/items/img-4574_20260420/IMG_4574.jpeg' },
+      { id: 'ep3', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Sentença: Liderando a supressão no túnel Zewan Gan - Parte 2', desc: 'Presos no túnel, Xylo precisa garantir a sobrevivência do grupo, o que exige cooperação em meio ao perigo.', linkUrl: 'https://ia600903.us.archive.org/35/items/copy_8B2AFA00-CCD2-448E-92A3-69381470A448/copy_8B2AFA00-CCD2-448E-92A3-69381470A448.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601905.us.archive.org/4/items/img-4573_20260420/IMG_4573.jpeg' },
+      { id: 'ep4', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Ordem de espera: Fortaleza Mureed', desc: 'Ao chegar na Fortaleza Mureed durante um festival, o grupo encontra um raro momento de calma… que não dura muito.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600707.us.archive.org/22/items/screen-recording-05-17-2026-03-04-15-1/ScreenRecording_05-17-2026%2003-04-15_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia600105.us.archive.org/27/items/img-5470_202605/IMG_5470.png' },
+      { id: 'ep5', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 1', desc: 'Antes do confronto decisivo, Xylo e seus aliados se preparam sabendo que estão em clara desvantagem.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902908.us.archive.org/13/items/screen-recording-05-17-2026-03-54-11-1/ScreenRecording_05-17-2026%2003-54-11_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia902908.us.archive.org/22/items/img-5473_20260518/IMG_5473.jpeg' },
+      { id: 'ep6', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Sentença: Defender a Fortaleza Mureed da Praga Demoníaca, Parte 2', desc: 'A batalha começa e rapidamente foge do controle, trazendo consequências inesperadas mesmo com todo o planejamento.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia601007.us.archive.org/10/items/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F/copy_2A0ABFE5-29AD-44B2-9C18-1D65BEEBE44F.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601901.us.archive.org/23/items/img-5486_202605/IMG_5486.jpeg' },
+      { id: 'ep7', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Sentença: Camuflagem de férias na cidade portuária de loff', desc: 'Após se recuperar, Xylo percebe que uma nova ameaça silenciosa já está se espalhando pela cidade.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600801.us.archive.org/20/items/screen-recording-04-25-2026-05-10-33-1/ScreenRecording_04-25-2026%2005-10-33_1.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia902901.us.archive.org/5/items/img-5492_202605/IMG_5492.png' },
+      { id: 'ep8', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Ordem de espera: loff, a cidade portuária', desc: 'Depois de conterem um ataque surpresa, o grupo parte em busca de quem está por trás de tudo.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902900.us.archive.org/15/items/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357/copy_EB1AF7D2-6064-4EB7-BF01-448F7C450357.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia601501.us.archive.org/35/items/img-5499_202605/IMG_5499.jpeg' },
+      { id: 'ep9', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Punição: Investigação secreta na Concha de Sodrick', desc: 'Uma organização sombria entra em cena, revelando conexões perigosas dentro da própria guilda.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia902808.us.archive.org/7/items/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44/copy_81B09ECE-9555-425D-AD28-D1B4C4018A44.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia601607.us.archive.org/31/items/img-5514_202605/IMG_5514.jpeg' },
+      { id: 'ep10', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 1', desc: 'Um breve momento de paz surge, mas sinais indicam que outro confronto está prestes a acontecer.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600608.us.archive.org/2/items/copy_7251406C-67E2-4822-BBC9-736956365884/copy_7251406C-67E2-4822-BBC9-736956365884.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600504.us.archive.org/22/items/img-5522_20260519/IMG_5522.jpeg' },
+      { id: 'ep11', skip:{op:{start:90,end:180},ed:{start:1290,end:1380}}, name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 2', desc: 'Marcado por uma condenação eterna, Xylo enfrenta um ciclo interminável de batalhas contra inimigos sem fim.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600807.us.archive.org/16/items/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia903107.us.archive.org/9/items/img-5529_202605/IMG_5529.jpeg' },
+      { id: 'ep12', skip:{ed:{start:1320,end:1410}}, name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 3', desc: 'Após concluir mais uma missão, o grupo segue em frente, sem saber quais desafios o futuro ainda reserva.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600403.us.archive.org/25/items/copy_282CD98A-5474-414C-998D-78D4F5706608/copy_282CD98A-5474-414C-998D-78D4F5706608.mp4', fileUrl: null, savedTime: 0, duration: 1740, watched: false, coverUrl: 'https://ia903208.us.archive.org/26/items/img-5539_202605/IMG_5539.png' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -1240,6 +1247,8 @@ function showPlayerControls(keepAlive){
   overlay.style.opacity = '1';
   _ctrlVisible = true;
   _saveCtrlRects();
+  // Reaparecer skip btn se no intervalo
+  if(typeof checkSkipBtn === 'function') checkSkipBtn();
   if(!keepAlive){
     _ctrlTimeout = setTimeout(function(){
       overlay.style.transition = 'opacity 0.18s ease';
@@ -1256,12 +1265,11 @@ function hidePlayerControls(){
   if(!overlay) return;
   clearTimeout(_ctrlTimeout);
   _saveCtrlRects();
-  overlay.style.transition = 'opacity 0.18s ease';
   overlay.style.opacity = '0';
   setTimeout(function(){
     overlay.style.display = 'none';
     _ctrlVisible = false;
-  }, 180);
+  }, 250);
 }
 function togglePlayerControls(){
   if(_ctrlVisible) hidePlayerControls();
@@ -1319,11 +1327,11 @@ window.hidePlayerControls = hidePlayerControls;
 
       if(relX < leftZone){
         skipBack();
-        showPlayerControls();
+        if(_ctrlVisible) showPlayerControls(); // reseta timer se visível
         // se oculto: só animação, nada mais
       } else if(relX > rightZone){
         skipForward();
-        showPlayerControls();
+        if(_ctrlVisible) showPlayerControls();
       } else {
         // Centro → toggle play/pause sempre mostra controles
         togglePlay();
@@ -1467,7 +1475,7 @@ function saveSaved(){ lsSet(_profileKey(SAVED_KEY), savedItems); }
 function audioLabel(a){return a==='ld'?'Dub | Leg':a==='l'?'Leg':'Dub';}
 function formatProg(p){if(!p)return'';var pts=[];if(p.season)pts.push('T'+p.season);if(p.ep)pts.push('Ep '+p.ep);if(p.time)pts.push(p.time);return pts.join(' · ');}
 function sorted(list){return list.slice().sort(function(a,b){if(a.status===b.status)return a.name.localeCompare(b.name);return a.status==='watching'?-1:1;});}
-function fmtTime(s){if(!s||isNaN(s))return'00:00';var m=Math.floor(s/60),sec=Math.floor(s%60);return (m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;}
+function fmtTime(s){if(!s||isNaN(s))return'0:00';var m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
 function fmtMins(s){if(!s||isNaN(s))return'';return Math.round(s/60)+'m';}
 function newItem(name,aud){var hoje=new Date();var dataHoje=hoje.getFullYear()+'-'+(hoje.getMonth()+1).toString().padStart(2,'0')+'-'+hoje.getDate().toString().padStart(2,'0');return{id:Date.now().toString(),name:name,status:'watching',cat:'anime-serie',audio:aud||'d',progress:{},fav:false,rating:null,episodes:[],lastEp:-1,cover:'',dataLancamento:dataHoje};}
 
@@ -1548,7 +1556,6 @@ function mkPC(a,fn){
     '<div class="p-card-img">'+
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
-    (a.rating_age?'<img src="https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png" style="position:absolute;top:6px;left:6px;height:18px;width:auto;z-index:2;border-radius:2px;"/>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">'+
@@ -1589,11 +1596,11 @@ function mkCW(a){
   var minsLabel='';
   if(ep&&ep.duration&&ep.duration>0){
     if(ep.savedTime&&ep.savedTime>0){
-      var rem=Math.floor((ep.duration-ep.savedTime)/60);
-      minsLabel=rem>0?rem+'m restantes':'1m restantes';
+      var rem=Math.round((ep.duration-ep.savedTime)/60);
+      if(rem>0) minsLabel=rem+'m restantes';
     } else {
       var tot=Math.round(ep.duration/60);
-      if(tot>0) minsLabel=(ep.id==='ep1'&&ep.duration>=3479&&ep.duration<=3481)?'58m':tot+'m';
+      if(tot>0) minsLabel=tot+'m';
     }
   }
   return '<div class="cw-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){openPlayer(\''+a.id+'\','+targetIdx+')})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){openPlayer(\''+a.id+'\','+targetIdx+')})">' +
@@ -1605,7 +1612,6 @@ function mkCW(a){
             : '<div class="cw-thumb-emoji">⚔️</div>')
       ) +
       '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.92) 0%,rgba(8,8,15,.3) 55%,transparent 100%);pointer-events:none;"></div>' +
-      (a.rating_age?'<img src="https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png" style="position:absolute;top:6px;left:6px;height:18px;width:auto;z-index:3;border-radius:2px;"/>':'')+
       '<button ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.cw-card\'));" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this)" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this)" style="position:absolute;top:6px;right:6px;background:none;border:none;color:#fff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:1;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:2;">···</button>' +
       '<div class="cw-play-ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="8,6 26,16 8,26" fill="white"/></svg></div>' +
       (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
@@ -1863,8 +1869,7 @@ function setHeroCarouselItem(item){
     var audLabel=item.audio==='d'?'Dub':item.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=item.genres&&item.genres.length?' '+item.genres.join(', '):'';
     var diamond=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    var diamondLeft=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 6px 1px 0;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    var ratingAge=item.rating_age?'<img src="https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-right:6px;border-radius:2px;"/>':''; aud.innerHTML=ratingAge+diamondLeft+audLabel+diamond+genreStr;
+    aud.innerHTML=audLabel+diamond+genreStr;
   }
   var lbl=g('hero-play-label');
   if(lbl){
@@ -1974,8 +1979,7 @@ function openDetail(itemId){
     var audLabel=a.audio==='d'?'Dub':a.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=a.genres&&a.genres.length?' '+a.genres.join(', '):'';
     var diamond=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    var diamondLeft=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 6px 1px 0;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    var ratingAgeDetail=a.rating_age?'<img src="https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png" style="height:20px;width:auto;display:inline-block;vertical-align:middle;margin-right:6px;border-radius:2px;"/>':''; tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+ratingAgeDetail+diamondLeft+audLabel+diamond+genreStr+'</span>';
+    tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+audLabel+diamond+genreStr+'</span>';
   }
   // Descrição
   var dt=g('detail-desc-text');
@@ -2146,19 +2150,6 @@ document.addEventListener('click',function(e){
   }
 });
 
-function hideToast(){
-  var toast=g('toast-msg');
-  if(!toast)return;
-  clearTimeout(toast._timer);
-  toast.style.transition='opacity .22s ease,transform .28s cubic-bezier(.4,0,.6,1)';
-  toast.style.opacity='0';
-  toast.style.transform='translateY(20px)';
-  setTimeout(function(){
-    toast.style.display='none';
-    toast.style.transform='translateY(0px)';
-    toast.style.transition='opacity .22s ease,transform .22s ease';
-  },280);
-}
 function showToastDesfazer(text){
   var toast=g('toast-msg');
   if(!toast)return;
@@ -2175,32 +2166,13 @@ function showToastDesfazer(text){
     desfazerBtn.style.cssText='background:none;border:none;color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);flex-shrink:0;padding:0;';
     toast.appendChild(desfazerBtn);
   }
-  // Ação do desfazer
-  desfazerBtn.onclick=function(){
-    var a=items.find(function(x){return x.id===detailItemId;});
-    if(a){
-      a.episodes.forEach(function(e){e.watched=false;e.savedTime=0;});
-      a.lastEp=-1;
-      saveData();renderDetailEps();updateContinueBar();renderHome();
-    }
-    hideToast();
-  };
   desfazerBtn.style.display='block';
-  // Aparece de baixo pra cima
   toast.style.display='flex';
-  toast.style.transform='translateY(20px)';
-  toast.style.opacity='0';
-  toast.style.transition='none';
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      toast.style.transition='opacity .18s ease,transform .22s cubic-bezier(.22,.61,.36,1)';
-      toast.style.opacity='1';
-      toast.style.transform='translateY(0px)';
-    });
-  });
+  toast.style.opacity='1';
   clearTimeout(toast._timer);
   toast._timer=setTimeout(function(){
-    hideToast();
+    toast.style.opacity='0';
+    setTimeout(function(){toast.style.display='none';},250);
   },5000);
 }
 function preloadEpDurations(anime){
@@ -2254,12 +2226,11 @@ function renderDetailEps(){
       timeLabelColor='var(--blue)';
     } else if(ep.duration&&ep.duration>0){
       if(ep.savedTime&&ep.savedTime>1){
-        var rem=Math.floor((ep.duration-ep.savedTime)/60);
-        timeLabel=rem>0?rem+'m restantes':'1m restantes';
+        var rem=Math.round((ep.duration-ep.savedTime)/60);
+        timeLabel=rem>0?rem+'m restantes':'Assistido';
         timeLabelColor='var(--blue)';
       } else {
-        var totMins=Math.round(ep.duration/60);
-        timeLabel=(ep.id==='ep1'&&ep.duration>=3479&&ep.duration<=3481)?'58m':totMins+'m';
+        timeLabel=Math.round(ep.duration/60)+'m';
       }
     }
     return '<div class="ep-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){playEpFromDetail('+i+')})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){playEpFromDetail('+i+')})">' +
@@ -2283,7 +2254,6 @@ function renderDetailEps(){
         ) +
         (!isWatched && prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
         (!isWatched && timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
-        (a.rating_age?'<img src="https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png" style="position:absolute;top:6px;left:6px;height:16px;width:auto;z-index:3;border-radius:2px;"/>':'')+
       '</div>' +
       '<div class="ep-card-info">' +
         '<div class="ep-card-num-name">'+(i+1)+'. '+ep.name+'</div>' +
@@ -2547,24 +2517,12 @@ function showToast(text, icon){
   if(!toast) return;
   if(toastText) toastText.textContent = text;
   if(toastIcon) toastIcon.innerHTML = _toastCheckSVG;
-  // Esconde desfazer se estava visível
-  var desfazerBtn=g('toast-desfazer');
-  if(desfazerBtn) desfazerBtn.style.display='none';
-  // Aparece de baixo pra cima
-  toast.style.display='flex';
-  toast.style.transform='translateY(20px)';
-  toast.style.opacity='0';
-  toast.style.transition='none';
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      toast.style.transition='opacity .18s ease,transform .22s cubic-bezier(.22,.61,.36,1)';
-      toast.style.opacity='1';
-      toast.style.transform='translateY(0px)';
-    });
-  });
+  toast.style.display = 'flex';
+  toast.style.opacity = '1';
   clearTimeout(toast._timer);
   toast._timer = setTimeout(function(){
-    hideToast();
+    toast.style.opacity = '0';
+    setTimeout(function(){ toast.style.display = 'none'; }, 260);
   }, 2000);
 }
 window.showToast = showToast;
@@ -2714,7 +2672,7 @@ window.toggleFav=toggleFav;window.toggleExpand=toggleExpand;window.saveProgress2
 
 // ===== PLAYER =====
 function setPlayIcon(p){var btn=g('play-pause-btn');if(btn)btn.textContent=p?'⏸':'▶';setPlayIconOverlay(p);}
-function updateProgress(cur,dur){var pct=dur>0?(cur/dur)*100:0;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';var pr=g('progress-range');if(pr)pr.value=Math.round(pct*10);var tc=g('time-cur');if(tc){var _a=items.find(function(x){return x.id===playerItemId;});var _ep=_a&&_a.episodes&&_a.episodes[playerEpIdx];var _isEp1=_ep&&_ep.id==='ep1'&&dur>=3479&&dur<=3481;var _cur=_isEp1?Math.min(Math.ceil(cur),3480):cur;tc.textContent=fmtTime(_cur);}var tt=g('time-tot');if(tt){var a=items.find(function(x){return x.id===playerItemId;});var ep=a&&a.episodes&&a.episodes[playerEpIdx];tt.textContent=(ep&&ep.id==='ep1'&&dur>=3479&&dur<=3480)?'58:00':fmtTime(dur);}}
+function updateProgress(cur,dur){var pct=dur>0?(cur/dur)*100:0;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';var pr=g('progress-range');if(pr)pr.value=Math.round(pct*10);var tc=g('time-cur');if(tc)tc.textContent=fmtTime(cur);var tt=g('time-tot');if(tt)tt.textContent=fmtTime(dur);}
 function showLoading(){var ov=g('loading-overlay');if(ov)ov.classList.add('show');}
 function hideLoading(){var ov=g('loading-overlay');if(ov)ov.classList.remove('show');}
 function showNoFile(){if(vid)vid.style.display='none';var nf=g('no-file-msg');if(nf)nf.classList.add('show');var epl=g('player-ep-label');if(epl)epl.textContent='Selecione um episódio';updateProgress(0,0);setPlayIcon(false);}
@@ -2815,7 +2773,7 @@ function renderEpList(){
     var timeInfo='';
     if(ep.watched){timeInfo='Assistido';}
     else if(ep.duration&&ep.duration>0){
-      if(ep.savedTime&&ep.savedTime>0){var rem=Math.floor((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'1m restantes';}
+      if(ep.savedTime&&ep.savedTime>0){var rem=Math.round((ep.duration-ep.savedTime)/60);timeInfo=rem>0?rem+'m restantes':'Assistido';}
       else{timeInfo=Math.round(ep.duration/60)+'m';}
     }
     // Thumbnail
@@ -3095,7 +3053,7 @@ window.openLinkModal=openLinkModal;window.openLinkModalForEp=openLinkModalForEp;
 function loadEpisode(idx){
   var a=items.find(function(x){return x.id===playerItemId;});if(!a||!a.episodes||!a.episodes[idx])return;
   var ep=a.episodes[idx];playerEpIdx=idx;a.lastEp=idx;saveData();
-  _lastSavedTime=-1; _cwUpdated=false; // reset per-episode flags
+  _lastSavedTime=-1; _cwUpdated=false; _skipBtnVisible=false; _skipBtnDismissed=false; hideSkipBtn(); // reset per-episode flags
   // Atualiza Continue Assistindo e banner imediatamente
   renderContinueAssistindo();
   var _ha=items.find(function(x){return x.id===playerItemId;});
@@ -3139,7 +3097,7 @@ function loadEpisode(idx){
   renderEpList();
   renderNextEp();
 }
-function togglePlay(){if(!vid||!vid.src)return;if(vid.paused){vid.play().then(function(){setPlayIcon(true);}).catch(function(){});}else{vid.pause();setPlayIcon(false);}showPlayerControls();}
+function togglePlay(){if(!vid||!vid.src)return;if(vid.paused){vid.play().then(function(){setPlayIcon(true);}).catch(function(){});}else{vid.pause();setPlayIcon(false);}}
 function seekByClick(e){if(!vid||!vid.duration)return;var track=g('progress-track');if(!track)return;var rect=track.getBoundingClientRect();var pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));vid.currentTime=pct*vid.duration;}
 function onProgressInput(val){if(!vid||!vid.duration)return;isSeeking=true;var pct=val/10;var pf=g('progress-fill');if(pf)pf.style.width=pct+'%';var pt=g('progress-thumb');if(pt)pt.style.left=pct+'%';}
 function onProgressChange(val){if(!vid||!vid.duration)return;vid.currentTime=(val/10/100)*vid.duration;isSeeking=false;}
@@ -3224,8 +3182,71 @@ function showSkipFlash(direction, touchX){
     if(numFly.parentNode) numFly.parentNode.removeChild(numFly);
   }, 700);
 }
-function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');showPlayerControls();}}
-function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');showPlayerControls();}}
+function skipBack(){if(vid&&vid.src){vid.currentTime=Math.max(0,vid.currentTime-10);showSkipFlash('back');}}
+function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);showSkipFlash('forward');}}
+
+// ===== SISTEMA PULAR ABERTURA/CRÉDITOS =====
+var _skipBtnTimer = null;
+var _skipBtnVisible = false;
+
+function getSkipInfo(){
+  if(playerItemId===null||playerEpIdx<0) return null;
+  var a=items.find(function(x){return x.id===playerItemId;});
+  var ep=a&&a.episodes&&a.episodes[playerEpIdx];
+  return ep&&ep.skip?ep.skip:null;
+}
+
+function checkSkipBtn(){
+  if(!vid||!vid.src||!vid.duration) return;
+  var skip=getSkipInfo();
+  if(!skip) return;
+  var cur=vid.currentTime;
+  var type=null,skipTo=null;
+  if(skip.op&&cur>=skip.op.start&&cur<skip.op.end){ type='op'; skipTo=skip.op.end; }
+  else if(skip.ed&&cur>=skip.ed.start&&cur<skip.ed.end){ type='ed'; skipTo=skip.ed.end; }
+  if(type){
+    if(!_skipBtnVisible) showSkipBtn(type==='op'?'Pular Abertura':'Pular Créditos', skipTo);
+  } else {
+    if(_skipBtnVisible) hideSkipBtn();
+  }
+}
+
+function showSkipBtn(label, skipTo){
+  var wrap=g('skip-btn-wrap');
+  var lbl=g('skip-btn-label');
+  var btn=g('skip-btn');
+  if(!wrap||!lbl) return;
+  _skipBtnVisible=true;
+  lbl.textContent=label;
+  btn._skipTo=skipTo;
+  wrap.style.display='block';
+  clearTimeout(_skipBtnTimer);
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      wrap.style.transform='translateX(0%)';
+    });
+  });
+  _skipBtnTimer=setTimeout(function(){ hideSkipBtn(); },7000);
+}
+
+function hideSkipBtn(){
+  var wrap=g('skip-btn-wrap');
+  if(!wrap) return;
+  _skipBtnVisible=false;
+  clearTimeout(_skipBtnTimer);
+  wrap.style.transform='translateX(110%)';
+  setTimeout(function(){ if(!_skipBtnVisible) wrap.style.display='none'; },340);
+}
+
+function doSkip(){
+  var btn=g('skip-btn');
+  if(!btn||!vid) return;
+  vid.currentTime=btn._skipTo||0;
+  hideSkipBtn();
+  showPlayerControls();
+}
+window.doSkip=doSkip;
+window.checkSkipBtn=checkSkipBtn;
 
 window.togglePlay=togglePlay;window.seekByClick=seekByClick;window.onProgressInput=onProgressInput;window.onProgressChange=onProgressChange;window.onVolInput=onVolInput;window.skipBack=skipBack;window.skipForward=skipForward;
 function toggleFullscreen(){if(vid&&vid.webkitEnterFullscreen){vid.webkitEnterFullscreen();return;}var ov=g('player-overlay');if(!document.fullscreenElement&&!document.webkitFullscreenElement){if(ov&&ov.requestFullscreen)ov.requestFullscreen();else if(ov&&ov.webkitRequestFullscreen)ov.webkitRequestFullscreen();}else{if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}}
@@ -3246,16 +3267,7 @@ function saveCurrentProgress(){
 vid.addEventListener('timeupdate',function(){
   if(isSeeking||!vid.duration)return;
   updateProgress(vid.currentTime,vid.duration);
-  // Marcar EP1 como assistido a partir de 57:01
-  if(playerItemId&&playerEpIdx>=0){
-    var _aw=items.find(function(x){return x.id===playerItemId;});
-    var _ew=_aw&&_aw.episodes&&_aw.episodes[playerEpIdx];
-    if(_ew&&_ew.id==='ep1'&&!_ew.watched&&vid.currentTime>=3421){
-      _ew.watched=true;
-      _ew.savedTime=vid.duration;
-      saveData();
-    }
-  }
+  checkSkipBtn();
   // Update Continue Assistindo after 1 second of playback
   if(!_cwUpdated && vid.currentTime >= 1){
     _cwUpdated = true;
@@ -3288,10 +3300,6 @@ vid.addEventListener('play',function(){setPlayIcon(true);});
 vid.addEventListener('pause',function(){setPlayIcon(false);saveCurrentProgress();});
 vid.addEventListener('ended',function(){
   setPlayIcon(false);
-  // Força 58:00 no EP1 ao terminar
-  var _aEnd=items.find(function(x){return x.id===playerItemId;});
-  var _epEnd=_aEnd&&_aEnd.episodes&&_aEnd.episodes[playerEpIdx];
-  if(_epEnd&&_epEnd.id==='ep1'){var tc=g('time-cur');if(tc)tc.textContent='58:00';}
   if(playerItemId&&playerEpIdx>=0){
     var a=items.find(function(x){return x.id===playerItemId;});
     if(a&&a.episodes&&a.episodes[playerEpIdx]){
@@ -3347,11 +3355,6 @@ function openCardMenu(itemId, btn){
   var allWatched = a.episodes && a.episodes.length > 0 && a.episodes.every(function(ep){ return ep.watched; });
   if(assistidoBtn) assistidoBtn.textContent = allWatched ? 'Marcar como Não Assistido' : 'Marcado como Assistido';
 
-  // Atualizar label "Adicionar à Fila" / "Remover da Fila"
-  var filaBtn = g('ctx-lista');
-  var naFila = savedItems.some(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
-  if(filaBtn) filaBtn.textContent = naFila ? 'Remover da Fila' : 'Adicionar à Fila';
-
   // Todos os itens sempre visíveis
   var continuarBtn = g('ctx-continuar');
   var infosBtn = g('ctx-infos');
@@ -3401,19 +3404,6 @@ function openCardMenu(itemId, btn){
   menu.style.left = left + 'px';
   menu.style.top = top + 'px';
   overlay.style.display = 'block';
-
-  // Animação de entrada — sobe dos pontinhos
-  var _originY = menu.style.transformOrigin.indexOf('bottom') >= 0 ? 'bottom' : 'top';
-  menu.style.transition = 'none';
-  menu.style.opacity = '0';
-  menu.style.transform = 'scale(0.85) translateY(' + (_originY === 'bottom' ? '12px' : '-12px') + ')';
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      menu.style.transition = 'opacity 0.18s ease, transform 0.2s cubic-bezier(.22,.61,.36,1)';
-      menu.style.opacity = '1';
-      menu.style.transform = 'scale(1) translateY(0px)';
-    });
-  });
 
   // Touch: highlight + zoom dinâmico suave
   var _highlighted = null;
@@ -3479,12 +3469,11 @@ function openCardMenu(itemId, btn){
     if(_cardMenuClosing) return;
     _cardMenuClosing = true;
     menu.style.pointerEvents = 'none';
-    var _goDown = _cardToOrigin.indexOf('bottom') >= 0 ? '12px' : '-12px';
-    menu.style.transition = 'transform 0.18s cubic-bezier(.4,0,.6,1), opacity 0.18s ease';
+    menu.style.transition = 'transform 0.22s cubic-bezier(.4,0,.6,1), opacity 0.22s ease';
     menu.style.transformOrigin = _cardToOrigin;
-    menu.style.transform = 'scale(0.85) translateY(' + _goDown + ')';
+    menu.style.transform = 'scale(0)';
     menu.style.opacity = '0';
-    setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 190);
+    setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 230);
   };
 
   menu.ontouchend = function(e){
@@ -3513,24 +3502,11 @@ function openCardMenu(itemId, btn){
     e.preventDefault();
   };
 
-  // Click fallback — shrink close + ação
-  var _actionsMap = {
-    'ctx-lista': function(){ ctxLista(); },
-    'ctx-zentrilista': function(){ ctxZentrilista(); },
-    'ctx-assistir': function(){ ctxAssistir(); },
-    'ctx-assistido': function(){ ctxAssistido(); },
-    'ctx-fila': function(){ ctxFilaCW(); },
-    'ctx-zentrilista-cw': function(){ ctxZentrilista(); },
-    'ctx-continuar': function(){ ctxContinuar(); },
-    'ctx-infos': function(){ openDetail(_ctxItemId); },
-    'ctx-assistido-cw': function(){ ctxAssistido(); }
-  };
+  // Click fallback — shrink close
   var items_btns = menu.querySelectorAll('.card-ctx-item');
   items_btns.forEach(function(item){
     item.onclick = function(){
-      var action = _actionsMap[item.id];
-      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); if(action) action(); }); }
-      else { _closeCardMenuImmediate(); if(action) action(); }
+      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
     };
   });
 
@@ -3620,25 +3596,6 @@ function ctxAssistir(){
   if(!_ctxItemId) return;
   openDetail(_ctxItemId);
 }
-function ctxLista(){
-  if(!_ctxItemId) return;
-  var a = items.find(function(x){ return x.id === _ctxItemId; });
-  if(!a) return;
-  var idx = savedItems.findIndex(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
-  if(idx >= 0){
-    savedItems.splice(idx, 1);
-    saveSaved();
-    showToast('Removido da Fila', '✓');
-  } else {
-    savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
-    saveSaved();
-    showToast('Adicionado à Fila', '✓');
-  }
-  renderSalvos();
-}
-function ctxFilaCW(){
-  ctxLista();
-}
 function ctxZentrilista(){
   if(!_ctxItemId) return;
   var a = items.find(function(x){ return x.id === _ctxItemId; });
@@ -3678,7 +3635,7 @@ function ctxContinuar(){
   openPlayer(a.id, idx, 'home');
 }
 window.openCardMenu=openCardMenu;window.closeCardMenu=closeCardMenu;
-window.ctxAssistir=ctxAssistir;window.ctxZentrilista=ctxZentrilista;window.ctxFav=ctxFav;window.ctxAssistido=ctxAssistido;window.ctxContinuar=ctxContinuar;window.ctxLista=ctxLista;window.ctxFilaCW=ctxFilaCW;
+window.ctxAssistir=ctxAssistir;window.ctxZentrilista=ctxZentrilista;window.ctxFav=ctxFav;window.ctxAssistido=ctxAssistido;window.ctxContinuar=ctxContinuar;
 window.getSuggestion=async function(){
   var btn=g('suggest-btn');if(btn){btn.disabled=true;btn.textContent='Pensando...';}
   var rec=g('rec-results');if(rec)rec.innerHTML='<div class="loading-msg">🤖 Analisando sua lista...</div>';
