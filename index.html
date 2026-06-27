@@ -1247,8 +1247,11 @@ function showPlayerControls(keepAlive){
   overlay.style.opacity = '1';
   _ctrlVisible = true;
   _saveCtrlRects();
-  // Reaparecer skip btn se no intervalo
-  if(typeof checkSkipBtn === 'function') checkSkipBtn();
+  // Reaparecer skip btn se no intervalo e já sumiu pelos 7s
+  if(typeof checkSkipBtn === 'function'){
+    if(_skipBtnTimedOut) _skipBtnTimedOut = false;
+    checkSkipBtn();
+  }
   if(!keepAlive){
     _ctrlTimeout = setTimeout(function(){
       overlay.style.transition = 'opacity 0.18s ease';
@@ -3053,7 +3056,7 @@ window.openLinkModal=openLinkModal;window.openLinkModalForEp=openLinkModalForEp;
 function loadEpisode(idx){
   var a=items.find(function(x){return x.id===playerItemId;});if(!a||!a.episodes||!a.episodes[idx])return;
   var ep=a.episodes[idx];playerEpIdx=idx;a.lastEp=idx;saveData();
-  _lastSavedTime=-1; _cwUpdated=false; _skipBtnVisible=false; _skipBtnDismissed=false; hideSkipBtn(); // reset per-episode flags
+  _lastSavedTime=-1; _cwUpdated=false; _skipBtnVisible=false; _skipBtnDismissed=false; _skipBtnTimedOut=false; hideSkipBtn(); // reset per-episode flags
   // Atualiza Continue Assistindo e banner imediatamente
   renderContinueAssistindo();
   var _ha=items.find(function(x){return x.id===playerItemId;});
@@ -3188,6 +3191,7 @@ function skipForward(){if(vid&&vid.src&&vid.duration){vid.currentTime=Math.min(v
 // ===== SISTEMA PULAR ABERTURA/CRÉDITOS =====
 var _skipBtnTimer = null;
 var _skipBtnVisible = false;
+var _skipBtnTimedOut = false;
 
 function getSkipInfo(){
   if(playerItemId===null||playerEpIdx<0) return null;
@@ -3205,8 +3209,9 @@ function checkSkipBtn(){
   if(skip.op&&cur>=skip.op.start&&cur<skip.op.end){ type='op'; skipTo=skip.op.end; }
   else if(skip.ed&&cur>=skip.ed.start&&cur<skip.ed.end){ type='ed'; skipTo=skip.ed.end; }
   if(type){
-    if(!_skipBtnVisible) showSkipBtn(type==='op'?'Pular Abertura':'Pular Créditos', skipTo);
+    if(!_skipBtnVisible && !_skipBtnTimedOut) showSkipBtn(type==='op'?'Pular Abertura':'Pular Créditos', skipTo);
   } else {
+    _skipBtnTimedOut = false;
     if(_skipBtnVisible) hideSkipBtn();
   }
 }
@@ -3217,6 +3222,7 @@ function showSkipBtn(label, skipTo){
   var btn=g('skip-btn');
   if(!wrap||!lbl) return;
   _skipBtnVisible=true;
+  _skipBtnTimedOut=false;
   lbl.textContent=label;
   btn._skipTo=skipTo;
   wrap.style.display='block';
@@ -3226,7 +3232,10 @@ function showSkipBtn(label, skipTo){
       wrap.style.transform='translateX(0%)';
     });
   });
-  _skipBtnTimer=setTimeout(function(){ hideSkipBtn(); },7000);
+  _skipBtnTimer=setTimeout(function(){
+    _skipBtnTimedOut=true;
+    hideSkipBtn();
+  },7000);
 }
 
 function hideSkipBtn(){
