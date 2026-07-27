@@ -110,6 +110,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .p-card-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:.25;}
 .p-card-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:.3px;}
 .p-card-fav{position:absolute;top:6px;right:6px;font-size:14px;}
+.rating-badge{display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.85);color:#fff;font-size:10px;font-weight:800;padding:1px 5px;border-radius:3px;letter-spacing:.2px;vertical-align:middle;line-height:1.3;}
+.ep-thumb-badge{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.7);color:#fff;font-size:8px;font-weight:800;padding:1px 4px;border-radius:3px;letter-spacing:.2px;z-index:2;}
 .p-card-menu-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;font-weight:700;letter-spacing:1px;line-height:1;padding:2px 4px;flex-shrink:0;align-self:center;}
 .card-ctx-menu{position:fixed;z-index:9800;background:#1e1e30;border-radius:12px;min-width:220px;box-shadow:0 4px 28px rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.08);overflow:hidden;transform-origin:bottom right;will-change:transform;}
 .card-ctx-overlay{position:fixed;inset:0;z-index:9799;background:transparent;pointer-events:none;}
@@ -1144,6 +1146,7 @@ var DEFAULT_ANIMES = [
     trending: true,
     genres: ['Action', 'Drama', 'Fantasy'],
     rating_age: 'A16',
+    ratingImgUrl: 'https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png',
     content_rating: 'Linguagem Imprópria, Violência Fantasiosa',
     engagement: 92,
     dataLancamento: '2026-04-11',
@@ -1160,6 +1163,33 @@ var DEFAULT_ANIMES = [
       { id: 'ep10', skip:{op:{start:90,end:180}}, name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 1', desc: 'Um breve momento de paz surge, mas sinais indicam que outro confronto está prestes a acontecer.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600608.us.archive.org/2/items/copy_7251406C-67E2-4822-BBC9-736956365884/copy_7251406C-67E2-4822-BBC9-736956365884.mp4', fileUrl: null, savedTime: 0, duration: 1500, watched: false, coverUrl: 'https://ia600504.us.archive.org/22/items/img-5522_20260519/IMG_5522.jpeg' },
       { id: 'ep11', skip:{op:{start:137,end:227}}, name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 2', desc: 'Marcado por uma condenação eterna, Xylo enfrenta um ciclo interminável de batalhas contra inimigos sem fim.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600807.us.archive.org/16/items/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825/copy_2F9305F2-36C6-4C27-97C4-57AE242A0825.mp4', fileUrl: null, savedTime: 0, duration: 1440, watched: false, coverUrl: 'https://ia903107.us.archive.org/9/items/img-5529_202605/IMG_5529.jpeg' },
       { id: 'ep12', skip:{ed:{start:1700,end:1770}}, name: 'Punição: Evacuar e resgatar o povo do Porto de loff, Parte 3', desc: 'Após concluir mais uma missão, o grupo segue em frente, sem saber quais desafios o futuro ainda reserva.', content_rating: 'Drogas Lícitas, Linguagem Imprópria, Violência Fantasiosa', linkUrl: 'https://ia600403.us.archive.org/25/items/copy_282CD98A-5474-414C-998D-78D4F5706608/copy_282CD98A-5474-414C-998D-78D4F5706608.mp4', fileUrl: null, savedTime: 0, duration: 1740, watched: false, coverUrl: 'https://ia903208.us.archive.org/26/items/img-5539_202605/IMG_5539.png' }
+    ]
+  },
+  {
+    id: 'daemons-shadow-realm',
+    name: 'Daemons of the Shadow Realm',
+    status: 'watching',
+    cat: 'anime-serie',
+    audio: 'd',
+    fav: false,
+    rating: null,
+    progress: {},
+    cover: 'https://ia601901.us.archive.org/17/items/img-5586_202605/IMG_5586.jpeg',
+    bannerUrl: 'https://ia902809.us.archive.org/2/items/img-5598_202605/IMG_5598.jpeg',
+    detailImg: 'https://ia600504.us.archive.org/15/items/img-5596_202605/IMG_5596.jpeg',
+    logoUrl: 'https://archive.org/download/copy_FDA90A99-564D-4402-A6B5-1C5D321AB827/copy_FDA90A99-564D-4402-A6B5-1C5D321AB827.png',
+    description: 'Em uma vila isolada entre montanhas perigosas, Yuru vive como caçador ao lado de sua irmã gêmea Asa, levando uma vida simples e tranquila. Porém, tudo muda quando criaturas misteriosas começam a surgir após um estranho rugido ecoar pelos céus. Enquanto antigos segredos vêm à tona, os dois acabam envolvidos em um conflito sobrenatural ligado a poderes desconhecidos e entidades chamadas Daemons. Entre batalhas intensas e mistérios ocultos, o destino da vila começa a mudar para sempre.',
+    lastEp: -1,
+    views: 0,
+    trending: false,
+    genres: ['Action', 'Adventure', 'Supernatural', 'Shonen'],
+    rating_age: 'A16',
+    ratingImgUrl: 'https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png',
+    content_rating: 'Violência, Linguagem Imprópria',
+    engagement: 0,
+    dataLancamento: '2026-07-26',
+    episodes: [
+      { id: 'ep1', name: 'Asa e Yuru', skip:{ed:{start:1315,end:1420}}, desc: 'Em uma vila isolada nas montanhas, os gêmeos Asa e Yuru vivem como caçadores até que um estranho rugido ecoa pelos céus, dando início ao surgimento de criaturas misteriosas conhecidas como Daemons.', content_rating: 'Violência, Linguagem Imprópria', linkUrl: 'https://ia600401.us.archive.org/25/items/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510.mp4', fileUrl: null, savedTime: 0, duration: 1420, watched: false, coverUrl: 'https://ia600507.us.archive.org/28/items/img-5973_202607/IMG_5973.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -1558,6 +1588,7 @@ function mkPC(a,fn){
   return '<div class="p-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){'+fn+'})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){'+fn+'})">'+
     '<div class="p-card-img">'+
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
+    (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:16px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
@@ -1872,7 +1903,8 @@ function setHeroCarouselItem(item){
     var audLabel=item.audio==='d'?'Dub':item.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=item.genres&&item.genres.length?' '+item.genres.join(', '):'';
     var diamond=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    aud.innerHTML=audLabel+diamond+genreStr;
+    var ratingHtml=item.ratingImgUrl?'<img src="'+item.ratingImgUrl+'" style="height:15px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(item.rating_age?'<span class="rating-badge">'+item.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
+    aud.innerHTML=ratingHtml+audLabel+diamond+genreStr;
   }
   var lbl=g('hero-play-label');
   if(lbl){
@@ -1982,7 +2014,8 @@ function openDetail(itemId){
     var audLabel=a.audio==='d'?'Dub':a.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=a.genres&&a.genres.length?' '+a.genres.join(', '):'';
     var diamond=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+audLabel+diamond+genreStr+'</span>';
+    var ratingHtml=a.ratingImgUrl?'<img src="'+a.ratingImgUrl+'" style="height:15px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(a.rating_age?'<span class="rating-badge">'+a.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
+    tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+ratingHtml+audLabel+diamond+genreStr+'</span>';
   }
   // Descrição
   var dt=g('detail-desc-text');
@@ -2257,6 +2290,7 @@ function renderDetailEps(){
         ) +
         (!isWatched && prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
         (!isWatched && timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
+        (a.ratingImgUrl ? '<img class="ep-thumb-badge" src="'+a.ratingImgUrl+'" style="height:12px;width:auto;padding:0;background:none;border:none;"/>' : (a.rating_age ? '<div class="ep-thumb-badge">'+a.rating_age+'</div>' : '')) +
       '</div>' +
       '<div class="ep-card-info">' +
         '<div class="ep-card-num-name">'+(i+1)+'. '+ep.name+'</div>' +
@@ -2786,6 +2820,8 @@ function renderEpList(){
     } else {
       thumbHtml='<div class="ep-thumb-wrap"><div style="font-size:20px;opacity:.3;">🎬</div>';
     }
+    if(a.ratingImgUrl){thumbHtml+='<img class="ep-thumb-badge" src="'+a.ratingImgUrl+'" style="height:12px;width:auto;padding:0;background:none;border:none;"/>';}
+    else if(a.rating_age){thumbHtml+='<div class="ep-thumb-badge">'+a.rating_age+'</div>';}
     // Status overlay
     if(ep.watched){
       thumbHtml+='<div class="ep-thumb-status">↩ Assistido</div>';
