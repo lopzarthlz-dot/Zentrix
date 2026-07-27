@@ -1588,7 +1588,7 @@ function mkPC(a,fn){
   return '<div class="p-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){'+fn+'})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){'+fn+'})">'+
     '<div class="p-card-img">'+
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
-    (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:24px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
+    (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:13px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
@@ -1903,7 +1903,7 @@ function setHeroCarouselItem(item){
     var audLabel=item.audio==='d'?'Dub':item.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=item.genres&&item.genres.length?' '+item.genres.join(', '):'';
     var diamond=item.genres&&item.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    var ratingHtml=item.ratingImgUrl?'<img src="'+item.ratingImgUrl+'" style="height:22px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(item.rating_age?'<span class="rating-badge">'+item.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
+    var ratingHtml=item.ratingImgUrl?'<img src="'+item.ratingImgUrl+'" style="height:17px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(item.rating_age?'<span class="rating-badge">'+item.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
     aud.innerHTML=ratingHtml+audLabel+diamond+genreStr;
   }
   var lbl=g('hero-play-label');
@@ -2014,7 +2014,7 @@ function openDetail(itemId){
     var audLabel=a.audio==='d'?'Dub':a.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=a.genres&&a.genres.length?' '+a.genres.join(', '):'';
     var diamond=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    var ratingHtml=a.ratingImgUrl?'<img src="'+a.ratingImgUrl+'" style="height:22px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(a.rating_age?'<span class="rating-badge">'+a.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
+    var ratingHtml=a.ratingImgUrl?'<img src="'+a.ratingImgUrl+'" style="height:17px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(a.rating_age?'<span class="rating-badge">'+a.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
     tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+ratingHtml+audLabel+diamond+genreStr+'</span>';
   }
   // Descrição
@@ -2290,7 +2290,7 @@ function renderDetailEps(){
         ) +
         (!isWatched && prog>0 ? '<div class="ep-card-prog"><div class="ep-card-prog-fill" style="width:'+prog+'%"></div></div>' : '') +
         (!isWatched && timeLabel ? '<div class="ep-card-dur-badge">'+timeLabel+'</div>' : '') +
-        (a.ratingImgUrl ? '<img class="ep-thumb-badge" src="'+a.ratingImgUrl+'" style="height:18px;width:auto;padding:0;background:none;border:none;"/>' : (a.rating_age ? '<div class="ep-thumb-badge">'+a.rating_age+'</div>' : '')) +
+        (a.ratingImgUrl ? '<img class="ep-thumb-badge" src="'+a.ratingImgUrl+'" style="height:15px;width:auto;padding:0;background:none;border:none;"/>' : (a.rating_age ? '<div class="ep-thumb-badge">'+a.rating_age+'</div>' : '')) +
       '</div>' +
       '<div class="ep-card-info">' +
         '<div class="ep-card-num-name">'+(i+1)+'. '+ep.name+'</div>' +
@@ -2820,7 +2820,7 @@ function renderEpList(){
     } else {
       thumbHtml='<div class="ep-thumb-wrap"><div style="font-size:20px;opacity:.3;">🎬</div>';
     }
-    if(a.ratingImgUrl){thumbHtml+='<img class="ep-thumb-badge" src="'+a.ratingImgUrl+'" style="height:18px;width:auto;padding:0;background:none;border:none;"/>';}
+    if(a.ratingImgUrl){thumbHtml+='<img class="ep-thumb-badge" src="'+a.ratingImgUrl+'" style="height:15px;width:auto;padding:0;background:none;border:none;"/>';}
     else if(a.rating_age){thumbHtml+='<div class="ep-thumb-badge">'+a.rating_age+'</div>';}
     // Status overlay
     if(ep.watched){
