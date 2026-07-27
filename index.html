@@ -1588,7 +1588,7 @@ function mkPC(a,fn){
   return '<div class="p-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){'+fn+'})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){'+fn+'})">'+
     '<div class="p-card-img">'+
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
-    (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:13px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
+    (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:15px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
