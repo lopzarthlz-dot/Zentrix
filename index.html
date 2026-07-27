@@ -673,7 +673,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Gradient overlay -->
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.8) 35%, rgba(8,8,15,.2) 58%, transparent 100%);pointer-events:none;"></div>
       <!-- Content (texto/logo que faz fade) -->
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 78px 6px;">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 64px 6px;">
         <div id="hero-fade-content" style="transition:opacity .4s ease;opacity:1;">
         <!-- Logo com position absolute -->
         <img id="hero-logo-img" src="https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png"
@@ -695,7 +695,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div id="hero-preview-layer" style="position:absolute;inset:0;opacity:0;pointer-events:none;">
         <img id="hero-bg-img-prev" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
         <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.8) 35%, rgba(8,8,15,.2) 58%, transparent 100%);"></div>
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 78px 6px;">
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 64px 6px;">
           <img id="hero-logo-img-prev" style="position:absolute;object-fit:contain;object-position:left bottom;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
           <div style="display:flex;flex-direction:column;gap:1px;margin-bottom:8px;">
             <div id="hero-aud-prev" style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;padding-left:16px;"></div>
@@ -2038,12 +2038,26 @@ function initHeroCarousel(){
   _heroCarouselItems=watching.concat(others).slice(0,8);
   _heroCarouselIdx=0;
   if(_heroCarouselItems.length===0){g('hero-indicators')&&(g('hero-indicators').style.display='none');return;}
+  preloadHeroCarouselImages();
   setHeroCarouselItem(_heroCarouselItems[0]);
   renderHeroIndicators();
   // Loop sempre, mesmo com 1 anime
   _heroCarouselTimer=setTimeout(heroCarouselNext, HERO_DURATION);
   // Swipe
   initHeroSwipe();
+}
+// Pré-carrega banners e logos de todos os itens do carrossel do hero,
+// pra que na hora do swipe/troca as imagens já estejam prontas (sem "salto" de tamanho)
+var _heroPreloadedUrls={};
+function preloadHeroCarouselImages(){
+  _heroCarouselItems.forEach(function(item){
+    [item.bannerUrl, item.logoUrl].forEach(function(url){
+      if(!url || _heroPreloadedUrls[url]) return;
+      _heroPreloadedUrls[url]=true;
+      var img=new Image();
+      img.src=url;
+    });
+  });
 }
 function renderLista(){
   var list=items.slice();
