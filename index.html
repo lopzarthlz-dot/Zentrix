@@ -1174,7 +1174,7 @@ var DEFAULT_ANIMES = [
     fav: false,
     rating: null,
     progress: {},
-    cover: 'https://ia601901.us.archive.org/17/items/img-5586_202605/IMG_5586.jpeg',
+    cover: 'https://ia600504.us.archive.org/15/items/img-5596_202605/IMG_5596.jpeg',
     bannerUrl: 'https://ia902809.us.archive.org/2/items/img-5598_202605/IMG_5598.jpeg',
     detailImg: 'https://ia600504.us.archive.org/15/items/img-5596_202605/IMG_5596.jpeg',
     logoUrl: 'https://archive.org/download/copy_FDA90A99-564D-4402-A6B5-1C5D321AB827/copy_FDA90A99-564D-4402-A6B5-1C5D321AB827.png',
@@ -1588,7 +1588,7 @@ function mkPC(a,fn){
   return '<div class="p-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){'+fn+'})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){'+fn+'})">'+
     '<div class="p-card-img">'+
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
-    (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:17px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
+    (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:16px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
     (a.fav?'<div class="p-card-fav">⭐</div>':'')+
     '<div class="p-card-glow"></div></div>'+
     '<div class="p-card-name">'+a.name+'</div>'+
@@ -2015,7 +2015,7 @@ function openDetail(itemId){
     var audLabel=a.audio==='d'?'Dub':a.audio==='s'?'Leg':'Dub | Leg';
     var genreStr=a.genres&&a.genres.length?' '+a.genres.join(', '):'';
     var diamond=a.genres&&a.genres.length?'<svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'';
-    var ratingHtml=a.ratingImgUrl?'<img src="'+a.ratingImgUrl+'" style="height:22px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(a.rating_age?'<span class="rating-badge">'+a.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
+    var ratingHtml=a.ratingImgUrl?'<img src="'+a.ratingImgUrl+'" style="height:21px;width:auto;vertical-align:middle;"/><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':(a.rating_age?'<span class="rating-badge">'+a.rating_age+'</span><svg width="4" height="4" viewBox="0 0 6 6" style="display:inline-block;vertical-align:middle;margin:0 4px 1px 6px;"><polygon points="3,0 6,3 3,6 0,3" fill="rgba(255,255,255,0.5)"/></svg>':'');
     tr.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;">'+ratingHtml+audLabel+diamond+genreStr+'</span>';
   }
   // Descrição
