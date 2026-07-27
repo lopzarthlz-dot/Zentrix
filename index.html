@@ -1174,7 +1174,10 @@ var DEFAULT_ANIMES = [
     fav: false,
     rating: null,
     progress: {},
-    cover: 'https://ia600504.us.archive.org/15/items/img-5596_202605/IMG_5596.jpeg',
+    cover: 'https://ia903207.us.archive.org/10/items/img-5989_202607/IMG_5989.jpeg',
+    logoMaxWidth: 220,
+    logoMaxHeight: 100,
+    logoBottom: 168,
     bannerUrl: 'https://ia902809.us.archive.org/2/items/img-5598_202605/IMG_5598.jpeg',
     detailImg: 'https://ia600504.us.archive.org/15/items/img-5596_202605/IMG_5596.jpeg',
     logoUrl: 'https://archive.org/download/copy_FDA90A99-564D-4402-A6B5-1C5D321AB827/copy_FDA90A99-564D-4402-A6B5-1C5D321AB827.png',
@@ -1896,7 +1899,12 @@ function setHeroCarouselItem(item){
   var bgImg=g('hero-bg-img');
   if(bgImg&&item.bannerUrl) bgImg.src=item.bannerUrl;
   var logoImg=g('hero-logo-img');
-  if(logoImg&&item.logoUrl) logoImg.src=item.logoUrl;
+  if(logoImg&&item.logoUrl){
+    logoImg.src=item.logoUrl;
+    logoImg.style.maxWidth=(item.logoMaxWidth||280)+'px';
+    logoImg.style.maxHeight=(item.logoMaxHeight||130)+'px';
+    logoImg.style.bottom=(item.logoBottom!=null?item.logoBottom:148)+'px';
+  }
   var sub=g('hero-sub');
   if(sub) sub.textContent=item.description||'';
   var aud=g('hero-aud');
