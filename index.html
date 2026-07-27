@@ -672,8 +672,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         onclick="heroBannerTap();"></div>
       <!-- Gradient overlay -->
       <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.8) 35%, rgba(8,8,15,.2) 58%, transparent 100%);pointer-events:none;"></div>
-      <!-- Content -->
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 12px 6px;display:flex;flex-direction:column;justify-content:flex-end;">
+      <!-- Content (texto/logo que faz fade) -->
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 78px 6px;">
         <div id="hero-fade-content" style="transition:opacity .4s ease;opacity:1;">
         <!-- Logo com position absolute -->
         <img id="hero-logo-img" src="https://ia902906.us.archive.org/29/items/fe-352528-dc-6-b-4-c-3-c-84-d-5-dd-4-fe-96-f-37-d-7/FE352528-DC6B-4C3C-84D5-DD4FE96F37D7.png"
@@ -690,38 +690,38 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           ontouchend="if(!this._c)heroBannerTap();"
           onclick="heroBannerTap();"></div>
         </div>
-        <!-- Buttons -->
-        <div class="hero-btns">
-          <button class="detail-continue-btn" id="hero-play-btn" style="flex:1;transition:transform .15s,opacity .15s;"
-            ontouchstart="this.style.transform='scale(0.96)';this.style.opacity='0.85';this._startX=event.touches[0].clientX;this._startY=event.touches[0].clientY;this._cancelled=false;"
-            ontouchmove="var dx=Math.abs(event.touches[0].clientX-this._startX),dy=Math.abs(event.touches[0].clientY-this._startY);if(dx>20||dy>20){this._cancelled=true;this.style.transform='scale(1)';this.style.opacity='1';}"
-            ontouchend="this.style.transform='scale(1)';this.style.opacity='1';if(!this._cancelled){heroPlay();}"
-            ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
-            onclick="heroPlay()">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
-            <span id="hero-play-label" style="font-size:16px;font-weight:800;color:#000;">Continuar</span>
-          </button>
-          <button id="hero-bookmark-btn" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s,opacity .15s,background .2s,border-color .2s;"
-            ontouchstart="this.style.transform='scale(0.9)';this.style.opacity='0.8';this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
-            ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>20||Math.abs(event.touches[0].clientY-this._sy)>20){this._c=true;this.style.transform='scale(1)';this.style.opacity='1';}"
-            ontouchend="event.preventDefault();this.style.transform='scale(1)';this.style.opacity='1';if(!this._c){heroBookmark();}"
-            ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
-            onclick="heroBookmark()">
-            <svg id="hero-bookmark-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          </button>
-        </div>
       </div>
-      <!-- Camada de preview (próximo/anterior banner) para o drag interativo -->
+      <!-- Camada de preview (próximo/anterior banner) para o drag interativo - fica ABAIXO dos botões -->
       <div id="hero-preview-layer" style="position:absolute;inset:0;opacity:0;pointer-events:none;">
         <img id="hero-bg-img-prev" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
         <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,15,1) 0%, rgba(8,8,15,.8) 35%, rgba(8,8,15,.2) 58%, transparent 100%);"></div>
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 12px 6px;display:flex;flex-direction:column;justify-content:flex-end;">
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:0 16px 78px 6px;">
           <img id="hero-logo-img-prev" style="position:absolute;object-fit:contain;object-position:left bottom;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));">
           <div style="display:flex;flex-direction:column;gap:1px;margin-bottom:8px;">
             <div id="hero-aud-prev" style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.3px;padding-left:16px;"></div>
           </div>
           <div id="hero-sub-prev" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.45;margin-bottom:14px;padding-left:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
         </div>
+      </div>
+      <!-- Buttons (sempre por cima da preview, nunca ficam transparentes) -->
+      <div class="hero-btns" style="position:absolute;left:16px;right:16px;bottom:12px;z-index:5;">
+        <button class="detail-continue-btn" id="hero-play-btn" style="flex:1;transition:transform .15s,opacity .15s;"
+          ontouchstart="this.style.transform='scale(0.96)';this.style.opacity='0.85';this._startX=event.touches[0].clientX;this._startY=event.touches[0].clientY;this._cancelled=false;"
+          ontouchmove="var dx=Math.abs(event.touches[0].clientX-this._startX),dy=Math.abs(event.touches[0].clientY-this._startY);if(dx>20||dy>20){this._cancelled=true;this.style.transform='scale(1)';this.style.opacity='1';}"
+          ontouchend="this.style.transform='scale(1)';this.style.opacity='1';if(!this._cancelled){heroPlay();}"
+          ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
+          onclick="heroPlay()">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
+          <span id="hero-play-label" style="font-size:16px;font-weight:800;color:#000;">Continuar</span>
+        </button>
+        <button id="hero-bookmark-btn" style="width:52px;height:52px;border-radius:var(--radius);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s,opacity .15s,background .2s,border-color .2s;"
+          ontouchstart="this.style.transform='scale(0.9)';this.style.opacity='0.8';this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._c=false;"
+          ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>20||Math.abs(event.touches[0].clientY-this._sy)>20){this._c=true;this.style.transform='scale(1)';this.style.opacity='1';}"
+          ontouchend="event.preventDefault();this.style.transform='scale(1)';this.style.opacity='1';if(!this._c){heroBookmark();}"
+          ontouchcancel="this.style.transform='scale(1)';this.style.opacity='1';"
+          onclick="heroBookmark()">
+          <svg id="hero-bookmark-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
       </div>
     </div>
     <div class="hero-indicators" id="hero-indicators"></div>
