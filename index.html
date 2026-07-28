@@ -836,7 +836,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
         </svg>
       </button>
-      <div id="detail-dots-menu" style="display:none;position:absolute;top:48px;right:0;background:rgba(30,30,46,.97);border-radius:12px;overflow:hidden;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.6);z-index:100;opacity:0;transform:scale(0.9) translateY(-8px);transform-origin:top right;transition:opacity .2s ease,transform .2s ease;">
+      <div id="detail-dots-menu" style="display:none;position:absolute;top:48px;right:0;background:rgba(30,30,46,.97);border-radius:12px;overflow:hidden;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.6);z-index:100;opacity:0;transform:scale(0.9) translateY(-8px);transform-origin:top right;transition:opacity .28s cubic-bezier(.22,1,.36,1),transform .28s cubic-bezier(.22,1,.36,1);">
         <button onclick="detailMenuAssistido()" style="display:block;width:100%;text-align:left;padding:16px 20px;background:none;border:none;color:#fff;font-size:16px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;">Marcado como Assistido</button>
       </div>
     </div>
@@ -1208,7 +1208,7 @@ var DEFAULT_ANIMES = [
     engagement: 0,
     dataLancamento: '2026-07-26',
     episodes: [
-      { id: 'ep1', name: 'Asa e Yuru', skip:{ed:{start:1315,end:1420}}, desc: 'Em uma vila isolada nas montanhas, os gêmeos Asa e Yuru vivem como caçadores até que um estranho rugido ecoa pelos céus, dando início ao surgimento de criaturas misteriosas conhecidas como Daemons.', content_rating: 'Violência, Linguagem Imprópria', linkUrl: 'https://ia600401.us.archive.org/25/items/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510.mp4', fileUrl: null, savedTime: 0, duration: 1420, watched: false, coverUrl: 'https://ia600507.us.archive.org/28/items/img-5973_202607/IMG_5973.jpeg' }
+      { id: 'ep1', name: 'Asa e Yuru', skip:{ed:{start:1315,end:1420}}, desc: 'Em um mundo onde humanos formam laços com poderosos Daemons, os irmãos gêmeos Yuru e Asa carregam um destino capaz de mudar o futuro. Separados ainda crianças e sem conhecer a verdade sobre suas origens, eles seguem caminhos diferentes enquanto forças ocultas começam a agir. Para desvendar os mistérios de seu passado e enfrentar a ameaça que se aproxima, os dois precisarão encontrar um ao outro antes que seja tarde demais.', content_rating: 'Violência, Linguagem Imprópria', linkUrl: 'https://ia600401.us.archive.org/25/items/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510.mp4', fileUrl: null, savedTime: 0, duration: 1420, watched: false, coverUrl: 'https://ia600507.us.archive.org/28/items/img-5973_202607/IMG_5973.jpeg' }
     ]
   }
   // NOVOS ANIMES AQUI EMBAIXO
@@ -1868,6 +1868,21 @@ function renderHeroIndicators(){
 }
 
 var HERO_FADE_MS=380;
+var _heroTimerStartedAt=0, _heroTimerDuration=HERO_DURATION, _heroTimerRemaining=HERO_DURATION;
+function startHeroTimer(ms){
+  clearTimeout(_heroCarouselTimer);
+  _heroTimerStartedAt=Date.now();
+  _heroTimerDuration=ms;
+  _heroCarouselTimer=setTimeout(heroCarouselNext, ms);
+}
+function pauseHeroTimer(){
+  clearTimeout(_heroCarouselTimer);
+  var elapsed=Date.now()-_heroTimerStartedAt;
+  _heroTimerRemaining=Math.max(_heroTimerDuration-elapsed, 500);
+}
+function resumeHeroTimer(){
+  startHeroTimer(_heroTimerRemaining);
+}
 function heroCarouselGoTo(idx){
   clearTimeout(_heroCarouselTimer);
   var bg=g('hero-bg-img'), fadeContent=g('hero-fade-content');
@@ -1880,7 +1895,7 @@ function heroCarouselGoTo(idx){
     if(bg) bg.style.opacity='1';
     if(fadeContent) fadeContent.style.opacity='1';
   }, HERO_FADE_MS);
-  _heroCarouselTimer=setTimeout(heroCarouselNext, HERO_DURATION);
+  startHeroTimer(HERO_DURATION);
 }
 
 function heroCarouselNext(){
@@ -1939,7 +1954,7 @@ function initHeroSwipe(){
     startX=e.touches[0].clientX;
     startY=e.touches[0].clientY;
     moved=false;dragging=false;dir=0;targetIdx=-1;
-    clearTimeout(_heroCarouselTimer);
+    pauseHeroTimer();
   },{passive:true});
   banner.addEventListener('touchmove',function(e){
     var dx=e.touches[0].clientX-startX;
@@ -1960,7 +1975,7 @@ function initHeroSwipe(){
   },{passive:true});
   banner.addEventListener('touchend',function(e){
     if(!dragging){
-      _heroCarouselTimer=setTimeout(heroCarouselNext,HERO_DURATION);
+      resumeHeroTimer();
       return;
     }
     dragging=false;
@@ -1974,18 +1989,18 @@ function initHeroSwipe(){
         setHeroCarouselItem(_heroCarouselItems[targetIdx]);
         renderHeroIndicators();
         setPreviewOpacity(0,false);
-        _heroCarouselTimer=setTimeout(heroCarouselNext,HERO_DURATION);
+        startHeroTimer(HERO_DURATION);
       },280);
     } else {
-      // Não arrastou o suficiente: volta pro banner atual
+      // Não arrastou o suficiente: volta pro banner atual (retoma de onde parou, sem resetar)
       setPreviewOpacity(0,true);
-      _heroCarouselTimer=setTimeout(heroCarouselNext,HERO_DURATION);
+      resumeHeroTimer();
     }
   },{passive:true});
   banner.addEventListener('touchcancel',function(){
     dragging=false;
     setPreviewOpacity(0,true);
-    _heroCarouselTimer=setTimeout(heroCarouselNext,HERO_DURATION);
+    resumeHeroTimer();
   },{passive:true});
 }
 
@@ -2041,7 +2056,7 @@ function initHeroCarousel(){
   setHeroCarouselItem(_heroCarouselItems[0]);
   renderHeroIndicators();
   // Loop sempre, mesmo com 1 anime
-  _heroCarouselTimer=setTimeout(heroCarouselNext, HERO_DURATION);
+  startHeroTimer(HERO_DURATION);
   // Swipe
   initHeroSwipe();
 }
@@ -2302,9 +2317,9 @@ function toggleDetailMenu(){
   if(!menu)return;
   if(menu._open){
     menu.style.opacity='0';
-    menu.style.transform='scale(0.9) translateY(-8px)';
+    menu.style.transform='scale(0.85) translateY(-8px)';
     if(btn) btn.style.opacity='1';
-    setTimeout(function(){menu.style.display='none';menu._open=false;},200);
+    setTimeout(function(){menu.style.display='none';menu._open=false;},280);
   } else {
     menu.style.display='block';
     menu._open=true;
@@ -2317,9 +2332,9 @@ function closeDetailMenu(){
   var btn=g('detail-dots-btn');
   if(!menu||!menu._open)return;
   menu.style.opacity='0';
-  menu.style.transform='scale(0.9) translateY(-8px)';
+  menu.style.transform='scale(0.85) translateY(-8px)';
   if(btn) btn.style.opacity='1';
-  setTimeout(function(){menu.style.display='none';menu._open=false;},200);
+  setTimeout(function(){menu.style.display='none';menu._open=false;},280);
 }
 function detailMenuContinue(){
   closeDetailMenu();
@@ -2589,7 +2604,7 @@ function openEpMenu(idx, btn){
     _epMenuClosing = true;
     // Block further touch interactions immediately
     popover.style.pointerEvents = 'none';
-    popover.style.transition = 'transform 0.22s cubic-bezier(.4,0,.6,1), opacity 0.22s ease';
+    popover.style.transition = 'transform 0.32s cubic-bezier(.22,1,.36,1), opacity 0.26s ease-out';
     popover.style.transformOrigin = _toOrigin;
     popover.style.transform = 'scale(0)';
     popover.style.opacity = '0';
@@ -2597,7 +2612,7 @@ function openEpMenu(idx, btn){
       popover.style.transition = '';
       _epMenuClosing = false;
       if(cb) cb();
-    }, 230);
+    }, 320);
   };
 
   var _epHl=null, _epRaf=null;
@@ -3673,11 +3688,11 @@ function openCardMenu(itemId, btn){
     if(_cardMenuClosing) return;
     _cardMenuClosing = true;
     menu.style.pointerEvents = 'none';
-    menu.style.transition = 'transform 0.22s cubic-bezier(.4,0,.6,1), opacity 0.22s ease';
+    menu.style.transition = 'transform 0.32s cubic-bezier(.22,1,.36,1), opacity 0.26s ease-out';
     menu.style.transformOrigin = _cardToOrigin;
     menu.style.transform = 'scale(0)';
     menu.style.opacity = '0';
-    setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 230);
+    setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 320);
   };
 
   menu.ontouchend = function(e){
