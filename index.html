@@ -3293,9 +3293,9 @@ function fitEpDescToLines(el, fullText, maxLines){
   el.style.display='block';
   el.style.overflow='visible';
   el.style.webkitLineClamp='unset';
-  el.textContent=fullText;
   var lineHeight=parseFloat(getComputedStyle(el).lineHeight)||19;
   var maxHeight=lineHeight*maxLines+2;
+  el.textContent=fullText+' Saiba Mais';
   if(el.scrollHeight<=maxHeight){
     return {truncated:false, text:fullText};
   }
@@ -3334,21 +3334,16 @@ function loadEpisode(idx){
       descWrap.style.display='block';
       if(descShort){
         var fit=fitEpDescToLines(descShort, ep.desc, 3);
-        if(fit.truncated){
-          descShort.textContent='';
-          descShort.appendChild(document.createTextNode(fit.text+'... '));
-          var saibaSpan=document.createElement('span');
-          saibaSpan.textContent='Saiba Mais';
-          saibaSpan.style.color='var(--blue)';
-          saibaSpan.style.fontWeight='600';
-          saibaSpan.style.cursor='pointer';
-          saibaSpan.onclick=toggleEpDesc;
-          descShort.appendChild(saibaSpan);
-          descShort.style.overflow='hidden';
-        } else {
-          descShort.textContent=fit.text;
-          descShort.style.overflow='visible';
-        }
+        descShort.textContent='';
+        descShort.appendChild(document.createTextNode(fit.text+(fit.truncated?'... ':' ')));
+        var saibaSpan=document.createElement('span');
+        saibaSpan.textContent='Saiba Mais';
+        saibaSpan.style.color='var(--blue)';
+        saibaSpan.style.fontWeight='600';
+        saibaSpan.style.cursor='pointer';
+        saibaSpan.onclick=toggleEpDesc;
+        descShort.appendChild(saibaSpan);
+        descShort.style.overflow='hidden';
       }
       if(descFull) descFull.textContent=ep.desc;
       if(ratingAge) ratingAge.textContent=a.rating_age||'';
