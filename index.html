@@ -1907,8 +1907,7 @@ function preparePreviewItem(targetIdx){
   var logoPrev=g('hero-logo-img-prev');
   if(logoPrev){
     logoPrev.src=item.logoUrl||'';
-    logoPrev.style.maxWidth=(item.logoMaxWidth||280)+'px';
-    logoPrev.style.maxHeight=(item.logoMaxHeight||130)+'px';
+    applyLogoSize(logoPrev,item);
     logoPrev.style.bottom=(item.logoBottom!=null?item.logoBottom:148)+'px';
     logoPrev.style.left=(item.logoLeft!=null?item.logoLeft:-14)+'px';
   }
@@ -1998,8 +1997,7 @@ function setHeroCarouselItem(item){
   var logoImg=g('hero-logo-img');
   if(logoImg&&item.logoUrl){
     logoImg.src=item.logoUrl;
-    logoImg.style.maxWidth=(item.logoMaxWidth||280)+'px';
-    logoImg.style.maxHeight=(item.logoMaxHeight||130)+'px';
+    applyLogoSize(logoImg,item);
     logoImg.style.bottom=(item.logoBottom!=null?item.logoBottom:148)+'px';
     logoImg.style.left=(item.logoLeft!=null?item.logoLeft:-14)+'px';
   }
@@ -2050,9 +2048,40 @@ function initHeroCarousel(){
 // Pré-carrega banners e logos de todos os itens do carrossel do hero,
 // pra que na hora do swipe/troca as imagens já estejam prontas (sem "salto" de tamanho)
 var _heroPreloadedUrls={};
+var _heroLogoDims={}; // url -> {w,h} tamanho real calculado (sem "chute" do navegador)
+function measureAndCacheLogo(item){
+  if(!item.logoUrl || _heroLogoDims[item.logoUrl]) return;
+  var probe=new Image();
+  probe.onload=function(){
+    var nw=probe.naturalWidth, nh=probe.naturalHeight;
+    if(!nw||!nh) return;
+    var maxW=item.logoMaxWidth||280, maxH=item.logoMaxHeight||130;
+    var scale=Math.min(maxW/nw, maxH/nh);
+    _heroLogoDims[item.logoUrl]={w:Math.round(nw*scale), h:Math.round(nh*scale)};
+  };
+  probe.src=item.logoUrl;
+}
+function applyLogoSize(imgEl,item){
+  if(!imgEl) return;
+  var dims=_heroLogoDims[item.logoUrl];
+  if(dims){
+    // Tamanho real já medido: aplica direto, sem max-width/max-height (sem chute)
+    imgEl.style.width=dims.w+'px';
+    imgEl.style.height=dims.h+'px';
+    imgEl.style.maxWidth='none';
+    imgEl.style.maxHeight='none';
+  } else {
+    // Ainda não mediu (primeiríssima vez): usa o comportamento antigo como fallback
+    imgEl.style.width='';
+    imgEl.style.height='';
+    imgEl.style.maxWidth=(item.logoMaxWidth||280)+'px';
+    imgEl.style.maxHeight=(item.logoMaxHeight||130)+'px';
+  }
+}
 function preloadHeroCarouselImages(){
   var rack=g('hero-image-preload-rack');
   _heroCarouselItems.forEach(function(item){
+    measureAndCacheLogo(item);
     [item.bannerUrl, item.logoUrl].forEach(function(url){
       if(!url || _heroPreloadedUrls[url]) return;
       _heroPreloadedUrls[url]=true;
