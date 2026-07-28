@@ -1465,6 +1465,7 @@ function loadData(){
     if(p.rating !== undefined) a.rating = p.rating;
     if(p.status) a.status = p.status;
     if(p.progress) a.progress = p.progress;
+    if(p.lastWatchedAt) a.lastWatchedAt = p.lastWatchedAt;
     if(p.episodes){
       a.episodes = anime.episodes.map(function(ep){
         var ep2 = JSON.parse(JSON.stringify(ep));
@@ -1507,7 +1508,7 @@ function saveProgress(){
         epProg[ep.id]={savedTime:ep.savedTime||0,duration:ep.duration||0,watched:ep.watched||false};
       }
     });
-    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg};
+    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0};
   });
   lsSet(_profileKey(PROG_KEY), prog);
 }
@@ -1714,6 +1715,7 @@ function renderContinueAssistindo(){
     if(!hasUnwatched) return false;
     return a.lastEp>=0 || a.episodes.some(function(ep){ return ep.savedTime&&ep.savedTime>0; });
   });
+  cwList.sort(function(x,y){ return (y.lastWatchedAt||0)-(x.lastWatchedAt||0); });
   var sec=g('sec-cw'), row=g('cw-row');
   if(!sec||!row) return;
   if(cwList.length){
@@ -1754,6 +1756,7 @@ function renderHome(){
     // Só aparece se já abriu algum ep
     return a.lastEp>=0 || a.episodes.some(function(ep){ return ep.savedTime&&ep.savedTime>0; });
   });
+  cwList.sort(function(x,y){ return (y.lastWatchedAt||0)-(x.lastWatchedAt||0); });
   showSec('sec-cw','cw-row',cwList,mkCW);
 
   // NOVOS LANÇAMENTOS: only items released in last 7 days
@@ -2913,6 +2916,8 @@ function openPlayer(itemId,epIdx,origin){
   _playerOrigin = origin || 'home';
   playerItemId=itemId;
   var a=items.find(function(x){return x.id===itemId;});if(!a)return;
+  a.lastWatchedAt=Date.now(); // usado pra ordenar "Continue Assistindo" pelo mais recente
+  saveProgress();
   var pt=g('player-title');if(pt)pt.textContent=a.name;
   var ov=g('player-overlay');if(ov)ov.classList.add('active');
   document.body.style.overflow='hidden';
@@ -3282,10 +3287,30 @@ function toggleEpDesc(){
   }
 }
 window.toggleEpDesc=toggleEpDesc;
+// Trunca o texto pra caber em no máximo `maxLines` linhas, medindo a altura real renderizada
+// (mais confiável que depender só do -webkit-line-clamp, que pode falhar em certos contextos)
+function fitEpDescToLines(el, fullText, maxLines){
+  el.style.display='block';
+  el.style.overflow='visible';
+  el.style.webkitLineClamp='unset';
+  el.textContent=fullText;
+  var lineHeight=parseFloat(getComputedStyle(el).lineHeight)||19;
+  var maxHeight=lineHeight*maxLines+2;
+  if(el.scrollHeight<=maxHeight){
+    return {truncated:false, text:fullText};
+  }
+  var lo=0, hi=fullText.length, best=0;
+  while(lo<=hi){
+    var mid=(lo+hi)>>1;
+    el.textContent=fullText.slice(0,mid).trim()+'... Saiba Mais';
+    if(el.scrollHeight<=maxHeight){ best=mid; lo=mid+1; } else { hi=mid-1; }
+  }
+  return {truncated:true, text:fullText.slice(0,best).trim()};
+}
 window.openLinkModal=openLinkModal;window.openLinkModalForEp=openLinkModalForEp;window.closeLinkModal=closeLinkModal;window.submitLinkModal=submitLinkModal;
 function loadEpisode(idx){
   var a=items.find(function(x){return x.id===playerItemId;});if(!a||!a.episodes||!a.episodes[idx])return;
-  var ep=a.episodes[idx];playerEpIdx=idx;a.lastEp=idx;saveData();
+  var ep=a.episodes[idx];playerEpIdx=idx;a.lastEp=idx;a.lastWatchedAt=Date.now();saveData();
   _lastSavedTime=-1; _cwUpdated=false; _skipBtnVisible=false; _skipBtnDismissed=false; _skipBtnTimedOut=false; hideSkipBtn(); // reset per-episode flags
   // Atualiza Continue Assistindo e banner imediatamente
   renderContinueAssistindo();
@@ -3307,7 +3332,24 @@ function loadEpisode(idx){
   if(descWrap){
     if(ep.desc){
       descWrap.style.display='block';
-      if(descShort) descShort.innerHTML=ep.desc+'<span style="color:rgba(255,255,255,.7);"> ... </span><span style="color:var(--blue);font-weight:600;">Saiba Mais</span>';
+      if(descShort){
+        var fit=fitEpDescToLines(descShort, ep.desc, 3);
+        if(fit.truncated){
+          descShort.textContent='';
+          descShort.appendChild(document.createTextNode(fit.text+'... '));
+          var saibaSpan=document.createElement('span');
+          saibaSpan.textContent='Saiba Mais';
+          saibaSpan.style.color='var(--blue)';
+          saibaSpan.style.fontWeight='600';
+          saibaSpan.style.cursor='pointer';
+          saibaSpan.onclick=toggleEpDesc;
+          descShort.appendChild(saibaSpan);
+          descShort.style.overflow='hidden';
+        } else {
+          descShort.textContent=fit.text;
+          descShort.style.overflow='visible';
+        }
+      }
       if(descFull) descFull.textContent=ep.desc;
       if(ratingAge) ratingAge.textContent=a.rating_age||'';
       if(contentRating) contentRating.textContent=ep.content_rating||a.content_rating||'';
