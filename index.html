@@ -1059,7 +1059,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div id="player-ep-desc-expanded" style="display:none;overflow:hidden;">
         <div id="player-ep-desc-full" style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;margin-top:2px;"></div>
         <div style="margin-top:14px;">
-          <div style="font-size:12px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:4px;">Classificação de Conteúdo</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:4px;">Avisos de Conteúdo</div>
           <div id="player-ep-rating-age" style="font-size:13px;color:rgba(255,255,255,.7);font-weight:700;"></div>
           <div id="player-ep-content-rating" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;"></div>
         </div>
@@ -1210,8 +1210,35 @@ var DEFAULT_ANIMES = [
     episodes: [
       { id: 'ep1', name: 'Asa e Yuru', skip:{ed:{start:1315,end:1420}}, desc: 'Em um mundo onde humanos formam laços com poderosos Daemons, os irmãos gêmeos Yuru e Asa carregam um destino capaz de mudar o futuro. Separados ainda crianças e sem conhecer a verdade sobre suas origens, eles seguem caminhos diferentes enquanto forças ocultas começam a agir. Para desvendar os mistérios de seu passado e enfrentar a ameaça que se aproxima, os dois precisarão encontrar um ao outro antes que seja tarde demais.', content_rating: 'Violência, Linguagem Imprópria', linkUrl: 'https://ia600401.us.archive.org/25/items/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510.mp4', fileUrl: null, savedTime: 0, duration: 1420, watched: false, coverUrl: 'https://ia600507.us.archive.org/28/items/img-5973_202607/IMG_5973.jpeg' }
     ]
-  }
+  },
   // NOVOS ANIMES AQUI EMBAIXO
+  {
+    id: 'mob-psycho-100',
+    name: 'Mob Psycho 100',
+    status: 'watching',
+    cat: 'anime-serie',
+    audio: 'd',
+    fav: false,
+    rating: null,
+    progress: {},
+    cover: 'https://ia601404.us.archive.org/25/items/img-6018_202607/IMG_6018.jpeg',
+    bannerUrl: 'https://ia601505.us.archive.org/18/items/img-6021_202607/IMG_6021.jpeg',
+    detailImg: 'https://ia600509.us.archive.org/0/items/9782-a-6-ed-dd-2-a-4600-9-a-49-16-f-11636-a-1-eb/9782A6ED-DD2A-4600-9A49-16F11636A1EB.png',
+    logoUrl: 'https://ia600607.us.archive.org/26/items/e-46-f-843-a-1-a-8-d-42-fc-84-d-8-1-b-1-b-3-e-06-d-568/E46F843A-1A8D-42FC-84D8-1B1B3E06D568.png',
+    description: 'Shigeo Kageyama, ou simplesmente Mob, é um garoto aparentemente comum que esconde um imenso poder psíquico. Ao lado de seu mentor, Reigen Arataka, ele enfrenta espíritos malignos e desafios sobrenaturais enquanto tenta viver como um adolescente normal. Porém, quanto mais reprime suas emoções, mais se aproxima do momento em que seu verdadeiro poder será despertado.',
+    lastEp: -1,
+    views: 0,
+    trending: false,
+    genres: ['Action', 'Comedy', 'Fantasy', 'Supernatural', 'Shonen'],
+    rating_age: 'A14',
+    ratingImgUrl: 'https://ia600108.us.archive.org/26/items/img-6025_202607/IMG_6025.png',
+    content_rating: 'Violência, Linguagem Imprópria, Nudez, Conteúdo Sexual, Uso de Drogas Lícitas, Temas Sensíveis',
+    engagement: 0,
+    dataLancamento: '2026-07-28',
+    episodes: [
+      { id: 'ep1', name: 'Episódio 1', skip:{op:{start:0,end:90},ed:{start:1345,end:1449}}, desc: 'Shigeo Kageyama, conhecido como Mob, é um estudante do ensino fundamental com poderes psíquicos extraordinários. Enquanto trabalha para o autoproclamado médium Reigen Arataka, ele tenta levar uma vida comum, usando suas habilidades para enfrentar espíritos e fenômenos sobrenaturais. Mas controlar um poder tão grande pode ser mais difícil do que parece.', content_rating: 'Violência, Linguagem Imprópria, Nudez, Conteúdo Sexual, Uso de Drogas Lícitas, Temas Sensíveis', linkUrl: 'https://ia601802.us.archive.org/31/items/mob-psycho-100-episodio-1-dublado-you-tube-720p/Mob%20Psycho%20100%20-%20Episo%CC%81dio%201%20%28Dublado%29%20-%20YouTube%20%28720p%29.mp4', fileUrl: null, savedTime: 0, duration: 1449, watched: false, coverUrl: 'https://ia601803.us.archive.org/1/items/img-6042_202607/IMG_6042.jpeg' }
+    ]
+  }
 ];
 
 // ===== STORAGE =====
@@ -4865,7 +4892,7 @@ console.log('Zentrix OK!');
     <div id="more-details-title" style="font-size:24px;font-weight:800;color:#fff;margin-bottom:20px;line-height:1.2;"></div>
     <div id="more-details-desc" style="font-size:15px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:32px;"></div>
     <div style="margin-bottom:24px;">
-      <div style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;">Classificação de Conteúdo</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;">Avisos de Conteúdo</div>
       <div id="more-details-rating" style="font-size:15px;color:rgba(255,255,255,.85);line-height:1.6;"></div>
     </div>
     <div style="margin-bottom:24px;">
