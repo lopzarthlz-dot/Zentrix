@@ -858,7 +858,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="detail-desc-text" id="detail-desc-text" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
       <button class="detail-more-btn" id="detail-more-btn" onclick="openMoreDetails()">Mais Detalhes</button>
     </div>
-    <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><span class="season-arrow">▼</span> Season 1</div></div>
+    <div class="season-header" onclick="openSeasonPicker()" style="cursor:pointer;"><div class="season-label"><span class="season-arrow">▼</span> <span id="detail-season-label">Season 1</span></div></div>
     <div style="padding-top:4px;">
       <div class="eps-list" id="detail-eps-list"></div>
     </div>
@@ -1222,21 +1222,26 @@ var DEFAULT_ANIMES = [
     rating: null,
     progress: {},
     cover: 'https://ia601404.us.archive.org/25/items/img-6018_202607/IMG_6018.jpeg',
-    bannerUrl: 'https://ia601505.us.archive.org/18/items/img-6021_202607/IMG_6021.jpeg',
+    bannerUrl: 'https://ia903109.us.archive.org/23/items/img-6052_202607/IMG_6052.png',
     detailImg: 'https://ia600509.us.archive.org/0/items/9782-a-6-ed-dd-2-a-4600-9-a-49-16-f-11636-a-1-eb/9782A6ED-DD2A-4600-9A49-16F11636A1EB.png',
     logoUrl: 'https://ia600909.us.archive.org/20/items/img-6048_202607/IMG_6048.png',
+    logoMaxWidth: 190,
+    logoMaxHeight: 85,
+    logoBottom: 148,
+    logoLeft: 10,
     description: 'Shigeo Kageyama, ou simplesmente Mob, é um garoto aparentemente comum que esconde um imenso poder psíquico. Ao lado de seu mentor, Reigen Arataka, ele enfrenta espíritos malignos e desafios sobrenaturais enquanto tenta viver como um adolescente normal. Porém, quanto mais reprime suas emoções, mais se aproxima do momento em que seu verdadeiro poder será despertado.',
     lastEp: -1,
     views: 0,
     trending: false,
     genres: ['Action', 'Comedy', 'Fantasy', 'Supernatural', 'Shonen'],
     rating_age: 'A14',
+    seasonLabel: 'Mob Psycho 100',
     ratingImgUrl: 'https://ia600108.us.archive.org/26/items/img-6025_202607/IMG_6025.png',
     content_rating: 'Violência, Linguagem Imprópria, Nudez, Conteúdo Sexual, Uso de Drogas Lícitas, Temas Sensíveis',
     engagement: 0,
     dataLancamento: '2026-07-28',
     episodes: [
-      { id: 'ep1', name: 'Episódio 1', skip:{op:{start:0,end:90},ed:{start:1345,end:1449}}, desc: 'Shigeo Kageyama, conhecido como Mob, é um estudante do ensino fundamental com poderes psíquicos extraordinários. Enquanto trabalha para o autoproclamado médium Reigen Arataka, ele tenta levar uma vida comum, usando suas habilidades para enfrentar espíritos e fenômenos sobrenaturais. Mas controlar um poder tão grande pode ser mais difícil do que parece.', content_rating: 'Violência, Linguagem Imprópria, Nudez, Conteúdo Sexual, Uso de Drogas Lícitas, Temas Sensíveis', linkUrl: 'https://ia601802.us.archive.org/31/items/mob-psycho-100-episodio-1-dublado-you-tube-720p/Mob%20Psycho%20100%20-%20Episo%CC%81dio%201%20%28Dublado%29%20-%20YouTube%20%28720p%29.mp4', fileUrl: null, savedTime: 0, duration: 1449, watched: false, coverUrl: 'https://ia601803.us.archive.org/1/items/img-6042_202607/IMG_6042.jpeg' }
+      { id: 'ep1', name: 'Autointitulado Paranormal: Reigen Arataka e Mob', skip:{op:{start:0,end:90},ed:{start:1345,end:1449}}, desc: 'Shigeo Kageyama, conhecido como Mob, é um estudante do ensino fundamental com poderes psíquicos extraordinários. Enquanto trabalha para o autoproclamado médium Reigen Arataka, ele tenta levar uma vida comum, usando suas habilidades para enfrentar espíritos e fenômenos sobrenaturais. Mas controlar um poder tão grande pode ser mais difícil do que parece.', content_rating: 'Violência, Linguagem Imprópria, Nudez, Conteúdo Sexual, Uso de Drogas Lícitas, Temas Sensíveis', linkUrl: 'https://ia601802.us.archive.org/31/items/mob-psycho-100-episodio-1-dublado-you-tube-720p/Mob%20Psycho%20100%20-%20Episo%CC%81dio%201%20%28Dublado%29%20-%20YouTube%20%28720p%29.mp4', fileUrl: null, savedTime: 0, duration: 1449, watched: false, coverUrl: 'https://ia601803.us.archive.org/1/items/img-6042_202607/IMG_6042.jpeg' }
     ]
   }
 ];
@@ -1795,6 +1800,7 @@ function renderHome(){
     var diffDias=Math.floor((hoje-dataItem)/(1000*60*60*24));
     return diffDias>=0&&diffDias<7;
   });
+  novos.sort(function(x,y){ return new Date(y.dataLancamento)-new Date(x.dataLancamento); });
   showSec('sec-new','new-row',novos,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
 
   showSec('sec-favs','favs-row',favs,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
@@ -2212,6 +2218,9 @@ function openDetail(itemId){
   // Logo
   var li=g('detail-hero-logo-img');
   if(li) li.src=a.logoUrl||'';
+  // Label da temporada (customizável por anime)
+  var sl=g('detail-season-label');
+  if(sl) sl.textContent=a.seasonLabel||'Season 1';
   // Tags no mesmo estilo do hero da home
   var tr=g('detail-tags-row');
   if(tr){
@@ -2816,7 +2825,7 @@ function openSeasonPicker(){
   var list = g('season-picker-list');
   if(list){
     list.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;cursor:pointer;" onclick="closeSeasonPicker()">' +
-      '<span style="color:var(--blue);font-size:15px;font-weight:700;">Season 1</span>' +
+      '<span style="color:var(--blue);font-size:15px;font-weight:700;">'+(a.seasonLabel||'Season 1')+'</span>' +
       '<span style="color:var(--text3);font-size:13px;">'+epCount+' Episódios</span>' +
     '</div>';
   }
