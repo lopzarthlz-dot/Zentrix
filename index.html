@@ -738,9 +738,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="section-header"><div class="section-title">Novos lançamentos no Zentrix</div></div>
       <div class="cards-scroll"><div class="cards-row" id="new-row"></div></div>
     </div>
-    <div class="section" id="sec-favs" style="display:none;">
-      <div class="section-header"><div class="section-title">Favoritos ⭐</div></div>
-      <div class="cards-scroll"><div class="cards-row" id="favs-row"></div></div>
+    <div class="section" id="sec-popular" style="display:none;">
+      <div class="section-header"><div class="section-title">Mais Populares</div></div>
+      <div class="cards-scroll"><div class="cards-row" id="popular-row"></div></div>
+    </div>
+    <div class="section" id="sec-new-eps" style="display:none;">
+      <div class="section-header"><div class="section-title">Novos Episódios</div></div>
+      <div class="cards-scroll"><div class="cards-row" id="new-eps-row"></div></div>
     </div>
 
     <div class="empty-state" id="home-empty">
@@ -1159,6 +1163,7 @@ var DEFAULT_ANIMES = [
     lastEp: -1,
     views: 15000,
     trending: true,
+    featured: true,
     genres: ['Action', 'Drama', 'Fantasy'],
     rating_age: 'A16',
     ratingImgUrl: 'https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png',
@@ -1201,6 +1206,7 @@ var DEFAULT_ANIMES = [
     lastEp: -1,
     views: 0,
     trending: false,
+    featured: true,
     genres: ['Action', 'Adventure', 'Supernatural', 'Shonen'],
     rating_age: 'A16',
     ratingImgUrl: 'https://ia601405.us.archive.org/32/items/img-5287_20260521/IMG_5287.png',
@@ -1233,6 +1239,7 @@ var DEFAULT_ANIMES = [
     lastEp: -1,
     views: 0,
     trending: false,
+    featured: true,
     genres: ['Action', 'Comedy', 'Fantasy', 'Supernatural', 'Shonen'],
     rating_age: 'A14',
     seasonLabel: 'Mob Psycho 100',
@@ -1498,6 +1505,7 @@ function loadData(){
     if(p.status) a.status = p.status;
     if(p.progress) a.progress = p.progress;
     if(p.lastWatchedAt) a.lastWatchedAt = p.lastWatchedAt;
+    if(p.ultimoEpisodioLancado) a.ultimoEpisodioLancado = p.ultimoEpisodioLancado;
     if(p.episodes){
       a.episodes = anime.episodes.map(function(ep){
         var ep2 = JSON.parse(JSON.stringify(ep));
@@ -1540,7 +1548,7 @@ function saveProgress(){
         epProg[ep.id]={savedTime:ep.savedTime||0,duration:ep.duration||0,watched:ep.watched||false};
       }
     });
-    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0};
+    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0,ultimoEpisodioLancado:anime.ultimoEpisodioLancado||null};
   });
   lsSet(_profileKey(PROG_KEY), prog);
 }
@@ -1562,6 +1570,7 @@ function formatProg(p){if(!p)return'';var pts=[];if(p.season)pts.push('T'+p.seas
 function sorted(list){return list.slice().sort(function(a,b){if(a.status===b.status)return a.name.localeCompare(b.name);return a.status==='watching'?-1:1;});}
 function fmtTime(s){if(!s||isNaN(s))return'0:00';var m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
 function fmtMins(s){if(!s||isNaN(s))return'';return Math.round(s/60)+'m';}
+function fmtDateISO(d){return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');}
 function newItem(name,aud){var hoje=new Date();var dataHoje=hoje.getFullYear()+'-'+(hoje.getMonth()+1).toString().padStart(2,'0')+'-'+hoje.getDate().toString().padStart(2,'0');return{id:Date.now().toString(),name:name,status:'watching',cat:'anime-serie',audio:aud||'d',progress:{},fav:false,rating:null,episodes:[],lastEp:-1,cover:'',dataLancamento:dataHoje};}
 
 // ===== NAV =====
@@ -1761,7 +1770,6 @@ function renderContinueAssistindo(){
 function renderHome(){
   var watching=sorted(items.filter(function(x){return x.status==='watching';}));
   var watched=sorted(items.filter(function(x){return x.status==='watched';}));
-  var favs=items.filter(function(x){return x.fav;});
   var has=items.length>0||savedItems.length>0;
   var empty=g('home-empty');if(empty)empty.style.display=has?'none':'flex';
 
@@ -1776,7 +1784,7 @@ function renderHome(){
     if(vb!==va)return vb-va;
     return (b.engagement||0)-(a.engagement||0);
   });
-  function showSec(id,rowId,data,fn){var sec=g(id),row=g(rowId);if(!sec||!row)return;if(data.length){sec.style.display='block';row.innerHTML=data.slice(0,10).map(fn).join('');}else sec.style.display='none';}
+  function showSec(id,rowId,data,fn,limit){var sec=g(id),row=g(rowId);if(!sec||!row)return;var lim=(limit==null)?15:limit;var list=lim?data.slice(0,lim):data;if(list.length){sec.style.display='block';row.innerHTML=list.map(fn).join('');}else sec.style.display='none';}
   showSec('sec-all','all-row',emAlta,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
 
   // CONTINUE ASSISTINDO — só mostra se tem ep não assistido ainda
@@ -1789,7 +1797,7 @@ function renderHome(){
     return a.lastEp>=0 || a.episodes.some(function(ep){ return ep.savedTime&&ep.savedTime>0; });
   });
   cwList.sort(function(x,y){ return (y.lastWatchedAt||0)-(x.lastWatchedAt||0); });
-  showSec('sec-cw','cw-row',cwList,mkCW);
+  showSec('sec-cw','cw-row',cwList,mkCW,0);
 
   // NOVOS LANÇAMENTOS: only items released in last 7 days
   var hoje=new Date();
@@ -1803,7 +1811,24 @@ function renderHome(){
   novos.sort(function(x,y){ return new Date(y.dataLancamento)-new Date(x.dataLancamento); });
   showSec('sec-new','new-row',novos,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
 
-  showSec('sec-favs','favs-row',favs,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
+  // MAIS POPULARES: ordena por views, depois engagement (sem considerar trending)
+  var populares=items.slice().sort(function(a,b){
+    var vb=(b.views||0)-(a.views||0);
+    if(vb!==0)return vb;
+    return (b.engagement||0)-(a.engagement||0);
+  });
+  showSec('sec-popular','popular-row',populares,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
+
+  // NOVOS EPISÓDIOS: animes com ultimoEpisodioLancado nos últimos 7 dias
+  var novosEps=items.filter(function(a){
+    if(!a.ultimoEpisodioLancado)return false;
+    var partes=a.ultimoEpisodioLancado.split('-');
+    var dataEp=new Date(parseInt(partes[0]),parseInt(partes[1])-1,parseInt(partes[2]));
+    var diffDias=Math.floor((hoje-dataEp)/(1000*60*60*24));
+    return diffDias>=0&&diffDias<7;
+  });
+  novosEps.sort(function(x,y){ return new Date(y.ultimoEpisodioLancado)-new Date(x.ultimoEpisodioLancado); });
+  showSec('sec-new-eps','new-eps-row',novosEps,function(a){return mkPC(a,"openDetail('"+a.id+"')");});
 }
 function heroBookmark(){
   if(!heroItemId) return;
@@ -2080,12 +2105,47 @@ function setHeroCarouselItem(item){
   updateHeroBookmark();
 }
 
+// Rotação do Banner Carrossel: prioriza quem ficou mais tempo sem aparecer,
+// mas com sorteio real — nunca a mesma ordem/combinação toda vez.
+var HERO_HISTORY_KEY='zentrix_hero_history';
+function loadHeroHistory(){
+  try{ return JSON.parse(localStorage.getItem(HERO_HISTORY_KEY)||'{}'); }catch(e){ return {}; }
+}
+function saveHeroHistory(hist){
+  try{ localStorage.setItem(HERO_HISTORY_KEY, JSON.stringify(hist)); }catch(e){}
+}
+function pickFeaturedForHero(featuredList, count){
+  if(featuredList.length<=count){
+    // Poucos itens: usa todos, só embaralha a ordem (sem ranking entre eles)
+    var all=featuredList.slice();
+    for(var i=all.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=all[i];all[i]=all[j];all[j]=t; }
+    return all;
+  }
+  var hist=loadHeroHistory();
+  var now=Date.now();
+  var pool=featuredList.slice();
+  var picked=[];
+  for(var n=0;n<count&&pool.length>0;n++){
+    // Peso maior pra quem ficou mais tempo sem aparecer (nunca mostrado = peso máximo)
+    var weights=pool.map(function(it){ return Math.max(1, now-(hist[it.id]||0)); });
+    var total=weights.reduce(function(a,b){return a+b;},0);
+    var r=Math.random()*total, acc=0, idx=0;
+    for(;idx<pool.length;idx++){ acc+=weights[idx]; if(r<=acc) break; }
+    if(idx>=pool.length) idx=pool.length-1;
+    picked.push(pool[idx]);
+    pool.splice(idx,1);
+  }
+  // Marca os escolhidos como "mostrados agora" pra próxima vez priorizar os outros
+  picked.forEach(function(it){ hist[it.id]=now; });
+  saveHeroHistory(hist);
+  return picked;
+}
 function initHeroCarousel(){
   clearTimeout(_heroCarouselTimer);
-  // Usa todos os itens como carousel (watching primeiro, depois o resto)
-  var watching=items.filter(function(x){return x.status==='watching';});
-  var others=items.filter(function(x){return x.status!=='watching';});
-  _heroCarouselItems=watching.concat(others).slice(0,8);
+  // Banner Carrossel: exibe até 6 animes marcados como featured:true, sem ranking entre eles.
+  // Com rotação justa + aleatória quando há mais de 6 (ninguém fica de fora pra sempre, mas nunca é sempre a mesma combinação).
+  var featuredAll=items.filter(function(x){return x.featured===true;});
+  _heroCarouselItems=pickFeaturedForHero(featuredAll, 6);
   _heroCarouselIdx=0;
   if(_heroCarouselItems.length===0){g('hero-indicators')&&(g('hero-indicators').style.display='none');return;}
   preloadHeroCarouselImages();
@@ -2873,7 +2933,8 @@ function addEpFromDetail(){
   var a=items.find(function(x){return x.id===detailItemId;});if(!a)return;
   if(!a.episodes)a.episodes=[];
   a.episodes.push({name:name||('Episódio '+(a.episodes.length+1)),fileUrl:null,linkUrl:null,savedTime:0,duration:0,watched:false});
-  if(inp)inp.value='';saveData();renderDetailEps();updateContinueBar();
+  a.ultimoEpisodioLancado=fmtDateISO(new Date()); // entra em "Novos Episódios" automaticamente
+  if(inp)inp.value='';saveData();renderDetailEps();updateContinueBar();renderHome();
 }
 function toggleEpWatched(idx){
   var a=items.find(function(x){return x.id===detailItemId;});if(!a||!a.episodes[idx])return;
@@ -3260,7 +3321,7 @@ function goToDetailFromPlayer(){
   }
 }
 window.goToDetailFromPlayer=goToDetailFromPlayer;
-function addEpisode(){var inp=g('ep-name-input');var name=inp?inp.value.trim():'';var a=items.find(function(x){return x.id===playerItemId;});if(!a)return;if(!a.episodes)a.episodes=[];a.episodes.push({name:name||('Episódio '+(a.episodes.length+1)),fileUrl:null,linkUrl:null,savedTime:0,duration:0,watched:false});if(inp)inp.value='';saveData();renderEpList();}
+function addEpisode(){var inp=g('ep-name-input');var name=inp?inp.value.trim():'';var a=items.find(function(x){return x.id===playerItemId;});if(!a)return;if(!a.episodes)a.episodes=[];a.episodes.push({name:name||('Episódio '+(a.episodes.length+1)),fileUrl:null,linkUrl:null,savedTime:0,duration:0,watched:false});a.ultimoEpisodioLancado=fmtDateISO(new Date());if(inp)inp.value='';saveData();renderEpList();renderHome();}
 function removeEp(idx){var a=items.find(function(x){return x.id===playerItemId;});if(!a||!a.episodes)return;if(a.episodes[idx]&&a.episodes[idx].fileUrl)URL.revokeObjectURL(a.episodes[idx].fileUrl);a.episodes.splice(idx,1);if(playerEpIdx===idx){showNoFile();playerEpIdx=-1;}else if(playerEpIdx>idx)playerEpIdx--;saveData();renderEpList();}
 function pickFileForCurrentEp(){if(playerEpIdx<0){var a=items.find(function(x){return x.id===playerItemId;});if(a&&a.episodes&&a.episodes.length>0)playerEpIdx=0;else{addEpisode();playerEpIdx=0;}}triggerFilePicker(playerEpIdx);}
 function pickFileForEp(idx){playerEpIdx=idx;triggerFilePicker(idx);}
