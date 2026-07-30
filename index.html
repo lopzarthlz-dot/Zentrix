@@ -854,7 +854,7 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
   <div class="detail-body">
     <div class="detail-tags-row" id="detail-tags-row"></div>
     <div style="display:flex;justify-content:center;margin-bottom:16px;">
-      <button class="detail-mylist-btn" id="detail-mylist-btn">
+      <button class="detail-mylist-btn" id="detail-mylist-btn" onclick="showComingSoon()">
         <svg id="detail-mylist-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span id="detail-mylist-label">Minha Lista</span>
       </button>
@@ -914,20 +914,20 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
 <!-- Card Context Menu - Portrait cards -->
 <div class="card-ctx-overlay" id="card-ctx-overlay" style="display:none;"></div>
 <div class="card-ctx-menu" id="card-ctx-menu" style="display:none;">
-  <button class="card-ctx-item" id="ctx-lista">Adicionar à Lista</button>
-  <button class="card-ctx-item" id="ctx-zentrilista">Adicionar à Zentrilista</button>
+  <button class="card-ctx-item" id="ctx-lista" onclick="showComingSoon()">Adicionar à Lista</button>
+  <button class="card-ctx-item" id="ctx-zentrilista" onclick="showComingSoon()">Adicionar à Zentrilista</button>
   <div class="card-ctx-separator"></div>
-  <button class="card-ctx-item" id="ctx-assistir">Começar a Assistir</button>
-  <button class="card-ctx-item" id="ctx-assistido">Marcado como Assistido</button>
+  <button class="card-ctx-item" id="ctx-assistir" onclick="showComingSoon()">Começar a Assistir</button>
+  <button class="card-ctx-item" id="ctx-assistido" onclick="showComingSoon()">Marcado como Assistido</button>
 </div>
 <!-- Card Context Menu - Continue Watching cards -->
 <div class="card-ctx-menu" id="card-ctx-menu-cw" style="display:none;">
-  <button class="card-ctx-item" id="ctx-fila">Adicionar à Fila</button>
-  <button class="card-ctx-item" id="ctx-zentrilista-cw">Adicionar à Zentrilista</button>
+  <button class="card-ctx-item" id="ctx-fila" onclick="showComingSoon()">Adicionar à Fila</button>
+  <button class="card-ctx-item" id="ctx-zentrilista-cw" onclick="showComingSoon()">Adicionar à Zentrilista</button>
   <div class="card-ctx-separator"></div>
-  <button class="card-ctx-item" id="ctx-continuar">Continuar Assistindo</button>
-  <button class="card-ctx-item" id="ctx-infos">Infos da Série</button>
-  <button class="card-ctx-item" id="ctx-assistido-cw">Marcado como Assistido</button>
+  <button class="card-ctx-item" id="ctx-continuar" onclick="showComingSoon()">Continuar Assistindo</button>
+  <button class="card-ctx-item" id="ctx-infos" onclick="showComingSoon()">Infos da Série</button>
+  <button class="card-ctx-item" id="ctx-assistido-cw" onclick="showComingSoon()">Marcado como Assistido</button>
 </div>
 
 <!-- Toast notification -->
@@ -2875,6 +2875,12 @@ function showToast(text, icon){
   }, 2000);
 }
 window.showToast = showToast;
+// Função temporária pros botões que ainda não têm função real implementada
+function showComingSoon(){
+  showToast('Em Breve 🔜');
+  closeCardMenu();
+}
+window.showComingSoon = showComingSoon;
 
 function toggleDetailQueue(){
   var btn = g('detail-queue-btn');
