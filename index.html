@@ -1922,9 +1922,9 @@ function renderHeroIndicators(){
   }
 
   // Atualiza o estado de cada barrinha (sem recriar os elementos)
-  for(var j=0;j<n;j++){
-    var barEl=container.children[j];
-    var fillEl=barEl.querySelector('.hero-ind-fill');
+  for(let j=0;j<n;j++){
+    let barEl=container.children[j];
+    let fillEl=barEl.querySelector('.hero-ind-fill');
     if(!fillEl)continue;
     if(j===_heroCarouselIdx){
       barEl.className='hero-ind active';
