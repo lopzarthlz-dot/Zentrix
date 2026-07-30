@@ -20,6 +20,8 @@
   --font:'Inter',sans-serif;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden;}
+img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+*{-webkit-touch-callout:none;}
 
 /* LOGIN SCREEN */
 #login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:60px 16px 50px;max-width:480px;margin:0 auto;left:0;right:0;}
@@ -91,9 +93,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .hero-btns{display:flex;gap:10px;}
 .hero-indicators{display:flex;gap:5px;padding:10px 18px 4px;}
 .hero-ind{flex:1;height:3px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden;cursor:pointer;}
-.hero-ind-fill{height:100%;width:0%;background:var(--grad2);border-radius:99px;}
+.hero-ind-fill{height:100%;width:0%;background:var(--grad2);border-radius:99px;transition:width .35s ease;}
 .hero-ind.active .hero-ind-fill{transition:width linear;}
-.hero-ind.done .hero-ind-fill{width:100%;transition:none;}
 .hero-btn{display:flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:var(--font);}
 .hero-btn.primary{background:var(--grad2);color:#fff;box-shadow:0 0 20px rgba(56,189,248,.3);}
 .hero-btn.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border2);}
@@ -1655,7 +1656,7 @@ function mkPC(a,fn){
     '<div class="p-card-name">'+a.name+'</div>'+
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">'+
       '<div class="p-card-sub">'+audioLabel(a.audio)+'</div>'+
-      '<button class="p-card-menu-btn" ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.p-card\'));" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
+      '<button class="p-card-menu-btn" ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.p-card\'));this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._moved=false;" ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>12||Math.abs(event.touches[0].clientY-this._sy)>12)this._moved=true;" ontouchend="event.preventDefault();event.stopPropagation();if(!this._moved)openCardMenu(\''+a.id+'\',this);" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this);">···</button>'+
     '</div>'+
   '</div>';
 }
@@ -1708,7 +1709,7 @@ function mkCW(a){
       ) +
       (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:18px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
       '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,15,.92) 0%,rgba(8,8,15,.3) 55%,transparent 100%);pointer-events:none;"></div>' +
-      '<button ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.cw-card\'));" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this)" ontouchend="event.preventDefault();event.stopPropagation();openCardMenu(\''+a.id+'\',this)" style="position:absolute;top:6px;right:6px;background:none;border:none;color:#fff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:1;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:2;">···</button>' +
+      '<button ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.cw-card\'));this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._moved=false;" ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>12||Math.abs(event.touches[0].clientY-this._sy)>12)this._moved=true;" onclick="event.stopPropagation();openCardMenu(\''+a.id+'\',this)" ontouchend="event.preventDefault();event.stopPropagation();if(!this._moved)openCardMenu(\''+a.id+'\',this)" style="position:absolute;top:6px;right:6px;background:none;border:none;color:#fff;font-size:18px;font-weight:700;letter-spacing:1px;line-height:1;padding:4px 8px;border-radius:6px;cursor:pointer;z-index:2;">···</button>' +
       '<div class="cw-play-ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="8,6 26,16 8,26" fill="white"/></svg></div>' +
       (minsLabel?'<div class="cw-mins">'+minsLabel+'</div>':'')+
       '<div class="cw-info">' +
@@ -1902,47 +1903,65 @@ function renderHeroIndicators(){
   var n=_heroCarouselItems.length;
   if(n<=0){container.style.display='none';return;}
   container.style.display='flex';
-  container.innerHTML='';
-  for(var i=0;i<n;i++){
-    (function(idx){
-      var bar=document.createElement('div');
-      bar.className='hero-ind'+(idx===_heroCarouselIdx?' active':'')+(idx<_heroCarouselIdx?' done':'');
-      var fill=document.createElement('div');
-      fill.className='hero-ind-fill';
-      if(idx===_heroCarouselIdx) fill.style.transitionDuration=HERO_DURATION+'ms';
-      bar.appendChild(fill);
-      bar.addEventListener('click',function(){ heroCarouselGoTo(idx); });
-      container.appendChild(bar);
-    })(i);
+
+  // Só reconstrói do zero se a quantidade de barrinhas mudou (ex: primeira vez).
+  // Caso contrário, reaproveita as mesmas barrinhas pra poder animar suavemente entre elas.
+  if(container.children.length!==n){
+    container.innerHTML='';
+    for(var i=0;i<n;i++){
+      (function(idx){
+        var bar=document.createElement('div');
+        bar.className='hero-ind';
+        var fill=document.createElement('div');
+        fill.className='hero-ind-fill';
+        bar.appendChild(fill);
+        bar.addEventListener('click',function(){ heroCarouselGoTo(idx); });
+        container.appendChild(bar);
+      })(i);
+    }
   }
-  // Trigger fill animation on active bar
-  if(n>0){
-    var activeFill=container.children[_heroCarouselIdx]&&container.children[_heroCarouselIdx].querySelector('.hero-ind-fill');
-    if(activeFill){
+
+  // Atualiza o estado de cada barrinha (sem recriar os elementos)
+  for(var j=0;j<n;j++){
+    var barEl=container.children[j];
+    var fillEl=barEl.querySelector('.hero-ind-fill');
+    if(!fillEl)continue;
+    if(j===_heroCarouselIdx){
+      barEl.className='hero-ind active';
+      // Reseta pra 0% sem transição, força reflow, e então anima até 100% ao longo da duração
+      fillEl.style.transition='none';
+      fillEl.style.width='0%';
+      void fillEl.offsetWidth;
+      fillEl.style.transitionDuration=HERO_DURATION+'ms';
+      fillEl.style.transition='width '+HERO_DURATION+'ms linear';
       requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          activeFill.style.width='100%';
-        });
+        requestAnimationFrame(function(){ fillEl.style.width='100%'; });
       });
+    } else {
+      barEl.className='hero-ind';
+      // Esvazia suavemente (se estava cheia) — sem sumir instantâneo
+      fillEl.style.transitionDuration='';
+      fillEl.style.transition='width .35s ease';
+      fillEl.style.width='0%';
     }
   }
 }
 
 var HERO_FADE_MS=380;
-var _heroTimerStartedAt=0, _heroTimerDuration=HERO_DURATION, _heroTimerRemaining=HERO_DURATION;
+var _heroTimerEndsAt=0;
 function startHeroTimer(ms){
   clearTimeout(_heroCarouselTimer);
-  _heroTimerStartedAt=Date.now();
-  _heroTimerDuration=ms;
+  _heroTimerEndsAt=Date.now()+ms;
   _heroCarouselTimer=setTimeout(heroCarouselNext, ms);
 }
 function pauseHeroTimer(){
+  // Só cancela o disparo — NÃO recalcula o horário-alvo, porque a barrinha
+  // visual (CSS) continua rodando em tempo real mesmo durante o arrasto.
   clearTimeout(_heroCarouselTimer);
-  var elapsed=Date.now()-_heroTimerStartedAt;
-  _heroTimerRemaining=Math.max(_heroTimerDuration-elapsed, 500);
 }
 function resumeHeroTimer(){
-  startHeroTimer(_heroTimerRemaining);
+  var remaining=Math.max(_heroTimerEndsAt-Date.now(), 300);
+  _heroCarouselTimer=setTimeout(heroCarouselNext, remaining);
 }
 function heroCarouselGoTo(idx){
   clearTimeout(_heroCarouselTimer);
@@ -2583,7 +2602,7 @@ function renderDetailEps(){
         '</div>' +
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px;align-self:stretch;padding:4px 0;position:relative;">' +
-        '<button id="ep-dots-btn-'+i+'" ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.ep-card\'));" ontouchend="event.preventDefault();event.stopPropagation();openEpMenu('+i+',this)" onclick="event.stopPropagation();" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
+        '<button id="ep-dots-btn-'+i+'" ontouchstart="event.stopPropagation();pcCancel(this.closest(\'.ep-card\'));this._sx=event.touches[0].clientX;this._sy=event.touches[0].clientY;this._moved=false;" ontouchmove="if(Math.abs(event.touches[0].clientX-this._sx)>12||Math.abs(event.touches[0].clientY-this._sy)>12)this._moved=true;" ontouchend="event.preventDefault();event.stopPropagation();if(!this._moved)openEpMenu('+i+',this)" onclick="event.stopPropagation();" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px 8px;font-family:var(--font);letter-spacing:2px;line-height:1;transition:opacity .15s;-webkit-tap-highlight-color:transparent;">···</button>' +
       '</div>' +
     '</div>';
   }).join('');
