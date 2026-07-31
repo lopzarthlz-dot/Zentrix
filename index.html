@@ -819,9 +819,9 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
   </div>
   <div class="bottom-nav">
     <button class="nav-btn" data-nav="home" onclick="goTo('home')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span><span class="nav-label">Início</span></button>
-    <button class="nav-btn" data-nav="lista" onclick="goTo('lista')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span><span class="nav-label">Minhas Listas</span></button>
-    <button class="nav-btn" data-nav="salvos" onclick="goTo('salvos')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Explorar</span></button>
-    <button class="nav-btn" data-nav="perfil" onclick="goTo('perfil')"><span class="nav-icon" style="width:22px;height:22px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--grad2);flex-shrink:0;"><img src="https://ia600502.us.archive.org/9/items/177-bdc-4-f-6546-459-f-98-b-7-4-f-04-f-48-ce-3-fa/177BDC4F-6546-459F-98B7-4F04F48CE3FA.png" style="width:100%;height:100%;object-fit:cover;"/></span><span class="nav-label">Conta</span></button>
+    <button class="nav-btn" data-nav="lista" onclick="showComingSoon()"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span><span class="nav-label">Minhas Listas</span></button>
+    <button class="nav-btn" data-nav="salvos" onclick="showComingSoon()"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Explorar</span></button>
+    <button class="nav-btn" data-nav="perfil" onclick="showComingSoon()"><span class="nav-icon" style="width:22px;height:22px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--grad2);flex-shrink:0;"><img src="https://ia600502.us.archive.org/9/items/177-bdc-4-f-6546-459-f-98-b-7-4-f-04-f-48-ce-3-fa/177BDC4F-6546-459F-98B7-4F04F48CE3FA.png" style="width:100%;height:100%;object-fit:cover;"/></span><span class="nav-label">Conta</span></button>
   </div>
 </div>
 </div>
@@ -1507,6 +1507,8 @@ function loadData(){
     if(p.progress) a.progress = p.progress;
     if(p.lastWatchedAt) a.lastWatchedAt = p.lastWatchedAt;
     if(p.ultimoEpisodioLancado) a.ultimoEpisodioLancado = p.ultimoEpisodioLancado;
+    if(p.views!=null && p.views>(a.views||0)) a.views = p.views;
+    if(p.engagement!=null && p.engagement>(a.engagement||0)) a.engagement = p.engagement;
     if(p.episodes){
       a.episodes = anime.episodes.map(function(ep){
         var ep2 = JSON.parse(JSON.stringify(ep));
@@ -1549,7 +1551,7 @@ function saveProgress(){
         epProg[ep.id]={savedTime:ep.savedTime||0,duration:ep.duration||0,watched:ep.watched||false};
       }
     });
-    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0,ultimoEpisodioLancado:anime.ultimoEpisodioLancado||null};
+    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0,ultimoEpisodioLancado:anime.ultimoEpisodioLancado||null,views:anime.views||0,engagement:anime.engagement||0};
   });
   lsSet(_profileKey(PROG_KEY), prog);
 }
@@ -2247,6 +2249,7 @@ function renderBusca(){
   if(!list.length){c.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">'+(q?'Sem resultados':'Pesquise algo')+'</div></div>';return;}
   c.innerHTML=sorted(list).map(mkLI).join('');
 }
+window.renderBusca=renderBusca;
 function renderSalvos(){
   var c=g('salvos-items');if(!c)return;
   if(!savedItems.length){c.innerHTML='<div class="empty-state"><div class="empty-icon">💾</div><div class="empty-title">Nenhum título salvo</div><button class="empty-cta" onclick="openModal(\'saved-modal\')">+ Salvar</button></div>';return;}
@@ -2290,6 +2293,9 @@ function renderAll(){renderHome();renderLista();renderSalvos();renderDisc();rend
 function openDetail(itemId){
   detailItemId=itemId;
   var a=items.find(function(x){return x.id===itemId;});if(!a)return;
+  // VIEWS REAL: soma toda vez que a página do anime é aberta de verdade
+  a.views=(a.views||0)+1;
+  saveData();
   var ht=g('detail-hero-title');if(ht)ht.textContent=a.name;
   // Banner image
   var hi=g('detail-hero-img');
@@ -2407,7 +2413,10 @@ function updateDetailMyList(a){
 }
 function toggleDetailFav(){
   var a=items.find(function(x){return x.id===detailItemId;});if(!a)return;
-  a.fav=!a.fav;saveData();updateDetailMyList(a);
+  a.fav=!a.fav;
+  // ENGAJAMENTO REAL: soma quando favorita (não desconta ao desfavoritar, é histórico)
+  if(a.fav) a.engagement=(a.engagement||0)+3;
+  saveData();updateDetailMyList(a);
 }
 window.toggleDetailDesc=toggleDetailDesc;window.toggleDetailFav=toggleDetailFav;
 function openMoreDetails(){
@@ -3706,6 +3715,8 @@ vid.addEventListener('ended',function(){
       a.episodes[playerEpIdx].savedTime=vid.duration||a.episodes[playerEpIdx].savedTime;
       a.episodes[playerEpIdx].duration=vid.duration||a.episodes[playerEpIdx].duration;
       a.episodes[playerEpIdx].watched=true;
+      // ENGAJAMENTO REAL: soma quando termina de assistir um episódio de verdade
+      a.engagement=(a.engagement||0)+2;
       saveData();
       // Atualiza UI imediatamente: player + detail + home
       renderEpList();
