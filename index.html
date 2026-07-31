@@ -2858,6 +2858,7 @@ window.epMenuPlay = epMenuPlay;
 window.epMenuToggleWatched = epMenuToggleWatched;
 
 var _toastCheckSVG = '<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#22c55e"/><polyline points="6,12 10,16 18,8" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var _toastClockSVG = '<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f59e0b"/><path d="M12 6.5v5.8l4 2.2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function showToast(text, icon){
   var toast = g('toast-msg');
@@ -2865,7 +2866,7 @@ function showToast(text, icon){
   var toastIcon = g('toast-icon');
   if(!toast) return;
   if(toastText) toastText.textContent = text;
-  if(toastIcon) toastIcon.innerHTML = _toastCheckSVG;
+  if(toastIcon) toastIcon.innerHTML = (icon && icon.indexOf('<svg')===0) ? icon : _toastCheckSVG;
   toast.style.display = 'flex';
   toast.style.opacity = '1';
   clearTimeout(toast._timer);
@@ -2877,7 +2878,7 @@ function showToast(text, icon){
 window.showToast = showToast;
 // Função temporária pros botões que ainda não têm função real implementada
 function showComingSoon(){
-  showToast('Em Breve 🔜');
+  showToast('Em Breve', _toastClockSVG);
   closeCardMenu();
 }
 window.showComingSoon = showComingSoon;
@@ -3884,6 +3885,19 @@ function openCardMenu(itemId, btn){
     setTimeout(function(){ menu.style.transition=''; _cardMenuClosing=false; if(cb) cb(); }, 200);
   };
 
+  // Prepara cada item: guarda a ação real (definida no onclick inline, ex: showComingSoon)
+  // e substitui por uma versão que primeiro fecha o menu com a animação, e só então executa a ação.
+  var items_btns = menu.querySelectorAll('.card-ctx-item');
+  items_btns.forEach(function(item){
+    var realAction = item.onclick;
+    item.onclick = function(){
+      if(_cardShrinkClose){
+        var fn=_cardShrinkClose; _cardShrinkClose=null;
+        fn(function(){ _closeCardMenuImmediate(); if(realAction) realAction.call(item); });
+      } else if(realAction) realAction.call(item);
+    };
+  });
+
   menu.ontouchend = function(e){
     _touchStartedInMenu = false;
     if(_rafZoom) cancelAnimationFrame(_rafZoom);
@@ -3905,18 +3919,10 @@ function openCardMenu(itemId, btn){
       })();
     } else { menu.style.transform = 'scale(1)'; }
     if(insideMenu && item && menu.contains(item)){
-      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; setTimeout(function(){ fn(function(){ _closeCardMenuImmediate(); }); },60); }
+      if(item.onclick) item.onclick();
     }
     e.preventDefault();
   };
-
-  // Click fallback — shrink close
-  var items_btns = menu.querySelectorAll('.card-ctx-item');
-  items_btns.forEach(function(item){
-    item.onclick = function(){
-      if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
-    };
-  });
 
   overlay.onclick = null;
   overlay.ontouchstart = null;
