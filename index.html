@@ -930,6 +930,32 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
   <button class="card-ctx-item" id="ctx-assistido-cw" onclick="showComingSoon()">Marcado como Assistido</button>
 </div>
 
+<!-- Prévia ao segurar a capa de um anime (long-press) -->
+<div id="anime-preview-overlay" style="display:none;position:fixed;inset:0;z-index:9900;background:rgba(0,0,0,0);backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px);display:flex;align-items:center;justify-content:center;padding:24px;transition:background .25s ease,backdrop-filter .25s ease;" onclick="if(event.target===this)closeAnimePreview();">
+  <div id="anime-preview-content" style="width:100%;max-width:340px;opacity:0;transform:scale(.9);transition:opacity .22s cubic-bezier(.2,1,.3,1),transform .22s cubic-bezier(.2,1,.3,1);">
+    <div style="background:#1a1a24;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.6);margin-bottom:10px;">
+      <div style="width:100%;aspect-ratio:16/10;position:relative;background:#0d0d14;">
+        <img id="anime-preview-img" src="" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+      </div>
+      <div style="padding:14px 16px 16px;">
+        <div id="anime-preview-title" style="font-size:17px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.25;"></div>
+        <div id="anime-preview-desc" style="font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.45;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;"></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span id="anime-preview-badge"></span>
+          <span id="anime-preview-audio" style="font-size:12px;color:rgba(255,255,255,.55);font-weight:600;"></span>
+        </div>
+      </div>
+    </div>
+    <div class="card-ctx-menu" style="position:static;width:100%;transform:none;transform-origin:none;box-shadow:0 12px 40px rgba(0,0,0,.6);">
+      <button class="card-ctx-item" onclick="showComingSoon();closeAnimePreview();">Adicionar à Lista</button>
+      <button class="card-ctx-item" onclick="showComingSoon();closeAnimePreview();">Adicionar à Zentrilista</button>
+      <div class="card-ctx-separator"></div>
+      <button class="card-ctx-item" onclick="showComingSoon();closeAnimePreview();">Continuar Assistindo</button>
+      <button class="card-ctx-item" onclick="showComingSoon();closeAnimePreview();">Marcado como Assistido</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast notification -->
 <div id="toast-msg" style="display:none;position:fixed;bottom:100px;left:12px;right:12px;background:#fff;color:#111;font-size:14px;font-weight:600;padding:14px 16px;border-radius:12px;z-index:9999;display:flex;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.3);pointer-events:none;opacity:0;transition:opacity .25s;">
   <span id="toast-icon" style="display:flex;align-items:center;flex-shrink:0;"></span>
@@ -1150,6 +1176,7 @@ var DEFAULT_ANIMES = [
   {
     id: 'sentenced-hero',
     name: 'Sentenced to Be a Hero',
+    bannerInfoUrl: 'https://ia600504.us.archive.org/9/items/img-5613_202605/IMG_5613.jpeg',
     status: 'watching',
     cat: 'anime-serie',
     audio: 'd',
@@ -1189,6 +1216,7 @@ var DEFAULT_ANIMES = [
   {
     id: 'daemons-shadow-realm',
     name: 'Daemons of the Shadow Realm',
+    bannerInfoUrl: 'https://ia601508.us.archive.org/20/items/img-6011_202607/IMG_6011.jpeg',
     status: 'watching',
     cat: 'anime-serie',
     audio: 'd',
@@ -1215,7 +1243,7 @@ var DEFAULT_ANIMES = [
     engagement: 0,
     dataLancamento: '2026-07-26',
     episodes: [
-      { id: 'ep1', name: 'Asa e Yuru', skip:{ed:{start:1315,end:1420}}, desc: 'Em um mundo onde humanos formam laços com poderosos Daemons, os irmãos gêmeos Yuru e Asa carregam um destino capaz de mudar o futuro. Separados ainda crianças e sem conhecer a verdade sobre suas origens, eles seguem caminhos diferentes enquanto forças ocultas começam a agir. Para desvendar os mistérios de seu passado e enfrentar a ameaça que se aproxima, os dois precisarão encontrar um ao outro antes que seja tarde demais.', content_rating: 'Violência, Linguagem Imprópria', linkUrl: 'https://ia600808.us.archive.org/33/items/copy_b7ee67ac-4cd8-47af-857a-0ba10c86e510_202608/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510.mp4', fileUrl: null, savedTime: 0, duration: 1420, watched: false, coverUrl: 'https://ia600507.us.archive.org/28/items/img-5973_202607/IMG_5973.jpeg' },
+      { id: 'ep1', name: 'Asa e Yuru', skip:{ed:{start:1285,end:1418}}, desc: 'Em um mundo onde humanos formam laços com poderosos Daemons, os irmãos gêmeos Yuru e Asa carregam um destino capaz de mudar o futuro. Separados ainda crianças e sem conhecer a verdade sobre suas origens, eles seguem caminhos diferentes enquanto forças ocultas começam a agir. Para desvendar os mistérios de seu passado e enfrentar a ameaça que se aproxima, os dois precisarão encontrar um ao outro antes que seja tarde demais.', content_rating: 'Violência, Linguagem Imprópria', linkUrl: 'https://ia600808.us.archive.org/33/items/copy_b7ee67ac-4cd8-47af-857a-0ba10c86e510_202608/copy_B7EE67AC-4CD8-47AF-857A-0BA10C86E510.mp4', fileUrl: null, savedTime: 0, duration: 1420, watched: false, coverUrl: 'https://ia600507.us.archive.org/28/items/img-5973_202607/IMG_5973.jpeg' },
       { id: 'ep2', name: 'Direita e Esquerda', skip:{op:{start:0,end:140},ed:{start:1313,end:1418}}, desc: 'Após o ataque que destruiu sua vila, Yuru é forçado a fugir enquanto tenta entender a verdade por trás dos acontecimentos. Guiado por um aliado inesperado, ele desperta um poder adormecido e dá o primeiro passo rumo a um destino que mudará sua vida para sempre.', content_rating: 'Violência, Linguagem Imprópria', linkUrl: 'https://ia600502.us.archive.org/27/items/copy_09E58EFA-1B57-41E2-B498-35BDD91A2359/copy_09E58EFA-1B57-41E2-B498-35BDD91A2359.mp4', fileUrl: null, savedTime: 0, duration: 1420, watched: false, coverUrl: 'https://ia601502.us.archive.org/32/items/img-6081_202608/IMG_6081.jpeg' }
     ]
   },
@@ -1223,6 +1251,7 @@ var DEFAULT_ANIMES = [
   {
     id: 'mob-psycho-100',
     name: 'Mob Psycho 100',
+    bannerInfoUrl: 'https://ia600806.us.archive.org/9/items/img-6019_202607/IMG_6019.jpeg',
     status: 'watching',
     cat: 'anime-serie',
     audio: 'd',
@@ -1250,7 +1279,7 @@ var DEFAULT_ANIMES = [
     engagement: 0,
     dataLancamento: '2026-07-28',
     episodes: [
-      { id: 'ep1', name: 'Autointitulado Paranormal: Reigen Arataka e Mob', skip:{op:{start:0,end:90},ed:{start:1345,end:1449}}, desc: 'Shigeo Kageyama, conhecido como Mob, é um estudante do ensino fundamental com poderes psíquicos extraordinários. Enquanto trabalha para o autoproclamado médium Reigen Arataka, ele tenta levar uma vida comum, usando suas habilidades para enfrentar espíritos e fenômenos sobrenaturais. Mas controlar um poder tão grande pode ser mais difícil do que parece.', content_rating: 'Violência, Linguagem Imprópria, Nudez, Conteúdo Sexual, Uso de Drogas Lícitas, Temas Sensíveis', linkUrl: 'https://ia600402.us.archive.org/18/items/mob-psycho-100-episodio-1-dublado-you-tube-720p_202608/Mob%20Psycho%20100%20-%20Episo%CC%81dio%201%20%28Dublado%29%20-%20YouTube%20%28720p%29.mp4', fileUrl: null, savedTime: 0, duration: 1449, watched: false, coverUrl: 'https://ia601803.us.archive.org/1/items/img-6042_202607/IMG_6042.jpeg' }
+      { id: 'ep1', name: 'Autointitulado Paranormal: Reigen Arataka e Mob', skip:{op:{start:0,end:90},ed:{start:1345,end:1447}}, desc: 'Shigeo Kageyama, conhecido como Mob, é um estudante do ensino fundamental com poderes psíquicos extraordinários. Enquanto trabalha para o autoproclamado médium Reigen Arataka, ele tenta levar uma vida comum, usando suas habilidades para enfrentar espíritos e fenômenos sobrenaturais. Mas controlar um poder tão grande pode ser mais difícil do que parece.', content_rating: 'Violência, Linguagem Imprópria, Nudez, Conteúdo Sexual, Uso de Drogas Lícitas, Temas Sensíveis', linkUrl: 'https://ia600402.us.archive.org/18/items/mob-psycho-100-episodio-1-dublado-you-tube-720p_202608/Mob%20Psycho%20100%20-%20Episo%CC%81dio%201%20%28Dublado%29%20-%20YouTube%20%28720p%29.mp4', fileUrl: null, savedTime: 0, duration: 1449, watched: false, coverUrl: 'https://ia601803.us.archive.org/1/items/img-6042_202607/IMG_6042.jpeg' }
     ]
   }
 ];
@@ -1267,7 +1296,8 @@ var vid=document.getElementById('main-video');
 
 // ===== P-CARD PRESS EFFECT =====
 var _pcStartX, _pcStartY, _pcMoved, _pcTouched;
-function pcPress(el, e){
+var _pcLongPressTimer=null, _pcLongPressFired=false, PC_LONGPRESS_MS=450;
+function pcPress(el, e, itemId){
   // Não animar se o toque começou num botão filho (ex: ...)
   var target = e.target;
   var isChildBtn = false;
@@ -1290,20 +1320,36 @@ function pcPress(el, e){
   _pcTouched = true;
   el.style.transform = 'scale(0.94)';
   el.style.transition = 'transform .1s ease';
+  // Segurar (long-press) pra abrir a prévia — só pra cards que passam itemId (capas normais)
+  _pcLongPressFired = false;
+  clearTimeout(_pcLongPressTimer);
+  if(itemId){
+    _pcLongPressTimer = setTimeout(function(){
+      if(_pcMoved) return;
+      _pcLongPressFired = true;
+      _pcTouched = false;
+      el.style.transform = 'scale(1)';
+      el.style.transition = 'transform .15s ease';
+      if(navigator.vibrate) { try{ navigator.vibrate(10); }catch(e){} }
+      openAnimePreview(itemId);
+    }, PC_LONGPRESS_MS);
+  }
 }
 function pcRelease(el, e, fn){
+  clearTimeout(_pcLongPressTimer);
   el.style.transform = 'scale(1)';
   el.style.transition = 'transform .2s ease';
-  if(!_pcMoved) fn();
+  if(!_pcMoved && !_pcLongPressFired) fn();
   _pcTouched = false;
 }
 function pcCancel(el){
+  clearTimeout(_pcLongPressTimer);
   el.style.transform = 'scale(1)';
   el.style.transition = 'transform .2s ease';
   _pcTouched = false;
 }
 function pcClick(el, fn){
-  if(_pcTouched) return; // já tratado pelo touch
+  if(_pcTouched || _pcLongPressFired) return; // já tratado pelo touch
   fn();
 }
 // Detecta movimento no scroll
@@ -1311,7 +1357,7 @@ document.addEventListener('touchmove', function(e){
   if(!_pcTouched) return;
   var dx = Math.abs(e.touches[0].clientX - _pcStartX);
   var dy = Math.abs(e.touches[0].clientY - _pcStartY);
-  if(dx > 8 || dy > 8) _pcMoved = true;
+  if(dx > 8 || dy > 8){ _pcMoved = true; clearTimeout(_pcLongPressTimer); }
 }, {passive:true});
 window.pcPress=pcPress;window.pcRelease=pcRelease;window.pcCancel=pcCancel;window.pcClick=pcClick;
 
@@ -1657,7 +1703,7 @@ window.selAud=selAud;window.setFilter=setFilter;window.setSearchFilter=setSearch
 
 // ===== CARDS =====
 function mkPC(a,fn){
-  return '<div class="p-card" ontouchstart="pcPress(this,event)" ontouchend="pcRelease(this,event,function(){'+fn+'})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){'+fn+'})">'+
+  return '<div class="p-card" ontouchstart="pcPress(this,event,\''+a.id+'\')" ontouchend="pcRelease(this,event,function(){'+fn+'})" ontouchcancel="pcCancel(this)" onclick="pcClick(this,function(){'+fn+'})">'+
     '<div class="p-card-img">'+
     (a.cover?'<img src="'+a.cover+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy"/>':'<div class="p-card-emoji">⚔️</div>')+
     (a.ratingImgUrl?'<img class="p-card-badge" src="'+a.ratingImgUrl+'" style="height:16px;width:auto;padding:0;background:none;"/>':(a.rating_age?'<div class="p-card-badge">'+a.rating_age+'</div>':''))+
@@ -2899,6 +2945,54 @@ function showComingSoon(){
   closeCardMenu();
 }
 window.showComingSoon = showComingSoon;
+
+// Prévia ao segurar a capa de um anime (long-press)
+function openAnimePreview(itemId){
+  var a = items.find(function(x){ return x.id === itemId; });
+  if(!a) return;
+  var overlay = g('anime-preview-overlay');
+  var content = g('anime-preview-content');
+  if(!overlay || !content) return;
+
+  var img = g('anime-preview-img');
+  if(img) img.src = a.bannerInfoUrl || a.detailImg || a.bannerUrl || a.cover || '';
+  var title = g('anime-preview-title');
+  if(title) title.textContent = a.name;
+  var desc = g('anime-preview-desc');
+  if(desc) desc.textContent = a.description || '';
+  var badge = g('anime-preview-badge');
+  if(badge){
+    badge.innerHTML = a.ratingImgUrl
+      ? '<img src="'+a.ratingImgUrl+'" style="height:15px;width:auto;vertical-align:middle;"/>'
+      : (a.rating_age ? '<span class="rating-badge">'+a.rating_age+'</span>' : '');
+  }
+  var audio = g('anime-preview-audio');
+  if(audio) audio.textContent = a.audio==='d' ? 'Dub' : a.audio==='s' ? 'Leg' : 'Dub | Leg';
+
+  overlay.style.display = 'flex';
+  overlay.style.pointerEvents = 'auto';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      overlay.style.background = 'rgba(0,0,0,.75)';
+      overlay.style.backdropFilter = 'blur(6px)';
+      overlay.style.webkitBackdropFilter = 'blur(6px)';
+      content.style.opacity = '1';
+      content.style.transform = 'scale(1)';
+    });
+  });
+}
+function closeAnimePreview(){
+  var overlay = g('anime-preview-overlay');
+  var content = g('anime-preview-content');
+  if(!overlay || overlay.style.display==='none') return;
+  overlay.style.background = 'rgba(0,0,0,0)';
+  overlay.style.backdropFilter = 'blur(0px)';
+  overlay.style.webkitBackdropFilter = 'blur(0px)';
+  if(content){ content.style.opacity = '0'; content.style.transform = 'scale(.9)'; }
+  setTimeout(function(){ overlay.style.display = 'none'; }, 220);
+}
+window.openAnimePreview = openAnimePreview;
+window.closeAnimePreview = closeAnimePreview;
 
 function toggleDetailQueue(){
   var btn = g('detail-queue-btn');
