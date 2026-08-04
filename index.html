@@ -4074,7 +4074,7 @@ function openCardMenu(itemId, btn){
     item.onclick = function(){
       if(_cardShrinkClose){
         var fn=_cardShrinkClose; _cardShrinkClose=null;
-        fn(function(){ _closeCardMenuImmediate(); if(realAction) realAction.call(item); });
+        fn(function(){ if(realAction) realAction.call(item); _closeCardMenuImmediate(); });
       } else if(realAction) realAction.call(item);
     };
   });
