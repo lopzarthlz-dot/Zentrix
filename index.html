@@ -914,7 +914,7 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
 <!-- Card Context Menu - Portrait cards -->
 <div class="card-ctx-overlay" id="card-ctx-overlay" style="display:none;"></div>
 <div class="card-ctx-menu" id="card-ctx-menu" style="display:none;">
-  <button class="card-ctx-item" id="ctx-lista" onclick="showComingSoon()">Adicionar à Lista</button>
+  <button class="card-ctx-item" id="ctx-lista" onclick="toggleCardQueue()">Adicionar à Lista</button>
   <button class="card-ctx-item" id="ctx-zentrilista" onclick="showComingSoon()">Adicionar à Zentrilista</button>
   <div class="card-ctx-separator"></div>
   <button class="card-ctx-item" id="ctx-assistir" onclick="showComingSoon()">Começar a Assistir</button>
@@ -922,7 +922,7 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
 </div>
 <!-- Card Context Menu - Continue Watching cards -->
 <div class="card-ctx-menu" id="card-ctx-menu-cw" style="display:none;">
-  <button class="card-ctx-item" id="ctx-fila" onclick="showComingSoon()">Adicionar à Fila</button>
+  <button class="card-ctx-item" id="ctx-fila" onclick="toggleCardQueue()">Adicionar à Lista</button>
   <button class="card-ctx-item" id="ctx-zentrilista-cw" onclick="showComingSoon()">Adicionar à Zentrilista</button>
   <div class="card-ctx-separator"></div>
   <button class="card-ctx-item" id="ctx-continuar" onclick="showComingSoon()">Continuar Assistindo</button>
@@ -1600,6 +1600,7 @@ function loadData(){
     if(p.ultimoEpisodioLancado) a.ultimoEpisodioLancado = p.ultimoEpisodioLancado;
     if(p.views!=null) a.views = p.views;
     if(p.engagement!=null) a.engagement = p.engagement;
+    if(p.queued!=null) a.queued = p.queued;
     // DETECÇÃO AUTOMÁTICA DE EPISÓDIO NOVO: compara a quantidade de episódios de agora
     // com a quantidade salva da última vez que o app abriu. Se aumentou (não importa se foi
     // adicionado pelo app ou direto no código), marca a data de hoje automaticamente.
@@ -1652,7 +1653,7 @@ function saveProgress(){
         epProg[ep.id]={savedTime:ep.savedTime||0,duration:ep.duration||0,watched:ep.watched||false};
       }
     });
-    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0,ultimoEpisodioLancado:anime.ultimoEpisodioLancado||null,views:anime.views||0,engagement:anime.engagement||0};
+    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0,ultimoEpisodioLancado:anime.ultimoEpisodioLancado||null,views:anime.views||0,engagement:anime.engagement||0,queued:anime.queued||false};
   });
   lsSet(_profileKey(PROG_KEY), prog);
 }
@@ -1943,11 +1944,11 @@ function heroBookmark(){
   if(idx >= 0){
     savedItems.splice(idx, 1);
     saveSaved();
-    showToast('Removido da Fila', '★');
+    showToast('Removido da Lista', '★');
   } else {
     savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
     saveSaved();
-    showToast('Adicionado à Fila', '✓');
+    showToast('Adicionado à Lista', '✓');
   }
   updateHeroBookmark();
 }
@@ -2993,6 +2994,19 @@ function showComingSoon(){
 }
 window.showComingSoon = showComingSoon;
 
+// Adicionar/remover da fila — usado pelo menu dos cards normais ("Adicionar à Lista")
+// e pelo menu do Continue Assistindo ("Adicionar à Fila"). É o mesmo campo (a.queued) por trás.
+function toggleCardQueue(){
+  if(!_ctxItemId) return;
+  var a = items.find(function(x){ return x.id === _ctxItemId; });
+  if(!a) return;
+  a.queued = !a.queued;
+  saveData();
+  showToast(a.queued ? 'Adicionado à Lista' : 'Removido da Lista', '✅');
+  closeCardMenu();
+}
+window.toggleCardQueue = toggleCardQueue;
+
 // Prévia ao segurar a capa de um anime (long-press)
 function openAnimePreview(itemId){
   var a = items.find(function(x){ return x.id === itemId; });
@@ -3051,7 +3065,7 @@ function toggleDetailQueue(){
     btn.style.background = 'rgba(255,255,255,.08)';
     btn.style.borderColor = 'rgba(255,255,255,.2)';
     btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-    showToast('Removido da Fila', '🔖');
+    showToast('Removido da Lista', '🔖');
   } else {
     btn.dataset.queued = '1';
     btn.style.background = 'transparent';
@@ -3060,7 +3074,7 @@ function toggleDetailQueue(){
       '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>' +
       '<polyline points="9,12 11,14 15,10" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' +
     '</svg>';
-    showToast('Adicionado à Fila', '✅');
+    showToast('Adicionado à Lista', '✅');
   }
 }
 function openSeasonPicker(){
@@ -3914,6 +3928,12 @@ function openCardMenu(itemId, btn){
   var assistidoBtn = g('ctx-assistido');
   var allWatched = a.episodes && a.episodes.length > 0 && a.episodes.every(function(ep){ return ep.watched; });
   if(assistidoBtn) assistidoBtn.textContent = allWatched ? 'Marcar como Não Assistido' : 'Marcado como Assistido';
+
+  // Atualizar label dinâmico da lista/fila
+  var listaBtn = g('ctx-lista');
+  if(listaBtn) listaBtn.textContent = a.queued ? 'Remover da Lista' : 'Adicionar à Lista';
+  var filaBtn = g('ctx-fila');
+  if(filaBtn) filaBtn.textContent = a.queued ? 'Remover da Lista' : 'Adicionar à Lista';
 
   // Todos os itens sempre visíveis
   var continuarBtn = g('ctx-continuar');
