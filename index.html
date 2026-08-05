@@ -917,7 +917,7 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
   <button class="card-ctx-item" id="ctx-lista" onclick="toggleCardQueue()">Adicionar à Lista</button>
   <button class="card-ctx-item" id="ctx-zentrilista" onclick="showComingSoon()">Adicionar à Zentrilista</button>
   <div class="card-ctx-separator"></div>
-  <button class="card-ctx-item" id="ctx-assistir" onclick="showComingSoon()">Começar a Assistir</button>
+  <button class="card-ctx-item" id="ctx-assistir" onclick="ctxAssistir()">Começar a Assistir</button>
   <button class="card-ctx-item" id="ctx-assistido" onclick="showComingSoon()">Marcado como Assistido</button>
 </div>
 <!-- Card Context Menu - Continue Watching cards -->
@@ -925,7 +925,7 @@ img,video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
   <button class="card-ctx-item" id="ctx-fila" onclick="toggleCardQueue()">Adicionar à Lista</button>
   <button class="card-ctx-item" id="ctx-zentrilista-cw" onclick="showComingSoon()">Adicionar à Zentrilista</button>
   <div class="card-ctx-separator"></div>
-  <button class="card-ctx-item" id="ctx-continuar" onclick="showComingSoon()">Continuar Assistindo</button>
+  <button class="card-ctx-item" id="ctx-continuar" onclick="ctxAssistir()">Continuar Assistindo</button>
   <button class="card-ctx-item" id="ctx-infos" onclick="showComingSoon()">Infos da Série</button>
   <button class="card-ctx-item" id="ctx-assistido-cw" onclick="showComingSoon()">Marcado como Assistido</button>
 </div>
@@ -4193,10 +4193,17 @@ function closeCardMenu(){
   if(_cardShrinkClose){ var fn=_cardShrinkClose; _cardShrinkClose=null; fn(function(){ _closeCardMenuImmediate(); }); }
   else _closeCardMenuImmediate();
 }
+// Usado por "Começar a Assistir" (menu dos cards normais) e "Continuar Assistindo" (menu do Continue Assistindo).
+// Vai direto pro player: no episódio que parou, ou no episódio 1 se nunca assistiu nada.
 function ctxAssistir(){
   if(!_ctxItemId) return;
-  openDetail(_ctxItemId);
+  var a = items.find(function(x){ return x.id === _ctxItemId; });
+  if(!a || !a.episodes || a.episodes.length===0) return;
+  var idx = (a.lastEp!=null && a.lastEp>=0 && a.lastEp<a.episodes.length) ? a.lastEp : 0;
+  closeCardMenu();
+  openPlayer(a.id, idx, 'home');
 }
+window.ctxAssistir = ctxAssistir;
 function ctxZentrilista(){
   if(!_ctxItemId) return;
   var a = items.find(function(x){ return x.id === _ctxItemId; });
