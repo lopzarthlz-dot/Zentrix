@@ -1601,6 +1601,7 @@ function loadData(){
     if(p.views!=null) a.views = p.views;
     if(p.engagement!=null) a.engagement = p.engagement;
     if(p.queued!=null) a.queued = p.queued;
+    if(p.viewLog) a.viewLog = p.viewLog;
     // DETECÇÃO AUTOMÁTICA DE EPISÓDIO NOVO: compara a quantidade de episódios de agora
     // com a quantidade salva da última vez que o app abriu. Se aumentou (não importa se foi
     // adicionado pelo app ou direto no código), marca a data de hoje automaticamente.
@@ -1653,7 +1654,7 @@ function saveProgress(){
         epProg[ep.id]={savedTime:ep.savedTime||0,duration:ep.duration||0,watched:ep.watched||false};
       }
     });
-    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0,ultimoEpisodioLancado:anime.ultimoEpisodioLancado||null,views:anime.views||0,engagement:anime.engagement||0,queued:anime.queued||false};
+    prog[anime.id]={lastEp:anime.lastEp,fav:anime.fav,rating:anime.rating,status:anime.status,progress:anime.progress,episodes:epProg,lastWatchedAt:anime.lastWatchedAt||0,ultimoEpisodioLancado:anime.ultimoEpisodioLancado||null,views:anime.views||0,engagement:anime.engagement||0,queued:anime.queued||false,viewLog:anime.viewLog||[]};
   });
   lsSet(_profileKey(PROG_KEY), prog);
 }
@@ -1939,17 +1940,9 @@ function heroBookmark(){
   if(!heroItemId) return;
   var a = items.find(function(x){ return x.id === heroItemId; });
   if(!a) return;
-  var idx = -1;
-  for(var i=0;i<savedItems.length;i++){ if(savedItems[i].name.toLowerCase()===a.name.toLowerCase()){idx=i;break;} }
-  if(idx >= 0){
-    savedItems.splice(idx, 1);
-    saveSaved();
-    showToast('Removido da Lista', '★');
-  } else {
-    savedItems.push({id:Date.now().toString(), name:a.name, cat:'anime-serie'});
-    saveSaved();
-    showToast('Adicionado à Lista', '✓');
-  }
+  a.queued = !a.queued;
+  saveData();
+  showToast(a.queued ? 'Adicionado à Lista' : 'Removido da Lista', '✓');
   updateHeroBookmark();
 }
 function updateHeroBookmark(){
@@ -1957,7 +1950,7 @@ function updateHeroBookmark(){
   var a = items.find(function(x){ return x.id === heroItemId; });
   var btn = g('hero-bookmark-btn');
   if(!btn || !a) return;
-  var isSaved = savedItems.some(function(x){ return x.name.toLowerCase() === a.name.toLowerCase(); });
+  var isSaved = !!a.queued;
   if(isSaved){
     btn.style.background = 'transparent';
     btn.style.borderColor = 'var(--purple)';
@@ -2230,45 +2223,52 @@ function setHeroCarouselItem(item){
 
 // Rotação do Banner Carrossel: prioriza quem ficou mais tempo sem aparecer,
 // mas com sorteio real — nunca a mesma ordem/combinação toda vez.
-var HERO_HISTORY_KEY='zentrix_hero_history';
-function loadHeroHistory(){
-  try{ return JSON.parse(localStorage.getItem(HERO_HISTORY_KEY)||'{}'); }catch(e){ return {}; }
+var VIEW_LOG_DAYS = 7; // por quanto tempo uma visualização "conta" pro carrossel
+function pruneViewLog(a){
+  var cutoff = Date.now() - VIEW_LOG_DAYS*24*60*60*1000;
+  a.viewLog = (a.viewLog||[]).filter(function(t){ return t >= cutoff; });
 }
-function saveHeroHistory(hist){
-  try{ localStorage.setItem(HERO_HISTORY_KEY, JSON.stringify(hist)); }catch(e){}
+function recentViewsCount(a){
+  var cutoff = Date.now() - VIEW_LOG_DAYS*24*60*60*1000;
+  return (a.viewLog||[]).filter(function(t){ return t >= cutoff; }).length;
 }
-function pickFeaturedForHero(featuredList, count){
-  if(featuredList.length<=count){
-    // Poucos itens: usa todos, só embaralha a ordem (sem ranking entre eles)
-    var all=featuredList.slice();
-    for(var i=all.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=all[i];all[i]=all[j];all[j]=t; }
-    return all;
-  }
-  var hist=loadHeroHistory();
-  var now=Date.now();
-  var pool=featuredList.slice();
-  var picked=[];
-  for(var n=0;n<count&&pool.length>0;n++){
-    // Peso maior pra quem ficou mais tempo sem aparecer (nunca mostrado = peso máximo)
-    var weights=pool.map(function(it){ return Math.max(1, now-(hist[it.id]||0)); });
-    var total=weights.reduce(function(a,b){return a+b;},0);
-    var r=Math.random()*total, acc=0, idx=0;
-    for(;idx<pool.length;idx++){ acc+=weights[idx]; if(r<=acc) break; }
-    if(idx>=pool.length) idx=pool.length-1;
-    picked.push(pool[idx]);
-    pool.splice(idx,1);
-  }
-  // Marca os escolhidos como "mostrados agora" pra próxima vez priorizar os outros
-  picked.forEach(function(it){ hist[it.id]=now; });
-  saveHeroHistory(hist);
-  return picked;
+
+var HERO_SNAPSHOT_KEY = 'zentrix_hero_snapshot';
+var HERO_SNAPSHOT_DAYS = 7; // de quanto em quanto tempo o carrossel se reorganiza sozinho
+function getHeroSnapshot(){
+  try{ return JSON.parse(localStorage.getItem(HERO_SNAPSHOT_KEY)||'null'); }catch(e){ return null; }
+}
+function saveHeroSnapshot(snap){
+  try{ localStorage.setItem(HERO_SNAPSHOT_KEY, JSON.stringify(snap)); }catch(e){}
+}
+// Calcula os 6 animes mais vistos (nos últimos 7 dias) e "trava" essa seleção por 7 dias
+function computeHeroSnapshot(){
+  var pool = items.slice();
+  // Embaralha primeiro pra empates (ex: todos com 0 views) ficarem aleatórios, não sempre na mesma ordem
+  for(var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i];pool[i]=pool[j];pool[j]=t; }
+  pool.sort(function(a,b){ return recentViewsCount(b)-recentViewsCount(a); });
+  var top6 = pool.slice(0,6);
+  var snap = { ids: top6.map(function(x){return x.id;}), generatedAt: Date.now() };
+  saveHeroSnapshot(snap);
+  return snap;
 }
 function initHeroCarousel(){
   clearTimeout(_heroCarouselTimer);
-  // Banner Carrossel: exibe até 6 animes marcados como featured:true, sem ranking entre eles.
-  // Com rotação justa + aleatória quando há mais de 6 (ninguém fica de fora pra sempre, mas nunca é sempre a mesma combinação).
-  var featuredAll=items.filter(function(x){return x.featured===true;});
-  _heroCarouselItems=pickFeaturedForHero(featuredAll, 6);
+  // Banner Carrossel: automático — pega os 6 animes mais vistos (nos últimos 7 dias, hoje só na sua conta;
+  // quando existir banco de dados, vai somar todo mundo que usa o app). Essa seleção fica travada por 7 dias,
+  // depois o app recalcula sozinho. Entre os 6, sem ranking: a ordem de exibição é sempre embaralhada.
+  var snap = getHeroSnapshot();
+  var expired = !snap || (Date.now()-snap.generatedAt) >= HERO_SNAPSHOT_DAYS*24*60*60*1000;
+  if(expired) snap = computeHeroSnapshot();
+  var chosen = snap.ids.map(function(id){ return items.find(function(x){return x.id===id;}); }).filter(Boolean);
+  // Se a lista de animes mudou (ex: algum foi removido) e não bate mais, recalcula na hora
+  if(chosen.length < Math.min(6, items.length)){
+    snap = computeHeroSnapshot();
+    chosen = snap.ids.map(function(id){ return items.find(function(x){return x.id===id;}); }).filter(Boolean);
+  }
+  // Embaralha a ordem de exibição — sem ranking entre eles
+  for(var k=chosen.length-1;k>0;k--){ var j2=Math.floor(Math.random()*(k+1)); var t2=chosen[k];chosen[k]=chosen[j2];chosen[j2]=t2; }
+  _heroCarouselItems = chosen;
   _heroCarouselIdx=0;
   if(_heroCarouselItems.length===0){g('hero-indicators')&&(g('hero-indicators').style.display='none');return;}
   preloadHeroCarouselImages();
@@ -2397,6 +2397,10 @@ function openDetail(itemId){
   var a=items.find(function(x){return x.id===itemId;});if(!a)return;
   // VIEWS REAL: soma toda vez que a página do anime é aberta de verdade
   a.views=(a.views||0)+1;
+  // Também guarda O MOMENTO de cada visualização, pra saber quantas foram nos últimos 7 dias (usado pelo Banner Carrossel)
+  a.viewLog=(a.viewLog||[]);
+  a.viewLog.push(Date.now());
+  pruneViewLog(a);
   saveData();
   var ht=g('detail-hero-title');if(ht)ht.textContent=a.name;
   // Banner image
@@ -3003,6 +3007,7 @@ function toggleCardQueue(){
   a.queued = !a.queued;
   saveData();
   showToast(a.queued ? 'Adicionado à Lista' : 'Removido da Lista', '✅');
+  if(heroItemId === a.id) updateHeroBookmark();
   closeCardMenu();
 }
 window.toggleCardQueue = toggleCardQueue;
